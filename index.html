@@ -3,76 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appeler Papa</title>
+    <title>Adil Mhira | Service Design Director — Strategic Transformation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-color: #080808;
+            --text-primary: #f5f5f5;
+            --text-secondary: #888888;
+            --accent: #3b82f6;
+        }
+
         body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            cursor: default;
         }
-        .container { text-align: center; padding: 20px; }
-        h1 { color: white; font-size: 2rem; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
-        .call-button {
-            width: 200px; height: 200px; border-radius: 50%; border: none;
-            background: linear-gradient(145deg, #4CAF50, #45a049);
-            color: white; font-size: 1.5rem; font-weight: bold; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: all 0.3s ease;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;
+
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999; opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
-        .call-button:hover { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-        .call-button:active { transform: scale(0.95); }
-        .call-button.sending { background: linear-gradient(145deg, #FFA500, #FF8C00); }
-        .call-button.sent { background: linear-gradient(145deg, #2196F3, #1976D2); }
-        .phone-icon { font-size: 4rem; }
-        .status { color: white; margin-top: 20px; font-size: 1.2rem; min-height: 30px; }
+
+        .hero-title {
+            line-height: 0.85;
+            letter-spacing: -0.05em;
+        }
+
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+            background: var(--text-primary); transform: translateX(-101%);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link:hover::after { transform: translateX(0); }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .project-card {
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .tag {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        html { scroll-behavior: smooth; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Besoin de Papa ?</h1>
-        <button class="call-button" onclick="appelerPapa()">
-            <span class="phone-icon">📞</span>
-            <span>Appeler Papa</span>
-        </button>
-        <p class="status" id="status"></p>
-    </div>
+    <div class="grain-overlay"></div>
+
+    <!-- Nav -->
+    <nav class="fixed top-0 w-full z-50 px-6 py-8 md:px-12 flex justify-between items-center mix-blend-difference">
+        <a href="#" class="text-xl font-extrabold tracking-tighter">ADIL MHIRA</a>
+        <div class="hidden md:flex gap-10 text-[10px] font-bold uppercase tracking-[0.2em]">
+            <a href="#experience" class="nav-link">Parcours</a>
+            <a href="#expertise" class="nav-link">Expertise</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="min-h-screen flex flex-col justify-center px-6 md:px-12 pt-20">
+            <div class="max-w-7xl">
+                <div class="flex items-center gap-4 mb-8 reveal">
+                    <span class="w-12 h-[1px] bg-accent"></span>
+                    <p class="text-accent uppercase tracking-[0.4em] text-[10px] font-bold">Service Design Director</p>
+                </div>
+                <h1 class="hero-title text-[14vw] md:text-[9rem] font-extrabold mb-12 reveal">
+                    Vision.<br>Exécution.<br>Impact.
+                </h1>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-end reveal">
+                    <div class="md:col-span-7">
+                        <p class="text-xl md:text-3xl text-zinc-400 font-light leading-snug">
+                            Je pilote des transformations stratégiques à l'échelle du groupe. J'aligne vision C-Level, excellence opérationnelle et culture design pour créer de la valeur mesurable.
+                        </p>
+                    </div>
+                    <div class="md:col-span-5 flex justify-end">
+                        <div class="text-right">
+                            <p class="text-zinc-600 text-sm uppercase tracking-widest mb-2">Actuellement</p>
+                            <p class="text-lg font-semibold">Service Design Director @ Renault Group</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Block -->
+        <section class="py-24 px-6 md:px-12 border-y border-zinc-900">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+                <div class="reveal">
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Track Record</p>
+                    <p class="text-4xl font-bold">20<span class="text-accent">+</span></p>
+                    <p class="text-zinc-400 text-sm mt-2">Années de leadership design</p>
+                </div>
+                <div class="reveal" style="transition-delay: 0.1s;">
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Team Building</p>
+                    <p class="text-4xl font-bold">30<span class="text-accent">+</span></p>
+                    <p class="text-zinc-400 text-sm mt-2">Designers recrutés & formés</p>
+                </div>
+                <div class="reveal" style="transition-delay: 0.2s;">
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Scale</p>
+                    <p class="text-4xl font-bold">35M</p>
+                    <p class="text-zinc-400 text-sm mt-2">Assets sous gouvernance</p>
+                </div>
+                <div class="reveal" style="transition-delay: 0.3s;">
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-widest mb-4">Entrepreneurship</p>
+                    <p class="text-4xl font-bold">Exit</p>
+                    <p class="text-zinc-400 text-sm mt-2">Studio vendu au Groupe H4H</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience List -->
+        <section id="experience" class="py-32 px-6 md:px-12">
+            <h2 class="text-zinc-600 text-[10px] uppercase tracking-[0.3em] font-bold mb-20 reveal">Trajectoire Exécutive</h2>
+
+            <div class="space-y-32">
+                <!-- Renault -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 reveal">
+                    <div class="md:col-span-4">
+                        <p class="text-2xl font-bold">Renault Group</p>
+                        <p class="text-zinc-500 uppercase tracking-widest text-xs mt-2">2023 — Présent</p>
+                    </div>
+                    <div class="md:col-span-8">
+                        <h3 class="text-3xl md:text-5xl font-bold mb-6 tracking-tighter leading-tight">Architecte de la gouvernance design groupe. Influence directe sur la stratégie produit.</h3>
+                        <p class="text-zinc-400 text-lg mb-8 max-w-2xl">Reporting VP Design. Je structure les programmes transverses qui impactent l'ensemble des marques. Je traduis les enjeux design en arbitrages business pour le COMEX. Je définis les standards méthodologiques adoptés par 200+ designers.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="tag">Strategic Governance</span>
+                            <span class="tag">Executive Influence</span>
+                            <span class="tag">Operating Model Design</span>
+                            <span class="tag">Cross-Brand Alignment</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enedis -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 reveal">
+                    <div class="md:col-span-4">
+                        <p class="text-2xl font-bold">Enedis</p>
+                        <p class="text-zinc-500 uppercase tracking-widest text-xs mt-2">2020 — 2022</p>
+                    </div>
+                    <div class="md:col-span-8">
+                        <h3 class="text-3xl md:text-5xl font-bold mb-6 tracking-tighter leading-tight">Refonte stratégique d'une infrastructure critique nationale. Impact direct sur les OPEX.</h3>
+                        <p class="text-zinc-400 text-lg mb-8 max-w-2xl">Direction du redesign de la plateforme de supervision du réseau électrique français (35M de compteurs). J'ai instauré une gouvernance design entre DSI, métiers terrain et direction générale. Résultat : réduction mesurable des coûts d'exploitation et accélération du time-to-market de 40%.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="tag">Critical Infrastructure</span>
+                            <span class="tag">OPEX Optimization</span>
+                            <span class="tag">Enterprise Governance</span>
+                            <span class="tag">Industrial Scale</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EY -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 reveal">
+                    <div class="md:col-span-4">
+                        <p class="text-2xl font-bold">EY Consulting</p>
+                        <p class="text-zinc-500 uppercase tracking-widest text-xs mt-2">2018 — 2020</p>
+                    </div>
+                    <div class="md:col-span-8">
+                        <h3 class="text-3xl md:text-5xl font-bold mb-6 tracking-tighter leading-tight">Création et direction de la practice CX Financial Services. P&L ownership.</h3>
+                        <p class="text-zinc-400 text-lg mb-8 max-w-2xl">Senior Manager avec responsabilité P&L. J'ai bâti une équipe de 15 consultants spécialisés et signé des missions stratégiques avec les leaders bancaires et assurantiels français. Croissance de 300% du chiffre d'affaires de la practice en 18 mois.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="tag">Practice Leadership</span>
+                            <span class="tag">P&L Management</span>
+                            <span class="tag">Business Development</span>
+                            <span class="tag">Financial Services</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smala -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 reveal">
+                    <div class="md:col-span-4">
+                        <p class="text-2xl font-bold">Little Big Smala</p>
+                        <p class="text-zinc-500 uppercase tracking-widest text-xs mt-2">2016 — 2018</p>
+                    </div>
+                    <div class="md:col-span-8">
+                        <h3 class="text-3xl md:text-5xl font-bold mb-6 tracking-tighter leading-tight">Fondateur. De zéro à l'exit en 24 mois.</h3>
+                        <p class="text-zinc-400 text-lg mb-8 max-w-2xl">Création d'un studio d'innovation design de 12 personnes. Clients CAC40. Acquisition par le Groupe H4H. J'ai prouvé ma capacité à entreprendre, recruter, vendre et livrer dans un environnement à forte vélocité.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="tag">Founder</span>
+                            <span class="tag">M&A Exit</span>
+                            <span class="tag">Team Scaling</span>
+                            <span class="tag">CAC40 Clients</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expertise Grid -->
+        <section id="expertise" class="py-32 px-6 md:px-12 bg-zinc-950">
+            <div class="max-w-7xl">
+                <h2 class="text-4xl md:text-7xl font-bold mb-24 tracking-tighter reveal">Ce que j'apporte à une organisation.</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800 border border-zinc-800 reveal">
+                    <div class="bg-zinc-950 p-12 hover:bg-zinc-900 transition-colors">
+                        <p class="text-accent mb-8 font-bold text-sm">01</p>
+                        <h4 class="text-xl font-bold mb-4 uppercase tracking-wider">Strategic Governance</h4>
+                        <p class="text-zinc-500 text-sm leading-relaxed">Je conçois des modèles opérationnels (TOM) qui cassent les silos et alignent produit, tech et business sur une vision service unifiée. Je structure ce qui était chaotique.</p>
+                    </div>
+                    <div class="bg-zinc-950 p-12 hover:bg-zinc-900 transition-colors">
+                        <p class="text-accent mb-8 font-bold text-sm">02</p>
+                        <h4 class="text-xl font-bold mb-4 uppercase tracking-wider">Executive Influence</h4>
+                        <p class="text-zinc-500 text-sm leading-relaxed">Je parle le langage du COMEX. Je traduis les enjeux design en indicateurs business — NPS, CSAT, réduction de churn, OPEX — pour obtenir les arbitrages et les budgets.</p>
+                    </div>
+                    <div class="bg-zinc-950 p-12 hover:bg-zinc-900 transition-colors">
+                        <p class="text-accent mb-8 font-bold text-sm">03</p>
+                        <h4 class="text-xl font-bold mb-4 uppercase tracking-wider">Org Design & Scaling</h4>
+                        <p class="text-zinc-500 text-sm leading-relaxed">Je recrute, structure et fais grandir des équipes design performantes. Je mets en place les rituels, les outils et la culture qui permettent de scaler sans perdre en qualité.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-800 border-x border-b border-zinc-800 reveal mt-0">
+                    <div class="bg-zinc-950 p-12 hover:bg-zinc-900 transition-colors">
+                        <p class="text-accent mb-8 font-bold text-sm">04</p>
+                        <h4 class="text-xl font-bold mb-4 uppercase tracking-wider">Transformation Delivery</h4>
+                        <p class="text-zinc-500 text-sm leading-relaxed">Je ne fais pas que des slides. Je pilote l'exécution de bout en bout, du cadrage stratégique au déploiement terrain, avec une obsession pour les résultats mesurables.</p>
+                    </div>
+                    <div class="bg-zinc-950 p-12 hover:bg-zinc-900 transition-colors">
+                        <p class="text-accent mb-8 font-bold text-sm">05</p>
+                        <h4 class="text-xl font-bold mb-4 uppercase tracking-wider">Complex Problem Framing</h4>
+                        <p class="text-zinc-500 text-sm leading-relaxed">Je démêle les problèmes multi-stakeholders que personne ne veut toucher. Je clarifie, je priorise, je crée l'alignement là où il n'y avait que friction.</p>
+                    </div>
+                    <div class="bg-zinc-950 p-12 hover:bg-zinc-900 transition-colors">
+                        <p class="text-accent mb-8 font-bold text-sm">06</p>
+                        <h4 class="text-xl font-bold mb-4 uppercase tracking-wider">Stakeholder Management</h4>
+                        <p class="text-zinc-500 text-sm leading-relaxed">VP, C-Level, directions métiers, équipes terrain : je navigue tous les niveaux de l'organisation. Je construis les coalitions nécessaires pour faire avancer les sujets.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer / Contact -->
+        <section id="contact" class="py-32 px-6 md:px-12 bg-white text-black">
+            <div class="reveal">
+                <p class="uppercase tracking-[0.4em] text-[10px] font-extrabold mb-10">Prêt pour le prochain défi</p>
+                <h2 class="text-5xl md:text-[8rem] font-extrabold tracking-tighter leading-[0.85] mb-20">
+                    Parlons stratégie<br>et ambition.
+                </h2>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-12">
+                    <a href="mailto:adil@studioscratch.com" class="text-2xl md:text-5xl font-light hover:text-accent transition-colors break-all">
+                        adil@studioscratch.com
+                    </a>
+                    <div class="flex gap-10 text-[10px] font-bold uppercase tracking-widest">
+                        <a href="https://portfolio-adil.webflow.io" class="hover:opacity-50 transition-opacity">Portfolio</a>
+                        <a href="#" class="hover:opacity-50 transition-opacity">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-12 px-6 md:px-12 text-zinc-600 text-[10px] uppercase tracking-widest flex justify-between">
+        <p>Adil Mhira — 2025</p>
+        <p>Paris | Remote | International</p>
+    </footer>
+
     <script>
-        async function appelerPapa() {
-            const button = document.querySelector('.call-button');
-            const status = document.getElementById('status');
-            button.classList.add('sending');
-            button.innerHTML = '<span class="phone-icon">⏳</span><span>Envoi...</span>';
-            status.textContent = '';
-            try {
-                const response = await fetch('https://ntfy.sh/papa-family-2026', {
-                    method: 'POST',
-                    body: 'Ton fils a besoin de toi ! 📞'
-                });
-                if (response.ok) {
-                    button.classList.remove('sending');
-                    button.classList.add('sent');
-                    button.innerHTML = '<span class="phone-icon">✅</span><span>Envoyé !</span>';
-                    status.textContent = 'Papa a reçu ton message !';
-                    setTimeout(() => {
-                        button.classList.remove('sent');
-                        button.innerHTML = '<span class="phone-icon">📞</span><span>Appeler Papa</span>';
-                        status.textContent = '';
-                    }, 3000);
-                } else { throw new Error('Erreur'); }
-            } catch (error) {
-                button.classList.remove('sending');
-                button.innerHTML = '<span class="phone-icon">❌</span><span>Erreur</span>';
-                status.textContent = 'Réessaie dans quelques secondes';
-                setTimeout(() => {
-                    button.innerHTML = '<span class="phone-icon">📞</span><span>Appeler Papa</span>';
-                    status.textContent = '';
-                }, 3000);
-            }
-        }
+        lucide.createIcons();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
