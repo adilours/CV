@@ -13,11 +13,13 @@
         body {
             font-family: 'Inter', sans-serif;
             font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+            transition: background-color 0.6s ease, color 0.6s ease;
         }
         .glass-panel {
             background: rgba(250, 250, 249, 0.8);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            transition: background-color 0.6s ease, border-color 0.6s ease;
         }
         .reveal {
             opacity: 0;
@@ -31,6 +33,67 @@
         section {
             position: relative;
             background-color: inherit;
+            transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease;
+        }
+        
+        /* Zero Bullshit Dark Mode */
+        body.zb-mode {
+            background-color: #1c1917;
+            color: #fafaf9;
+        }
+        body.zb-mode .glass-panel {
+            background: rgba(28, 25, 23, 0.95);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        body.zb-mode header {
+            background-color: #1c1917;
+        }
+        body.zb-mode .bg-white {
+            background-color: #0c0a09 !important;
+        }
+        body.zb-mode .bg-stone-50 {
+            background-color: #1c1917 !important;
+        }
+        body.zb-mode .bg-stone-900 {
+            background-color: #0c0a09 !important;
+        }
+        body.zb-mode .text-stone-900 {
+            color: #fafaf9 !important;
+        }
+        body.zb-mode .text-stone-500 {
+            color: #a8a29e !important;
+        }
+        body.zb-mode .text-stone-400 {
+            color: #d6d3d1 !important;
+        }
+        body.zb-mode .border-stone-200 {
+            border-color: #44403c !important;
+        }
+        body.zb-mode .border-stone-200\/50 {
+            border-color: rgba(68, 64, 60, 0.5) !important;
+        }
+        body.zb-mode .bg-stone-100 {
+            background-color: #292524 !important;
+        }
+        body.zb-mode .text-stone-600 {
+            color: #d6d3d1 !important;
+        }
+        body.zb-mode .hover\:bg-stone-50:hover {
+            background-color: #292524 !important;
+        }
+        
+        /* ZB Toggle button glow */
+        #zb-toggle.active {
+            border-color: #f97316;
+            box-shadow: 0 0 12px rgba(249, 115, 22, 0.4);
+        }
+        #zb-toggle {
+            transition: all 0.3s ease;
+        }
+        
+        /* Content transition */
+        [data-fr], [data-en] {
+            transition: opacity 0.3s ease;
         }
     </style>
 </head>
@@ -47,7 +110,11 @@
                 <a href="#expertise" class="text-[10px] font-medium text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-[0.2em]" data-fr="Expertise" data-en="Expertise">Expertise</a>
                 <a href="#contact" class="text-[10px] font-medium text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-[0.2em]" data-fr="Contact" data-en="Contact">Contact</a>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 md:gap-4">
+                <button id="zb-toggle" class="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-widest border border-stone-300 rounded-full px-2.5 py-1.5 hover:border-orange-400 transition-all" title="Mode Zero Bullshit">
+                    <span>🔥</span>
+                    <span class="hidden sm:inline">Zero BS</span>
+                </button>
                 <button id="lang-toggle" class="flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest border border-stone-300 rounded-full px-3 py-1.5 hover:border-stone-400 transition-colors">
                     <span id="lang-fr" class="text-stone-900">FR</span>
                     <span class="text-stone-300">/</span>
@@ -72,7 +139,7 @@
                     </span>
                 </div>
                 
-                <h1 class="reveal text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-stone-900 leading-[1.05]" data-fr="Je simplifie les systèmes<br><span class='text-stone-400 italic'>pour libérer les décisions.</span>" data-en="I simplify systems<br><span class='text-stone-400 italic'>to unlock decisions.</span>">
+                <h1 class="reveal text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-stone-900 leading-[1.05]" data-fr="Je simplifie les systèmes<br><span class='text-stone-400 italic'>pour libérer les décisions.</span>" data-en="I simplify systems<br><span class='text-stone-400 italic'>to unlock decisions.</span>" data-zb-fr="Je rends actionnable<br><span class='text-stone-400 italic'>ce que personne ne comprend.</span>" data-zb-en="I make actionable<br><span class='text-stone-400 italic'>what nobody understands.</span>">
                     Je simplifie les systèmes<br><span class="text-stone-400 italic">pour libérer les décisions.</span>
                 </h1>
                 
@@ -92,7 +159,7 @@
     <!-- Introduction Statement -->
     <section class="py-16 md:py-24 px-6 bg-stone-900 text-stone-100">
         <div class="max-w-6xl mx-auto">
-            <p class="text-base md:text-lg lg:text-xl font-light leading-relaxed md:leading-loose text-stone-300 text-center md:text-left" data-fr="Service Designer intervenant sur les transformations complexes (automobile, retail, banque, énergie). Spécialiste de l'analyse des organisations et de l'intégration IA dans les parcours utilisateurs. J'accompagne les mutations métier par la recherche terrain, le développement d'outils propriétaires et une vision stratégique des enjeux business." data-en="Service Designer working on complex transformations (automotive, retail, banking, energy). Specialist in organizational analysis and AI integration in user journeys. I support business mutations through field research, proprietary tool development, and a strategic vision of business challenges.">
+            <p class="text-base md:text-lg lg:text-xl font-light leading-relaxed md:leading-loose text-stone-300 text-center md:text-left" data-fr="Service Designer intervenant sur les transformations complexes (automobile, retail, banque, énergie). Spécialiste de l'analyse des organisations et de l'intégration IA dans les parcours utilisateurs. J'accompagne les mutations métier par la recherche terrain, le développement d'outils propriétaires et une vision stratégique des enjeux business." data-en="Service Designer working on complex transformations (automotive, retail, banking, energy). Specialist in organizational analysis and AI integration in user journeys. I support business mutations through field research, proprietary tool development, and a strategic vision of business challenges." data-zb-fr="Service Designer sur les transformations complexes (automobile, retail, banque, énergie). Personne n'a le temps d'écouter nos belles présentations. À l'heure de l'IA, les post-it et les pixels ne suffisent plus : il faut capter l'attention en montrant du concret qui fait sens immédiatement. Je développe des outils qui alignent sur du tangible, j'intègre l'IA là où elle a du sens métier, je cartographie les organisations pour forcer les décisions, et je bâtis des équipes qui livrent plutôt que de débattre. Pas de workshop thérapeutique : du visible qui transforme avant que les gens décrochent." data-zb-en="Service Designer on complex transformations (automotive, retail, banking, energy). Nobody has time to listen to our fancy presentations. In the AI era, sticky notes and pixels aren't enough: you need to capture attention by showing concrete stuff that makes sense immediately. I build tools that align on tangible outcomes, integrate AI where it makes business sense, map organizations to force decisions, and build teams that deliver rather than debate. No therapeutic workshops: visible results that transform before people tune out.">
                 Service Designer intervenant sur les transformations complexes <span class="text-stone-500">(automobile, retail, banque, énergie)</span>. Spécialiste de l'analyse des organisations et de l'intégration IA dans les parcours utilisateurs. J'accompagne les mutations métier par la recherche terrain, le développement d'outils propriétaires et une vision stratégique des enjeux business.
             </p>
         </div>
@@ -126,7 +193,7 @@
                             <span class="block text-lg font-medium text-stone-900">Renault Group</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Service Design Lead</span>
                         </div>
-                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Alignement stratégique de programmes transverses. Je démine les angles morts et je recadre les problèmes complexes. J'utilise la cartographie non pas comme un livrable passif, mais comme un outil de navigation : modélisation du 'To-Be' pour forcer les décisions éclairées et opérationnaliser le changement." data-en="Strategic alignment of cross-functional programs. I defuse blind spots and reframe complex problems. I use mapping not as a passive deliverable, but as a navigation tool: modeling the 'To-Be' to force informed decisions and operationalize change.">
+                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Alignement stratégique de programmes transverses. Je démine les angles morts et je recadre les problèmes complexes. J'utilise la cartographie non pas comme un livrable passif, mais comme un outil de navigation : modélisation du 'To-Be' pour forcer les décisions éclairées et opérationnaliser le changement." data-en="Strategic alignment of cross-functional programs. I defuse blind spots and reframe complex problems. I use mapping not as a passive deliverable, but as a navigation tool: modeling the 'To-Be' to force informed decisions and operationalize change." data-zb-fr="J'aligne des programmes transverses dans un environnement où les Architectes d'Entreprise protègent leur territoire avec des schémas que personne ne comprend, où SAFe est devenu une religion bureaucratique, et où chaque réunion dure 2h pour ne rien décider. Nous, on réfléchit en flux, en étapes, en boucles - des trucs que les gens comprennent. Je cartographie qui décide quoi, je force les arbitrages, et je modélise le 'To-Be' pour coincer les gens face à leurs contradictions stratégiques. Moins de PowerPoint abscons, plus d'action concrète." data-zb-en="I align cross-functional programs in an environment where Enterprise Architects protect their turf with diagrams nobody understands, where SAFe has become a bureaucratic religion, and where every meeting lasts 2 hours to decide nothing. We think in flows, steps, loops - stuff people actually understand. I map who decides what, force arbitrations, and model the 'To-Be' to corner people facing their strategic contradictions. Less obscure PowerPoints, more concrete action.">
                             Alignement stratégique de programmes transverses. Je démine les angles morts et je recadre les problèmes complexes. J'utilise la cartographie non pas comme un livrable passif, mais comme un outil de navigation : modélisation du "To-Be" pour forcer les décisions éclairées et opérationnaliser le changement.
                         </p>
                     </div>
@@ -137,7 +204,7 @@
                             <span class="block text-lg font-medium text-stone-900">Renault Group</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Service Design Lead</span>
                         </div>
-                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Alignement stratégique de programmes transverses. Je démine les angles morts et je recadre les problèmes complexes. J'utilise la cartographie non pas comme un livrable passif, mais comme un outil de navigation : modélisation du 'To-Be' pour forcer les décisions éclairées et opérationnaliser le changement." data-en="Strategic alignment of cross-functional programs. I defuse blind spots and reframe complex problems. I use mapping not as a passive deliverable, but as a navigation tool: modeling the 'To-Be' to force informed decisions and operationalize change.">
+                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Alignement stratégique de programmes transverses. Je démine les angles morts et je recadre les problèmes complexes. J'utilise la cartographie non pas comme un livrable passif, mais comme un outil de navigation : modélisation du 'To-Be' pour forcer les décisions éclairées et opérationnaliser le changement." data-en="Strategic alignment of cross-functional programs. I defuse blind spots and reframe complex problems. I use mapping not as a passive deliverable, but as a navigation tool: modeling the 'To-Be' to force informed decisions and operationalize change." data-zb-fr="J'aligne des programmes transverses dans un environnement où les Architectes d'Entreprise protègent leur territoire avec des schémas que personne ne comprend, où SAFe est devenu une religion bureaucratique, et où chaque réunion dure 2h pour ne rien décider. Nous, on réfléchit en flux, en étapes, en boucles - des trucs que les gens comprennent. Je cartographie qui décide quoi, je force les arbitrages, et je modélise le 'To-Be' pour coincer les gens face à leurs contradictions stratégiques. Moins de PowerPoint abscons, plus d'action concrète." data-zb-en="I align cross-functional programs in an environment where Enterprise Architects protect their turf with diagrams nobody understands, where SAFe has become a bureaucratic religion, and where every meeting lasts 2 hours to decide nothing. We think in flows, steps, loops - stuff people actually understand. I map who decides what, force arbitrations, and model the 'To-Be' to corner people facing their strategic contradictions. Less obscure PowerPoints, more concrete action.">
                             Alignement stratégique de programmes transverses. Je démine les angles morts et je recadre les problèmes complexes. J'utilise la cartographie non pas comme un livrable passif, mais comme un outil de navigation : modélisation du "To-Be" pour forcer les décisions éclairées et opérationnaliser le changement.
                         </div>
                         <div class="col-span-3 flex justify-end">
@@ -162,7 +229,7 @@
                             <span class="block text-lg font-medium text-stone-900">Generali</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Employee Experience Lead</span>
                         </div>
-                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Définition de la roadmap EX 2023-2024. Parce que l'expérience client ne vaut rien si l'expérience collaborateur est un enfer bureaucratique. Alignement de la Direction Qualité de Service sur une vision humaine." data-en="Defining the EX 2023-2024 roadmap. Because customer experience means nothing if employee experience is a bureaucratic nightmare. Aligning Quality of Service leadership on a human-centric vision.">
+                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Définition de la roadmap EX 2023-2024. Parce que l'expérience client ne vaut rien si l'expérience collaborateur est un enfer bureaucratique. Alignement de la Direction Qualité de Service sur une vision humaine." data-en="Defining the EX 2023-2024 roadmap. Because customer experience means nothing if employee experience is a bureaucratic nightmare. Aligning Quality of Service leadership on a human-centric vision." data-zb-fr="Mission officielle : définir la roadmap EX 2023-2024. Mission réelle : cramer du budget pour produire des recommandations stratégiques dont ils n'ont implémenté qu'une seule deux ans plus tard - celle poussée par le support qui crevait sur ServiceNow. L'expérience collaborateur reste un enfer bureaucratique, mais on a réussi à jouer des coudes pour faire exister la Direction Qualité de Service face à des entités qui avaient dix fois plus de poids politique. Une guerre de tranchées pour gagner 50 mètres de terrain." data-zb-en="Official mission: define the EX 2023-2024 roadmap. Real mission: burn budget to produce strategic recommendations they only implemented one of two years later - the one pushed by support drowning in ServiceNow. Employee experience remains a bureaucratic hell, but we managed to elbow our way to make Quality of Service exist against entities with ten times more political weight. A trench war to gain 50 meters of ground.">
                             Définition de la roadmap EX 2023-2024. Parce que l'expérience client ne vaut rien si l'expérience collaborateur est un enfer bureaucratique. Alignement de la Direction Qualité de Service sur une vision humaine.
                         </p>
                     </div>
@@ -173,7 +240,7 @@
                             <span class="block text-lg font-medium text-stone-900">Generali</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Employee Experience Lead</span>
                         </div>
-                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Définition de la roadmap EX 2023-2024. Parce que l'expérience client ne vaut rien si l'expérience collaborateur est un enfer bureaucratique. Alignement de la Direction Qualité de Service sur une vision humaine." data-en="Defining the EX 2023-2024 roadmap. Because customer experience means nothing if employee experience is a bureaucratic nightmare. Aligning Quality of Service leadership on a human-centric vision.">
+                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Définition de la roadmap EX 2023-2024. Parce que l'expérience client ne vaut rien si l'expérience collaborateur est un enfer bureaucratique. Alignement de la Direction Qualité de Service sur une vision humaine." data-en="Defining the EX 2023-2024 roadmap. Because customer experience means nothing if employee experience is a bureaucratic nightmare. Aligning Quality of Service leadership on a human-centric vision." data-zb-fr="Mission officielle : définir la roadmap EX 2023-2024. Mission réelle : cramer du budget pour produire des recommandations stratégiques dont ils n'ont implémenté qu'une seule deux ans plus tard - celle poussée par le support qui crevait sur ServiceNow. L'expérience collaborateur reste un enfer bureaucratique, mais on a réussi à jouer des coudes pour faire exister la Direction Qualité de Service face à des entités qui avaient dix fois plus de poids politique. Une guerre de tranchées pour gagner 50 mètres de terrain." data-zb-en="Official mission: define the EX 2023-2024 roadmap. Real mission: burn budget to produce strategic recommendations they only implemented one of two years later - the one pushed by support drowning in ServiceNow. Employee experience remains a bureaucratic hell, but we managed to elbow our way to make Quality of Service exist against entities with ten times more political weight. A trench war to gain 50 meters of ground.">
                             Définition de la roadmap EX 2023-2024. Parce que l'expérience client ne vaut rien si l'expérience collaborateur est un enfer bureaucratique. Alignement de la Direction Qualité de Service sur une vision humaine.
                         </div>
                         <div class="col-span-3 flex justify-end">
@@ -198,7 +265,7 @@
                             <span class="block text-lg font-medium text-stone-900">Enedis</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Lead UX Transformation</span>
                         </div>
-                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="<strong>Kobee :</strong> Redesign radical de la plateforme de supervision Linky (35M+ compteurs). <br><strong>Simpark :</strong> Refonte du système de gestion des interventions terrain (1M+/an). Orchestration de la gouvernance design entre IT, opérations et terrain. Pas de compromis sur l'efficacité industrielle." data-en="<strong>Kobee:</strong> Radical redesign of the Linky supervision platform (35M+ smart meters). <br><strong>Simpark:</strong> Overhaul of field intervention system (1M+/year). Orchestrating design governance between IT, operations and field teams. No compromise on industrial efficiency.">
+                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="<strong>Kobee :</strong> Redesign radical de la plateforme de supervision Linky (35M+ compteurs). <br><strong>Simpark :</strong> Refonte du système de gestion des interventions terrain (1M+/an). Orchestration de la gouvernance design entre IT, opérations et terrain. Pas de compromis sur l'efficacité industrielle." data-en="<strong>Kobee:</strong> Radical redesign of the Linky supervision platform (35M+ smart meters). <br><strong>Simpark:</strong> Overhaul of field intervention system (1M+/year). Orchestrating design governance between IT, operations and field teams. No compromise on industrial efficiency." data-zb-fr="<strong>Kobee :</strong> Redesign d'une plateforme qui supervise 35 millions de compteurs Linky. <strong>Simpark :</strong> Refonte d'un système de gestion d'interventions terrain (1M+/an). À cette échelle, l'esthétique on s'en fout : si le technicien perd 30 secondes par intervention, c'est 500 000 heures perdues par an. J'ai orchestré la gouvernance design entre IT, opérations et terrain en refusant tous les compromis molassons. Pas de MVP gentillet : soit c'est efficace industriellement, soit ça ne sort pas." data-zb-en="<strong>Kobee:</strong> Redesign of a platform supervising 35 million Linky smart meters. <strong>Simpark:</strong> Overhaul of a field intervention system (1M+/year). At this scale, aesthetics don't matter: if the technician loses 30 seconds per intervention, that's 500,000 hours lost per year. I orchestrated design governance between IT, ops and field by refusing all soft compromises. No gentle MVP: either it's industrially efficient, or it doesn't ship.">
                             <strong>Kobee :</strong> Redesign radical de la plateforme de supervision Linky (35M+ compteurs). <br><strong>Simpark :</strong> Refonte du système de gestion des interventions terrain (1M+/an). Orchestration de la gouvernance design entre IT, opérations et terrain. Pas de compromis sur l'efficacité industrielle.
                         </p>
                     </div>
@@ -209,7 +276,7 @@
                             <span class="block text-lg font-medium text-stone-900">Enedis</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Lead UX Transformation</span>
                         </div>
-                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="<strong>Kobee :</strong> Redesign radical de la plateforme de supervision Linky (35M+ compteurs). <br><strong>Simpark :</strong> Refonte du système de gestion des interventions terrain (1M+/an). Orchestration de la gouvernance design entre IT, opérations et terrain. Pas de compromis sur l'efficacité industrielle." data-en="<strong>Kobee:</strong> Radical redesign of the Linky supervision platform (35M+ smart meters). <br><strong>Simpark:</strong> Overhaul of field intervention system (1M+/year). Orchestrating design governance between IT, operations and field teams. No compromise on industrial efficiency.">
+                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="<strong>Kobee :</strong> Redesign radical de la plateforme de supervision Linky (35M+ compteurs). <br><strong>Simpark :</strong> Refonte du système de gestion des interventions terrain (1M+/an). Orchestration de la gouvernance design entre IT, opérations et terrain. Pas de compromis sur l'efficacité industrielle." data-en="<strong>Kobee:</strong> Radical redesign of the Linky supervision platform (35M+ smart meters). <br><strong>Simpark:</strong> Overhaul of field intervention system (1M+/year). Orchestrating design governance between IT, operations and field teams. No compromise on industrial efficiency." data-zb-fr="<strong>Kobee :</strong> Redesign d'une plateforme qui supervise 35 millions de compteurs Linky. <strong>Simpark :</strong> Refonte d'un système de gestion d'interventions terrain (1M+/an). À cette échelle, l'esthétique on s'en fout : si le technicien perd 30 secondes par intervention, c'est 500 000 heures perdues par an. J'ai orchestré la gouvernance design entre IT, opérations et terrain en refusant tous les compromis molassons. Pas de MVP gentillet : soit c'est efficace industriellement, soit ça ne sort pas." data-zb-en="<strong>Kobee:</strong> Redesign of a platform supervising 35 million Linky smart meters. <strong>Simpark:</strong> Overhaul of a field intervention system (1M+/year). At this scale, aesthetics don't matter: if the technician loses 30 seconds per intervention, that's 500,000 hours lost per year. I orchestrated design governance between IT, ops and field by refusing all soft compromises. No gentle MVP: either it's industrially efficient, or it doesn't ship.">
                             <strong>Kobee :</strong> Redesign radical de la plateforme de supervision Linky (35M+ compteurs). <br><strong>Simpark :</strong> Refonte du système de gestion des interventions terrain (1M+/an). Orchestration de la gouvernance design entre IT, opérations et terrain. Pas de compromis sur l'efficacité industrielle.
                         </div>
                         <div class="col-span-3 flex justify-end">
@@ -234,7 +301,7 @@
                             <span class="block text-lg font-medium text-stone-900">Little Big Smala</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Founder & Head of Design</span>
                         </div>
-                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Création d'un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On ne faisait pas de slides qui dorment dans des tiroirs." data-en="Built an innovation studio from scratch. Scaled to 30+ experts. EY, HSBC, BNP Paribas. We didn't make slides that collect dust in drawers.">
+                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Création d'un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On ne faisait pas de slides qui dorment dans des tiroirs." data-en="Built an innovation studio from scratch. Scaled to 30+ experts. EY, HSBC, BNP Paribas. We didn't make slides that collect dust in drawers." data-zb-fr="J'ai créé un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On nous appelait pour sortir du concret quand les autres stagnaient dans les ateliers de co-création sans suite. On a même été référencés chez BNP Risk sans avoir fait le CA annuel nécessaire - un comble quand c'est l'entité de contrôle qui te valide. On livrait des trucs qui marchent ou on partait. J'ai revendu mes parts en 2020, les deux autres associés ont ensuite vendu au groupe H4H. Preuve qu'on avait créé de la valeur réelle." data-zb-en="I built an innovation studio. Scaled to 30+ experts. EY, HSBC, BNP Paribas. They called us to deliver concrete stuff when others were stuck in co-creation workshops going nowhere. We even got referenced at BNP Risk without meeting the annual revenue requirement - ironic when it's the control entity that validates you. We shipped stuff that works or we walked. I sold my shares in 2020, the other two partners later sold to H4H Group. Proof we created real value.">
                             Création d'un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On ne faisait pas de slides qui dorment dans des tiroirs.
                         </p>
                     </div>
@@ -245,7 +312,7 @@
                             <span class="block text-lg font-medium text-stone-900">Little Big Smala</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Founder & Head of Design</span>
                         </div>
-                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Création d'un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On ne faisait pas de slides qui dorment dans des tiroirs." data-en="Built an innovation studio from scratch. Scaled to 30+ experts. EY, HSBC, BNP Paribas. We didn't make slides that collect dust in drawers.">
+                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Création d'un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On ne faisait pas de slides qui dorment dans des tiroirs." data-en="Built an innovation studio from scratch. Scaled to 30+ experts. EY, HSBC, BNP Paribas. We didn't make slides that collect dust in drawers." data-zb-fr="J'ai créé un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On nous appelait pour sortir du concret quand les autres stagnaient dans les ateliers de co-création sans suite. On a même été référencés chez BNP Risk sans avoir fait le CA annuel nécessaire - un comble quand c'est l'entité de contrôle qui te valide. On livrait des trucs qui marchent ou on partait. J'ai revendu mes parts en 2020, les deux autres associés ont ensuite vendu au groupe H4H. Preuve qu'on avait créé de la valeur réelle." data-zb-en="I built an innovation studio. Scaled to 30+ experts. EY, HSBC, BNP Paribas. They called us to deliver concrete stuff when others were stuck in co-creation workshops going nowhere. We even got referenced at BNP Risk without meeting the annual revenue requirement - ironic when it's the control entity that validates you. We shipped stuff that works or we walked. I sold my shares in 2020, the other two partners later sold to H4H Group. Proof we created real value.">
                             Création d'un studio d'innovation. Scale à 30+ experts. EY, HSBC, BNP Paribas. On ne faisait pas de slides qui dorment dans des tiroirs.
                         </div>
                         <div class="col-span-3 flex justify-end">
@@ -270,7 +337,7 @@
                             <span class="block text-lg font-medium text-stone-900">EY</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Senior Manager CX</span>
                         </div>
-                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Direction de la practice CX Financial Services. Management de 15 consultants. Objectif : rendre les services financiers humains, enfin." data-en="Leading the CX Financial Services practice. Managing 15 consultants. Goal: making financial services human, finally.">
+                        <p class="text-sm text-stone-500 font-light leading-relaxed" data-fr="Direction de la practice CX Financial Services. Management de 15 consultants. Objectif : rendre les services financiers humains, enfin." data-en="Leading the CX Financial Services practice. Managing 15 consultants. Goal: making financial services human, finally." data-zb-fr="Direction de la practice CX Financial Services. Management de 15 consultants. Mission : rendre les services financiers humains. Spoiler : c'est compliqué quand les banques veulent juste cocher la case 'digital' sans toucher aux processus pourris hérités des années 80. Mais on a quand même fait bouger des lignes. J'ai poussé avec les équipes transverses d'EY un design system sous Angular 2 dans une banque - un vrai système industriel, pas une librairie de composants qui prend la poussière. On amenait du réel face aux COMEX, pas des dashboards PowerBI qui rassurent sans rien changer." data-zb-en="Leading the CX Financial Services practice. Managing 15 consultants. Mission: make financial services human. Spoiler: it's hard when banks just want to check the 'digital' box without touching rotten processes from the 80s. But we still moved the needle. I pushed with EY's cross-functional teams a design system on Angular 2 in a bank - a real industrial system, not a component library gathering dust. We brought reality to the board, not PowerBI dashboards that reassure without changing anything.">
                             Direction de la practice CX Financial Services. Management de 15 consultants. Objectif : rendre les services financiers humains, enfin.
                         </p>
                     </div>
@@ -281,7 +348,7 @@
                             <span class="block text-lg font-medium text-stone-900">EY</span>
                             <span class="text-[10px] text-stone-400 uppercase tracking-widest">Senior Manager CX</span>
                         </div>
-                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Direction de la practice CX Financial Services. Management de 15 consultants. Objectif : rendre les services financiers humains, enfin." data-en="Leading the CX Financial Services practice. Managing 15 consultants. Goal: making financial services human, finally.">
+                        <div class="col-span-5 text-sm text-stone-500 font-light leading-relaxed" data-fr="Direction de la practice CX Financial Services. Management de 15 consultants. Objectif : rendre les services financiers humains, enfin." data-en="Leading the CX Financial Services practice. Managing 15 consultants. Goal: making financial services human, finally." data-zb-fr="Direction de la practice CX Financial Services. Management de 15 consultants. Mission : rendre les services financiers humains. Spoiler : c'est compliqué quand les banques veulent juste cocher la case 'digital' sans toucher aux processus pourris hérités des années 80. Mais on a quand même fait bouger des lignes. J'ai poussé avec les équipes transverses d'EY un design system sous Angular 2 dans une banque - un vrai système industriel, pas une librairie de composants qui prend la poussière. On amenait du réel face aux COMEX, pas des dashboards PowerBI qui rassurent sans rien changer." data-zb-en="Leading the CX Financial Services practice. Managing 15 consultants. Mission: make financial services human. Spoiler: it's hard when banks just want to check the 'digital' box without touching rotten processes from the 80s. But we still moved the needle. I pushed with EY's cross-functional teams a design system on Angular 2 in a bank - a real industrial system, not a component library gathering dust. We brought reality to the board, not PowerBI dashboards that reassure without changing anything.">
                             Direction de la practice CX Financial Services. Management de 15 consultants. Objectif : rendre les services financiers humains, enfin.
                         </div>
                         <div class="col-span-3 flex justify-end">
@@ -414,12 +481,38 @@
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Language Toggle
+        // State
         let currentLang = 'fr';
+        let zbMode = false;
+
+        // DOM Elements
         const langToggle = document.getElementById('lang-toggle');
         const langFr = document.getElementById('lang-fr');
         const langEn = document.getElementById('lang-en');
+        const zbToggle = document.getElementById('zb-toggle');
 
+        // Update all content based on current state
+        function updateContent() {
+            document.querySelectorAll('[data-fr]').forEach(el => {
+                // Determine which attribute to use
+                const zbAttr = `data-zb-${currentLang}`;
+                const normalAttr = `data-${currentLang}`;
+                
+                // If ZB mode is on and ZB content exists, use it; otherwise use normal
+                let text;
+                if (zbMode && el.hasAttribute(zbAttr)) {
+                    text = el.getAttribute(zbAttr);
+                } else {
+                    text = el.getAttribute(normalAttr);
+                }
+                
+                if (text) {
+                    el.innerHTML = text;
+                }
+            });
+        }
+
+        // Language Toggle
         function setLanguage(lang) {
             currentLang = lang;
             document.documentElement.lang = lang;
@@ -437,26 +530,49 @@
                 langFr.classList.add('text-stone-400');
             }
 
-            // Update all translatable elements
-            document.querySelectorAll('[data-fr][data-en]').forEach(el => {
-                const text = el.getAttribute(`data-${lang}`);
-                if (text) {
-                    el.innerHTML = text;
-                }
-            });
+            // Update content
+            updateContent();
 
             // Store preference
             localStorage.setItem('lang', lang);
         }
 
+        // Zero Bullshit Toggle
+        function setZBMode(enabled) {
+            zbMode = enabled;
+            
+            // Toggle dark mode on body
+            document.body.classList.toggle('zb-mode', enabled);
+            
+            // Update toggle button styling
+            zbToggle.classList.toggle('active', enabled);
+            
+            // Update content
+            updateContent();
+            
+            // Store preference
+            localStorage.setItem('zbMode', enabled);
+        }
+
+        // Event Listeners
         langToggle.addEventListener('click', () => {
             setLanguage(currentLang === 'fr' ? 'en' : 'fr');
         });
 
-        // Check for stored preference
+        zbToggle.addEventListener('click', () => {
+            setZBMode(!zbMode);
+        });
+
+        // Initialize from stored preferences
         const storedLang = localStorage.getItem('lang');
+        const storedZB = localStorage.getItem('zbMode');
+        
         if (storedLang) {
             setLanguage(storedLang);
+        }
+        
+        if (storedZB === 'true') {
+            setZBMode(true);
         }
     </script>
 </body>
