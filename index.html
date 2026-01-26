@@ -9,6 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -104,6 +112,20 @@
         [data-fr], [data-en] {
             transition: opacity 0.3s ease;
         }
+        
+        /* 3D Avatar Scene */
+        #avatar-3d-container {
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+        #avatar-3d-container.loaded {
+            opacity: 0.85; /* Professionnel mais moderne - présence sans être distrayant */
+        }
+        #avatar-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-900 antialiased selection:bg-stone-200 selection:text-stone-900 min-h-screen flex flex-col">
@@ -134,9 +156,14 @@
     </nav>
 
     <!-- Hero Section -->
-    <header class="pt-40 pb-24 px-6 md:pt-56 md:pb-32">
+    <header class="relative pt-40 pb-24 px-6 md:pt-56 md:pb-32">
+        <!-- 3D Avatar Container - Right 50% -->
+        <div id="avatar-3d-container" class="hidden md:block absolute top-0 right-0 w-1/2 h-full pointer-events-none z-10 overflow-hidden">
+            <canvas id="avatar-canvas"></canvas>
+        </div>
+        
         <div class="max-w-6xl mx-auto">
-            <div class="flex flex-col gap-8 max-w-5xl">
+            <div class="flex flex-col gap-8 max-w-5xl relative z-20">
                 <div class="reveal inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/50 border border-emerald-200/40 w-fit">
                     <span class="relative flex h-2 w-2">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
@@ -477,6 +504,7 @@
         </div>
     </footer>
 
+    <script type="module" src="./avatar-scene.js"></script>
     <script>
         // Reveal Logic
         const observerOptions = { threshold: 0.1 };
