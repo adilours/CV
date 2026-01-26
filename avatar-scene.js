@@ -18,9 +18,9 @@ class AvatarScene {
         // Scene setup
         this.scene = new THREE.Scene();
         
-        // Camera - Vue de profil (side view)
+        // Camera - Vue de profil avec FOV augmenté pour éviter le crop
         this.camera = new THREE.PerspectiveCamera(
-            50, 
+            70, 
             this.container.offsetWidth / this.container.offsetHeight, 
             0.1, 
             1000
@@ -39,27 +39,42 @@ class AvatarScene {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimisation perfs
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         
-        // Lighting - Éclairage renforcé pour meilleure visibilité
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+        // Lighting - Éclairage soft et enveloppant
+        // Lumière ambiante forte pour illumination globale soft
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
         this.scene.add(ambientLight);
         
-        // Lumière de face principale
-        const frontLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        // Hemisphere light pour lumière douce naturelle
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.8);
+        hemiLight.position.set(0, 10, 0);
+        this.scene.add(hemiLight);
+        
+        // Lumière de face principale très douce
+        const frontLight = new THREE.DirectionalLight(0xffffff, 1.8);
         frontLight.position.set(0, 3, 5);
         this.scene.add(frontLight);
         
         // Lumière de côté droit
-        const sideLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        const sideLight = new THREE.DirectionalLight(0xffffff, 1.5);
         sideLight.position.set(4, 2, 0);
         this.scene.add(sideLight);
         
-        // Lumière de côté gauche (fill)
-        const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        // Lumière de côté gauche (fill) renforcée
+        const fillLight = new THREE.DirectionalLight(0xffffff, 1.2);
         fillLight.position.set(-3, 2, 2);
         this.scene.add(fillLight);
         
-        // Camera position - Vue de profil (side)
-        this.camera.position.set(3, 1.5, 0); // Position latérale
+        // Point lights pour effet wrap-around soft
+        const pointLight1 = new THREE.PointLight(0xffffff, 1.0, 10);
+        pointLight1.position.set(2, 2, 2);
+        this.scene.add(pointLight1);
+        
+        const pointLight2 = new THREE.PointLight(0xffffff, 0.8, 10);
+        pointLight2.position.set(-2, 1, 3);
+        this.scene.add(pointLight2);
+        
+        // Camera position - Plus reculée pour éviter le crop
+        this.camera.position.set(4, 1.5, 0); // Position latérale plus éloignée
         this.camera.lookAt(0, 1, 0);
         
         // Load FBX
@@ -119,14 +134,14 @@ class AvatarScene {
     animate() {
         this.animationId = requestAnimationFrame(() => this.animate());
         
-        // Update animation mixer
+        // Update animation mixer - Vitesse ralentie
         if (this.mixer) {
-            this.mixer.update(0.016); // 60fps
+            this.mixer.update(0.008); // Ralenti 2x (au lieu de 0.016)
         }
         
         // Subtle rotation continue pour dynamisme
         if (this.avatar) {
-            this.avatar.rotation.y += 0.001; // Rotation très subtile
+            this.avatar.rotation.y += 0.0005; // Rotation encore plus subtile
         }
         
         this.renderer.render(this.scene, this.camera);
