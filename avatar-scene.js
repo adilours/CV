@@ -39,16 +39,23 @@ class AvatarScene {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimisation perfs
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         
-        // Lighting - Équilibré pour style professionnel
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        // Lighting - Éclairage renforcé pour meilleure visibilité
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
         this.scene.add(ambientLight);
         
-        const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        keyLight.position.set(3, 5, 5);
-        this.scene.add(keyLight);
+        // Lumière de face principale
+        const frontLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        frontLight.position.set(0, 3, 5);
+        this.scene.add(frontLight);
         
-        const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        fillLight.position.set(-3, 2, -2);
+        // Lumière de côté droit
+        const sideLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        sideLight.position.set(4, 2, 0);
+        this.scene.add(sideLight);
+        
+        // Lumière de côté gauche (fill)
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        fillLight.position.set(-3, 2, 2);
         this.scene.add(fillLight);
         
         // Camera position - Vue de profil (side)
@@ -69,13 +76,13 @@ class AvatarScene {
         const loader = new FBXLoader();
         
         loader.load(
-            './AdilTpose.fbx',
+            './Hip Hop Dancing.fbx',
             (fbx) => {
                 this.avatar = fbx;
                 this.scene.add(fbx);
                 
-                // Ajuster scale et position (à affiner selon le modèle)
-                fbx.scale.setScalar(0.01); 
+                // Scale augmenté 3-4x pour meilleure visibilité
+                fbx.scale.setScalar(0.035); 
                 fbx.position.set(0, 0, 0);
                 
                 // Rotation pour vue de profil optimale
