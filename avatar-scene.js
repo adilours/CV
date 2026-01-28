@@ -244,7 +244,7 @@ class AvatarScene {
                 box.getSize(size);
                 box.getCenter(center);
 
-                const targetHeight = 2.1; // Ajuster la hauteur cible à l'écran
+                const targetHeight = 1.6; // Hauteur cible plus compacte pour éviter le crop
                 scale = targetHeight / Math.max(size.y, 0.0001);
                 model.scale.setScalar(scale);
 
@@ -253,6 +253,8 @@ class AvatarScene {
                 const scaledBox = new THREE.Box3().setFromObject(model);
                 const minY = scaledBox.min.y;
                 model.position.y -= minY;
+                // Descendre légèrement l'ensemble pour garder la tête visible
+                model.position.y -= targetHeight * 0.25;
             } else {
                 scale = this.calculateResponsiveScale();
                 model.scale.setScalar(scale);
