@@ -239,7 +239,7 @@ class AvatarScene {
             if (track.type === 'glb') {
                 // Scale fixe calibré pour le modèle GLB (empirique)
                 // Le modèle GLB utilise des unités différentes des FBX
-                scale = 0.012;
+                scale = 0.025;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
