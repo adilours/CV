@@ -46,6 +46,21 @@ class AvatarScene {
         this.init();
     }
 
+    calculateResponsiveScale() {
+        const width = window.innerWidth;
+        
+        // Échelle de base selon la largeur d'écran
+        if (width < 1440) {
+            return 0.030; // Petits écrans : plus petit
+        } else if (width < 1920) {
+            return 0.035; // Écrans moyens : taille actuelle
+        } else if (width < 2560) {
+            return 0.038; // Grands écrans : légèrement plus grand
+        } else {
+            return 0.040; // Très grands écrans : encore plus grand
+        }
+    }
+
     init() {
         // Scene setup
         this.scene = new THREE.Scene();
@@ -151,7 +166,8 @@ class AvatarScene {
             });
             
             // Configurer le modèle
-            fbx.scale.setScalar(0.035);
+            const scale = this.calculateResponsiveScale();
+            fbx.scale.setScalar(scale);
             fbx.position.set(0, 0, 0);
             fbx.rotation.y = Math.PI / 4;
             
@@ -165,7 +181,7 @@ class AvatarScene {
             }
             
             // Stocker en cache
-            this.loadedModels.set(track.id, { model: fbx, mixer });
+            this.loadedModels.set(track.id, { model: fbx, mixer, scale });
             
             // Basculer vers ce modèle
             this.switchToModel(track.id);
@@ -289,6 +305,12 @@ class AvatarScene {
             this.container.offsetWidth, 
             this.container.offsetHeight
         );
+        
+        // Mettre à jour l'échelle du modèle actuel si nécessaire
+        if (this.avatar) {
+            const newScale = this.calculateResponsiveScale();
+            this.avatar.scale.setScalar(newScale);
+        }
     }
     
     setupDarkModeObserver() {
