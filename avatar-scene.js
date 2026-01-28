@@ -141,15 +141,15 @@ class AvatarScene {
         pointLight2.position.set(-2, 1, 3);
         this.scene.add(pointLight2);
         
-        // Camera position - Plus reculée et décalée pour éviter le crop
-        // On décale la caméra pour que le centre de la scène soit à droite de l'écran
-        this.camera.position.set(6, 2, 0); 
-        this.camera.lookAt(0, 1, 0);
+        // Camera position - Optimisée pour le décalage à droite
+        // On se place à X=6, Y=2 et on regarde vers le point décalé
+        this.camera.position.set(6, 2, -1); 
+        this.camera.lookAt(0, 1, -2.5);
         
         // #region agent log
-        console.log('[DEBUG E] Camera config (Wide Canvas):', {
-            position: {x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z},
-            canvasWidth: this.container.offsetWidth
+        console.log('[DEBUG E] Camera config (Offset):', {
+            position: this.camera.position,
+            target: {x: 0, y: 1, z: -2.5}
         });
         // #endregion
         
@@ -216,8 +216,17 @@ class AvatarScene {
             // Configurer le modèle
             const scale = this.calculateResponsiveScale();
             fbx.scale.setScalar(scale);
-            fbx.position.set(0, 0, 0);
+            
+            // Décaler le modèle sur la droite (Axe Z car la caméra est sur l'axe X)
+            fbx.position.set(0, 0, -2.5); 
             fbx.rotation.y = Math.PI / 4;
+            
+            // #region agent log
+            console.log('[DEBUG Position] Model offset applied:', {
+                position: fbx.position,
+                canvasWidth: this.container.offsetWidth
+            });
+            // #endregion
             
             // Setup animation
             let mixer = null;
@@ -262,6 +271,10 @@ class AvatarScene {
         if (cached) {
             this.avatar = cached.model;
             this.mixer = cached.mixer;
+            
+            // S'assurer que la position est correcte (décalée à droite)
+            this.avatar.position.set(0, 0, -2.5);
+            
             this.scene.add(this.avatar);
             
             // Accélérer l'animation après le changement
