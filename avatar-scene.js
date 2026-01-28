@@ -90,23 +90,6 @@ class AvatarScene {
         // CRITICAL FIX: Set clear color to transparent
         this.renderer.setClearColor(0x000000, 0); // Black with alpha 0 = fully transparent
         
-        // #region agent log
-        console.log('[DEBUG A] Renderer configured with setClearColor(0x000000, 0) for transparency');
-        // #endregion
-        
-        // #region agent log
-        const containerStyles = window.getComputedStyle(this.container);
-        const canvasStyles = window.getComputedStyle(this.canvas);
-        console.log('[DEBUG B+C] Container and canvas computed styles:', {
-            containerBg: containerStyles.backgroundColor,
-            containerZIndex: containerStyles.zIndex,
-            containerPosition: containerStyles.position,
-            canvasBg: canvasStyles.backgroundColor,
-            canvasZIndex: canvasStyles.zIndex,
-            canvasDisplay: canvasStyles.display
-        });
-        // #endregion
-        
         // Lighting - Éclairage soft et enveloppant
         // Lumière ambiante forte pour illumination globale soft
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
@@ -145,34 +128,8 @@ class AvatarScene {
         this.camera.position.set(4.5, 1.5, 0); 
         this.camera.lookAt(0, 1, 0);
         
-        // #region agent log
-        console.log('[DEBUG E] Camera config (33% Offset CSS):', {
-            position: this.camera.position,
-            containerLeft: this.container.style.left
-        });
-        // #endregion
-        
         // Load initial track
         this.loadTrack(this.currentTrackIndex);
-        
-        // #region agent log
-        // Check sections z-index after DOM is ready
-        setTimeout(() => {
-            const sections = document.querySelectorAll('section, header, footer');
-            const sectionData = Array.from(sections).slice(0, 5).map((el, i) => {
-                const styles = window.getComputedStyle(el);
-                return {
-                    index: i,
-                    tagName: el.tagName,
-                    className: el.className.substring(0, 50),
-                    zIndex: styles.zIndex,
-                    position: styles.position,
-                    backgroundColor: styles.backgroundColor
-                };
-            });
-            console.log('[DEBUG] Section stacking contexts:', sectionData);
-        }, 1000);
-        // #endregion
         
         // Handle resize
         window.addEventListener('resize', () => this.onResize());
@@ -219,13 +176,6 @@ class AvatarScene {
             // Position centrale dans son container (le container est décalé par CSS)
             fbx.position.set(0, 0, 0); 
             fbx.rotation.y = Math.PI / 4;
-            
-            // #region agent log
-            console.log('[DEBUG Position] Model offset applied:', {
-                position: fbx.position,
-                canvasWidth: this.container.offsetWidth
-            });
-            // #endregion
             
             // Setup animation
             let mixer = null;
@@ -351,16 +301,6 @@ class AvatarScene {
         // Subtle rotation continue pour dynamisme
         if (this.avatar) {
             this.avatar.rotation.y += 0.0005; // Rotation encore plus subtile
-            
-            // #region agent log
-            if (Math.random() < 0.01) { // Log périodique
-                console.log('[DEBUG Animation] Model position:', {
-                    x: this.avatar.position.x,
-                    visible: this.avatar.visible,
-                    canvasWidth: this.renderer.domElement.width
-                });
-            }
-            // #endregion
         }
         
         this.renderer.render(this.scene, this.camera);
