@@ -238,7 +238,7 @@ class AvatarScene {
             let scale;
             if (track.type === 'glb') {
                 // Les fichiers GLB nécessitent un scale beaucoup plus important
-                scale = this.calculateResponsiveScale() * 250; // 250x pour le GLB
+                scale = this.calculateResponsiveScale() * 170; // 170x pour le GLB
             } else {
                 scale = this.calculateResponsiveScale();
             }
