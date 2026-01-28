@@ -237,22 +237,43 @@ class AvatarScene {
             // Configurer le modèle
             let scale;
             if (track.type === 'glb') {
+                // #region agent log
+                const boxBeforeScale = new THREE.Box3().setFromObject(model);
+                const sizeBeforeScale = new THREE.Vector3();
+                boxBeforeScale.getSize(sizeBeforeScale);
+                console.log('[DEBUG-H2] GLB BEFORE scale:', {minY:boxBeforeScale.min.y, maxY:boxBeforeScale.max.y, sizeX:sizeBeforeScale.x, sizeY:sizeBeforeScale.y, sizeZ:sizeBeforeScale.z});
+                // #endregion
+                
                 // Scale fixe calibré pour le modèle GLB (empirique)
                 // Le modèle GLB utilise des unités différentes des FBX
                 scale = 0.025;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
+                // #region agent log
+                console.log('[DEBUG-H4] Scale applied:', scale);
+                // #endregion
+                
                 // Centrer le modèle après scaling
                 const box = new THREE.Box3().setFromObject(model);
                 const center = new THREE.Vector3();
                 box.getCenter(center);
+                
+                // #region agent log
+                const sizeAfterScale = new THREE.Vector3();
+                box.getSize(sizeAfterScale);
+                console.log('[DEBUG-H2-H3] Box AFTER scale:', {minY:box.min.y, maxY:box.max.y, centerX:center.x, centerY:center.y, centerZ:center.z, sizeY:sizeAfterScale.y});
+                // #endregion
                 
                 // Centrer horizontalement et en profondeur
                 model.position.set(-center.x, 0, -center.z);
                 
                 // Placer les pieds au niveau du sol et descendre un peu
                 model.position.y = -box.min.y - 0.3;
+                
+                // #region agent log
+                console.log('[DEBUG-H3-H5] FINAL position:', {posX:model.position.x, posY:model.position.y, posZ:model.position.z, scaleActual:model.scale.x});
+                // #endregion
             } else {
                 // FBX: logique existante
                 scale = this.calculateResponsiveScale();
