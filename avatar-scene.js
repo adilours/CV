@@ -242,8 +242,11 @@ class AvatarScene {
                 const size = new THREE.Vector3();
                 box.getSize(size);
 
-                const targetHeight = 1.4; // Légèrement plus petit
+                const targetHeight = 1.4; 
                 scale = targetHeight / Math.max(size.y, 0.0001);
+                
+                // Mémoriser le scale multiplicateur pour le resize
+                model.userData.baseScale = scale;
                 model.scale.setScalar(scale);
 
                 // Centrage et positionnement vertical
@@ -252,17 +255,15 @@ class AvatarScene {
                 const center = new THREE.Vector3();
                 updatedBox.getCenter(center);
                 
-                // Centrer horizontalement et verticalement à l'origine
                 model.position.x -= center.x;
                 model.position.y -= center.y;
                 model.position.z -= center.z;
 
-                // Abaisser le modèle pour qu'il soit bien placé dans le header (pas en haut de l'écran)
+                // Abaisser le modèle
                 model.position.y -= 0.5;
-
-                console.log('[DEBUG GLB] Size:', size.y, 'Scale:', scale, 'Final Y:', model.position.y);
             } else {
                 scale = this.calculateResponsiveScale();
+                model.userData.baseScale = scale;
                 model.scale.setScalar(scale);
                 model.position.set(0, 0, 0);
             }
@@ -396,7 +397,7 @@ class AvatarScene {
     }
 
     onResize() {
-        if (!this.container) return;
+        if (!this.container || this.container.offsetWidth === 0) return;
         
         this.camera.aspect = this.container.offsetWidth / this.container.offsetHeight;
         this.camera.updateProjectionMatrix();
@@ -405,10 +406,19 @@ class AvatarScene {
             this.container.offsetHeight
         );
         
-        // Mettre à jour l'échelle du modèle actuel si nécessaire
+        // Mettre à jour l'échelle du modèle actuel
         if (this.avatar) {
-            const newScale = this.calculateResponsiveScale();
-            this.avatar.scale.setScalar(newScale);
+            const track = this.tracks[this.currentTrackIndex];
+            if (track.type === 'glb') {
+                // Pour le GLB, on garde le scale auto-calculé
+                if (this.avatar.userData.baseScale) {
+                    this.avatar.scale.setScalar(this.avatar.userData.baseScale);
+                }
+            } else {
+                // Pour le FBX, on utilise l'échelle responsive
+                const newScale = this.calculateResponsiveScale();
+                this.avatar.scale.setScalar(newScale);
+            }
         }
     }
     
