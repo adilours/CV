@@ -1,12 +1,5 @@
-console.log('[AudioPlayer] Script loaded');
-
 class AudioPlayer {
     constructor(avatarScene) {
-        console.log('[AudioPlayer] Constructor called', {
-            hasTracks: !!(avatarScene?.tracks),
-            tracksLength: avatarScene?.tracks?.length
-        });
-        
         this.avatarScene = avatarScene;
         this.tracks = avatarScene.tracks || [];
         this.currentTrackIndex = 0; // Carlton par défaut
@@ -21,24 +14,8 @@ class AudioPlayer {
         this.nextBtn = document.getElementById('next-btn');
         this.loadingIndicator = document.getElementById('loading-indicator');
         
-        console.log('[AudioPlayer] DOM elements:', {
-            audio: !!this.audio,
-            playPauseBtn: !!this.playPauseBtn,
-            playIcon: !!this.playIcon,
-            pauseIcon: !!this.pauseIcon,
-            prevBtn: !!this.prevBtn,
-            nextBtn: !!this.nextBtn,
-            loadingIndicator: !!this.loadingIndicator
-        });
-        
         // Vérifier que les éléments critiques existent
-        if (!this.audio) {
-            console.error('[AudioPlayer] Critical: audio element not found!');
-            return;
-        }
-        
-        if (!this.playPauseBtn || !this.prevBtn || !this.nextBtn) {
-            console.error('[AudioPlayer] Critical: player buttons not found!');
+        if (!this.audio || !this.playPauseBtn || !this.prevBtn || !this.nextBtn) {
             return;
         }
         
@@ -138,12 +115,6 @@ class AudioPlayer {
     }
     
     nextTrack() {
-        console.log('[AudioPlayer] nextTrack called', {
-            hasTracks: !!this.tracks,
-            tracksLength: this.tracks?.length,
-            currentIndex: this.currentTrackIndex
-        });
-        
         if (!this.tracks || !this.tracks.length) return;
         
         let newIndex;
@@ -185,59 +156,41 @@ class AudioPlayer {
 
 // Initialize after avatar scene is ready
 (function initAudioPlayer() {
-    console.log('[AudioPlayer] Initializing...');
-    
     // Protection globale : empêcher toute double initialisation
     if (window.__audioPlayerInitialized) {
-        console.warn('[AudioPlayer] Already initialized, aborting');
         return;
     }
     window.__audioPlayerInitialized = true;
     
     // Fonction d'initialisation
     function tryInit() {
-        console.log('[AudioPlayer] tryInit - checking conditions', {
-            DOMReady: document.readyState,
-            avatarScene: !!window.avatarScene,
-            tracks: window.avatarScene?.tracks?.length,
-            audioPlayer: !!window.audioPlayer
-        });
-        
         // Vérifier que tout est prêt
         if (document.readyState === 'loading') {
-            console.log('[AudioPlayer] DOM not ready, waiting...');
             return false;
         }
         
         if (!window.avatarScene || !window.avatarScene.tracks || window.avatarScene.tracks.length === 0) {
-            console.log('[AudioPlayer] AvatarScene not ready');
             return false;
         }
         
         if (window.audioPlayer) {
-            console.log('[AudioPlayer] Instance already exists');
-            return true; // Déjà initialisé, pas besoin de continuer
+            return true; // Déjà initialisé
         }
         
         // Tout est prêt, créer l'instance
-        console.log('[AudioPlayer] Creating instance');
         window.audioPlayer = new AudioPlayer(window.avatarScene);
         return true;
     }
     
     // Essayer d'initialiser immédiatement
     if (tryInit()) {
-        console.log('[AudioPlayer] Initialized immediately');
         return;
     }
     
     // Sinon, attendre DOMContentLoaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('[AudioPlayer] DOMContentLoaded event');
-            if (tryInit()) {
-                console.log('[AudioPlayer] Initialized on DOMContentLoaded');
-            }
+            tryInit();
         }, { once: true });
     }
     
@@ -246,10 +199,8 @@ class AudioPlayer {
     const maxAttempts = 30;
     const checkInterval = setInterval(() => {
         attempts++;
-        console.log(`[AudioPlayer] Attempt ${attempts}/${maxAttempts}`);
         
         if (tryInit() || attempts >= maxAttempts) {
-            console.log('[AudioPlayer] Stopping interval', { success: !!window.audioPlayer, attempts });
             clearInterval(checkInterval);
         }
     }, 200);

@@ -38,6 +38,11 @@ class AvatarScene {
         this.isLoading = false;
         this.animationStarted = false;
         
+        // Animation transition properties
+        this.transitionSpeed = 0.008; // Vitesse normale
+        this.targetSpeed = 0.008;
+        this.isTransitioning = false;
+        
         this.init();
     }
 
@@ -120,6 +125,9 @@ class AvatarScene {
         
         const track = this.tracks[trackIndex];
         
+        // Ralentir l'animation pendant la transition
+        this.slowDownForTransition();
+        
         // Émission d'événement pour UI
         window.dispatchEvent(new CustomEvent('avatarLoading', { 
             detail: { trackName: track.name } 
@@ -139,17 +147,7 @@ class AvatarScene {
         
         try {
             const fbx = await new Promise((resolve, reject) => {
-                loader.load(
-                    track.fbx,
-                    resolve,
-                    (progress) => {
-                        if (progress.total > 0) {
-                            const percent = (progress.loaded / progress.total * 100).toFixed(0);
-                            console.log(`Loading ${track.name}: ${percent}%`);
-                        }
-                    },
-                    reject
-                );
+                loader.load(track.fbx, resolve, undefined, reject);
             });
             
             // Configurer le modèle
@@ -179,10 +177,8 @@ class AvatarScene {
                 detail: { trackName: track.name } 
             }));
             
-            console.log('Avatar loaded successfully:', track.name);
-            
         } catch (error) {
-            console.error('Error loading track:', track.name, error);
+            console.error(error);
             window.dispatchEvent(new CustomEvent('avatarError', { 
                 detail: { trackName: track.name } 
             }));
@@ -204,11 +200,26 @@ class AvatarScene {
             this.mixer = cached.mixer;
             this.scene.add(this.avatar);
             
+            // Accélérer l'animation après le changement
+            this.speedUpAfterTransition();
+            
             if (!this.animationStarted) {
                 this.animate();
                 this.animationStarted = true;
             }
         }
+    }
+    
+    slowDownForTransition() {
+        // Ralentir progressivement l'animation
+        this.targetSpeed = 0.002;
+        this.isTransitioning = true;
+    }
+    
+    speedUpAfterTransition() {
+        // Accélérer progressivement l'animation
+        this.targetSpeed = 0.008;
+        this.isTransitioning = true;
     }
 
     cleanupCache(keepTrackId) {
@@ -227,7 +238,6 @@ class AvatarScene {
                         }
                     });
                     this.loadedModels.delete(id);
-                    console.log('Cleaned up model:', id);
                     break; // Ne supprimer qu'un à la fois
                 }
             }
@@ -242,9 +252,24 @@ class AvatarScene {
     animate() {
         this.animationId = requestAnimationFrame(() => this.animate());
         
-        // Update animation mixer - Vitesse ralentie
+        // Interpolation progressive de la vitesse (lerp avec easing)
+        if (this.isTransitioning) {
+            const lerpFactor = 0.05; // Facteur d'interpolation (plus petit = plus lent)
+            const diff = Math.abs(this.transitionSpeed - this.targetSpeed);
+            
+            if (diff < 0.0001) {
+                // Transition terminée
+                this.transitionSpeed = this.targetSpeed;
+                this.isTransitioning = false;
+            } else {
+                // Interpolation ease-in-out
+                this.transitionSpeed += (this.targetSpeed - this.transitionSpeed) * lerpFactor;
+            }
+        }
+        
+        // Update animation mixer avec vitesse dynamique
         if (this.mixer) {
-            this.mixer.update(0.008); // Ralenti 2x (au lieu de 0.016)
+            this.mixer.update(this.transitionSpeed);
         }
         
         // Subtle rotation continue pour dynamisme
