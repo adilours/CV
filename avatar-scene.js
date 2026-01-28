@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 class AvatarScene {
     constructor() {
@@ -11,30 +12,50 @@ class AvatarScene {
             return;
         }
         
-        // Configuration des tracks (musique + danse)
-        this.tracks = [
-            {
-                id: 'carlton',
-                name: 'Carlton Dance',
-                fbx: './carlton Dancing.fbx',
-                audio: './It s Not Unusual.mp3'
-            },
-            {
-                id: 'thriller',
-                name: 'Thriller',
-                fbx: './thriller.fbx',
-                audio: './Michael Jackson Thriller Official Video Shortened Version.mp3'
-            },
-            {
-                id: 'sugarhill',
-                name: 'Sugarhill Gang',
-                fbx: './charley.fbx',
-                audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3'
-            }
-        ];
+        // Déterminer si on est en mode Zero Bullshit
+        this.isZeroBullshitMode = document.body.classList.contains('zb-mode');
         
-        this.currentTrackIndex = 0; // Démarre avec Carlton
-        this.loadedModels = new Map(); // Cache des modèles FBX
+        // Configuration des animations selon le mode
+        if (this.isZeroBullshitMode) {
+            // Mode ZB : danses avec changement de tracks
+            this.tracks = [
+                {
+                    id: 'carlton',
+                    name: 'Carlton Dance',
+                    fbx: './carlton Dancing.fbx',
+                    audio: './It s Not Unusual.mp3',
+                    type: 'fbx'
+                },
+                {
+                    id: 'thriller',
+                    name: 'Thriller',
+                    fbx: './thriller.fbx',
+                    audio: './Michael Jackson Thriller Official Video Shortened Version.mp3',
+                    type: 'fbx'
+                },
+                {
+                    id: 'sugarhill',
+                    name: 'Sugarhill Gang',
+                    fbx: './charley.fbx',
+                    audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3',
+                    type: 'fbx'
+                }
+            ];
+        } else {
+            // Mode Normal : running en loop, pas de tracks audio
+            this.tracks = [
+                {
+                    id: 'running',
+                    name: 'Running',
+                    fbx: './Jogging_compressed.glb',
+                    audio: null,
+                    type: 'glb'
+                }
+            ];
+        }
+        
+        this.currentTrackIndex = 0;
+        this.loadedModels = new Map(); // Cache des modèles FBX/GLB
         this.isLoading = false;
         this.animationStarted = false;
         
@@ -162,32 +183,60 @@ class AvatarScene {
             return;
         }
         
-        const loader = new FBXLoader();
+        // Choisir le bon loader selon le type
+        const loader = track.type === 'glb' ? new GLTFLoader() : new FBXLoader();
         
         try {
-            const fbx = await new Promise((resolve, reject) => {
-                loader.load(track.fbx, resolve, undefined, reject);
-            });
+            let model;
+            
+            if (track.type === 'glb') {
+                // Charger GLB
+                const gltf = await new Promise((resolve, reject) => {
+                    loader.load(track.fbx, resolve, undefined, reject);
+                });
+                model = gltf.scene;
+                
+                // Pour GLB, les animations sont dans gltf.animations
+                if (gltf.animations && gltf.animations.length > 0) {
+                    const mixer = new THREE.AnimationMixer(model);
+                    const action = mixer.clipAction(gltf.animations[0]);
+                    action.setLoop(THREE.LoopRepeat, Infinity);
+                    action.play();
+                    
+                    // Stocker le mixer séparément pour GLB
+                    model.userData.mixer = mixer;
+                }
+            } else {
+                // Charger FBX
+                model = await new Promise((resolve, reject) => {
+                    loader.load(track.fbx, resolve, undefined, reject);
+                });
+                
+                // Pour FBX, les animations sont dans fbx.animations
+                if (model.animations && model.animations.length > 0) {
+                    const mixer = new THREE.AnimationMixer(model);
+                    const action = mixer.clipAction(model.animations[0]);
+                    action.setLoop(THREE.LoopRepeat, Infinity);
+                    action.play();
+                    
+                    model.userData.mixer = mixer;
+                }
+            }
             
             // Configurer le modèle
             const scale = this.calculateResponsiveScale();
-            fbx.scale.setScalar(scale);
+            model.scale.setScalar(scale);
             
             // Position centrale dans son container (le container est décalé par CSS)
-            fbx.position.set(0, 0, 0); 
-            fbx.rotation.y = Math.PI / 4;
-            
-            // Setup animation
-            let mixer = null;
-            if (fbx.animations && fbx.animations.length > 0) {
-                mixer = new THREE.AnimationMixer(fbx);
-                const action = mixer.clipAction(fbx.animations[0]);
-                action.setLoop(THREE.LoopRepeat, Infinity);
-                action.play();
-            }
+            model.position.set(0, 0, 0); 
+            model.rotation.y = Math.PI / 4;
             
             // Stocker en cache
-            this.loadedModels.set(track.id, { model: fbx, mixer, scale });
+            this.loadedModels.set(track.id, { 
+                model: model, 
+                mixer: model.userData.mixer, 
+                scale 
+            });
             
             // Basculer vers ce modèle
             this.switchToModel(track.id);
@@ -324,9 +373,15 @@ class AvatarScene {
     }
     
     setupDarkModeObserver() {
-        // Adapter l'éclairage en mode Zero BS
+        // Adapter l'éclairage et switcher les animations selon le mode Zero BS
         const observer = new MutationObserver(() => {
             const isDark = document.body.classList.contains('zb-mode');
+            
+            // Si le mode a changé, recharger l'animation appropriée
+            if (isDark !== this.isZeroBullshitMode) {
+                this.isZeroBullshitMode = isDark;
+                this.switchMode();
+            }
             
             // Ajuster opacité en mode dark
             if (isDark) {
@@ -340,6 +395,78 @@ class AvatarScene {
             attributes: true, 
             attributeFilter: ['class'] 
         });
+    }
+    
+    switchMode() {
+        // Nettoyer l'animation actuelle
+        if (this.avatar) {
+            this.scene.remove(this.avatar);
+            this.avatar = null;
+            this.mixer = null;
+        }
+        
+        // Vider le cache
+        this.loadedModels.forEach((data) => {
+            // Dispose geometry et materials
+            data.model.traverse((child) => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(m => m.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
+                }
+            });
+        });
+        this.loadedModels.clear();
+        
+        // Reconfigurer les tracks
+        if (this.isZeroBullshitMode) {
+            this.tracks = [
+                {
+                    id: 'carlton',
+                    name: 'Carlton Dance',
+                    fbx: './carlton Dancing.fbx',
+                    audio: './It s Not Unusual.mp3',
+                    type: 'fbx'
+                },
+                {
+                    id: 'thriller',
+                    name: 'Thriller',
+                    fbx: './thriller.fbx',
+                    audio: './Michael Jackson Thriller Official Video Shortened Version.mp3',
+                    type: 'fbx'
+                },
+                {
+                    id: 'sugarhill',
+                    name: 'Sugarhill Gang',
+                    fbx: './charley.fbx',
+                    audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3',
+                    type: 'fbx'
+                }
+            ];
+            this.currentTrackIndex = 0;
+        } else {
+            this.tracks = [
+                {
+                    id: 'running',
+                    name: 'Running',
+                    fbx: './Jogging_compressed.glb',
+                    audio: null,
+                    type: 'glb'
+                }
+            ];
+            this.currentTrackIndex = 0;
+        }
+        
+        // Charger la nouvelle animation
+        this.loadTrack(this.currentTrackIndex);
+        
+        // Dispatch event pour le player audio
+        window.dispatchEvent(new CustomEvent('avatarModeChanged', { 
+            detail: { isZeroBullshit: this.isZeroBullshitMode } 
+        }));
     }
     
     // Cleanup method

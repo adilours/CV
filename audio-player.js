@@ -43,6 +43,51 @@ class AudioPlayer {
         window.addEventListener('avatarLoading', () => this.showLoading());
         window.addEventListener('avatarLoaded', () => this.hideLoading());
         window.addEventListener('avatarError', () => this.hideLoading());
+        
+        // Écouter les changements de mode
+        window.addEventListener('avatarModeChanged', (e) => {
+            this.handleModeChange(e.detail.isZeroBullshit);
+        });
+        
+        // Initialiser la visibilité selon le mode actuel
+        this.handleModeChange(document.body.classList.contains('zb-mode'));
+    }
+    
+    handleModeChange(isZeroBullshit) {
+        const playerContainer = document.getElementById('audio-player');
+        
+        if (!playerContainer) return;
+        
+        if (isZeroBullshit) {
+            // Mode ZB : afficher le player
+            playerContainer.style.display = 'flex';
+            
+            // Mettre à jour les tracks depuis avatarScene
+            this.tracks = this.avatarScene.tracks;
+            this.currentTrackIndex = 0;
+            
+            // Charger et jouer la première track
+            if (this.audio && this.tracks.length > 0) {
+                const track = this.tracks[0];
+                if (track.audio) {
+                    this.audio.src = track.audio;
+                    this.audio.play().catch(() => {
+                        // L'autoplay peut être bloqué par le navigateur
+                    });
+                    this.updatePlayPauseIcon(true);
+                }
+            }
+        } else {
+            // Mode Normal : masquer le player et arrêter la musique
+            playerContainer.style.display = 'none';
+            
+            if (this.audio) {
+                this.audio.pause();
+                this.audio.currentTime = 0;
+                this.audio.src = '';
+            }
+            this.updatePlayPauseIcon(false);
+        }
     }
     
     async selectTrack(index) {

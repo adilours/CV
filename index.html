@@ -548,8 +548,8 @@
         </div>
     </footer>
 
-    <!-- Audio Player Floating - Minimal -->
-    <div id="audio-player" class="fixed bottom-6 right-6 z-50 bg-stone-900/90 backdrop-blur-sm rounded-full shadow-xl">
+    <!-- Audio Player Floating - Minimal (Hidden by default, visible in Zero BS mode only) -->
+    <div id="audio-player" style="display: none;" class="fixed bottom-6 right-6 z-50 bg-stone-900/90 backdrop-blur-sm rounded-full shadow-xl">
         <div class="flex items-center gap-1 px-2 py-2">
             <!-- Previous -->
             <button id="prev-btn" class="text-stone-400 hover:text-stone-100 transition-all duration-200 p-2 rounded-full hover:bg-stone-800/50">
@@ -587,8 +587,8 @@
 
     <audio id="audio-element" preload="none"></audio>
 
-    <script type="module" src="./avatar-scene.js?v=11"></script>
-    <script type="module" src="./audio-player.js?v=11"></script>
+    <script type="module" src="./avatar-scene.js?v=12"></script>
+    <script type="module" src="./audio-player.js?v=12"></script>
     <script>
         // Reveal Logic
         const observerOptions = { threshold: 0.1 };
