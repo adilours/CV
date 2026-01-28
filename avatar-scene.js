@@ -91,23 +91,19 @@ class AvatarScene {
         this.renderer.setClearColor(0x000000, 0); // Black with alpha 0 = fully transparent
         
         // #region agent log
-        console.log('[DEBUG] Renderer initialized:', {
-            clearColorHex: this.renderer.getClearColor().getHexString(),
-            clearAlpha: this.renderer.getClearAlpha(),
-            canvasWidth: this.renderer.domElement.width,
-            canvasHeight: this.renderer.domElement.height
-        });
+        console.log('[DEBUG A] Renderer configured with setClearColor(0x000000, 0) for transparency');
         // #endregion
         
         // #region agent log
         const containerStyles = window.getComputedStyle(this.container);
         const canvasStyles = window.getComputedStyle(this.canvas);
-        console.log('[DEBUG] Container and canvas styles:', {
+        console.log('[DEBUG B+C] Container and canvas computed styles:', {
             containerBg: containerStyles.backgroundColor,
             containerZIndex: containerStyles.zIndex,
             containerPosition: containerStyles.position,
             canvasBg: canvasStyles.backgroundColor,
-            canvasZIndex: canvasStyles.zIndex
+            canvasZIndex: canvasStyles.zIndex,
+            canvasDisplay: canvasStyles.display
         });
         // #endregion
         
@@ -150,7 +146,11 @@ class AvatarScene {
         this.camera.lookAt(0, 1, 0);
         
         // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:126',message:'Camera configuration',data:{position:{x:this.camera.position.x,y:this.camera.position.y,z:this.camera.position.z},fov:this.camera.fov,aspect:this.camera.aspect,near:this.camera.near,far:this.camera.far},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+        console.log('[DEBUG E] Camera config:', {
+            position: {x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z},
+            fov: this.camera.fov,
+            aspect: this.camera.aspect.toFixed(2)
+        });
         // #endregion
         
         // Load initial track
