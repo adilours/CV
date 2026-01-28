@@ -237,20 +237,28 @@ class AvatarScene {
             // Configurer le modèle
             let scale;
             if (track.type === 'glb') {
-                // Les fichiers GLB nécessitent un scale beaucoup plus important
-                scale = this.calculateResponsiveScale() * 170; // 170x pour le GLB
+                // Ajustement auto: fitter la hauteur du personnage pour éviter le crop
+                const box = new THREE.Box3().setFromObject(model);
+                const size = new THREE.Vector3();
+                const center = new THREE.Vector3();
+                box.getSize(size);
+                box.getCenter(center);
+
+                const targetHeight = 2.1; // Ajuster la hauteur cible à l'écran
+                scale = targetHeight / Math.max(size.y, 0.0001);
+                model.scale.setScalar(scale);
+
+                // Recentrer sur l'origine et poser les pieds au sol
+                model.position.sub(center);
+                const scaledBox = new THREE.Box3().setFromObject(model);
+                const minY = scaledBox.min.y;
+                model.position.y -= minY;
             } else {
                 scale = this.calculateResponsiveScale();
-            }
-            model.scale.setScalar(scale);
-            
-            // Position centrale dans son container (le container est décalé par CSS)
-            if (track.type === 'glb') {
-                // Pour le GLB, remonter le personnage pour le voir en entier
-                model.position.set(0, 0.8, 0); // Monter pour centrer le personnage
-            } else {
+                model.scale.setScalar(scale);
                 model.position.set(0, 0, 0);
             }
+
             model.rotation.y = Math.PI / 4;
             
             // Stocker en cache
@@ -293,7 +301,9 @@ class AvatarScene {
             this.mixer = cached.mixer;
             
             // S'assurer que la position est centrale dans le container décalé
-            this.avatar.position.set(0, 0, 0);
+            if (cached.model) {
+                this.avatar.position.copy(cached.model.position);
+            }
             
             this.scene.add(this.avatar);
             
