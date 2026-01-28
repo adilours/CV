@@ -184,10 +184,6 @@ class AvatarScene {
             return;
         }
         
-        // #region agent log
-        console.log('[DEBUG-H1] loadTrack START - track:', track.id, 'type:', track.type, 'file:', track.fbx);
-        // #endregion
-        
         // Choisir le bon loader selon le type
         let loader;
         
@@ -197,9 +193,6 @@ class AvatarScene {
             const dracoLoader = new DRACOLoader();
             dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
             loader.setDRACOLoader(dracoLoader);
-            // #region agent log
-            console.log('[DEBUG-H1] GLB loader configured with DRACO');
-            // #endregion
         } else {
             loader = new FBXLoader();
         }
@@ -208,16 +201,10 @@ class AvatarScene {
             let model;
             
             if (track.type === 'glb') {
-                // #region agent log
-                console.log('[DEBUG-H1] Loading GLB file...');
-                // #endregion
                 // Charger GLB
                 const gltf = await new Promise((resolve, reject) => {
                     loader.load(track.fbx, resolve, undefined, reject);
                 });
-                // #region agent log
-                console.log('[DEBUG-H1] GLB loaded successfully, scene:', gltf.scene ? 'exists' : 'null', 'animations:', gltf.animations?.length || 0);
-                // #endregion
                 model = gltf.scene;
                 
                 // Pour GLB, les animations sont dans gltf.animations
@@ -250,43 +237,22 @@ class AvatarScene {
             // Configurer le modèle
             let scale;
             if (track.type === 'glb') {
-                // #region agent log
-                const boxBeforeScale = new THREE.Box3().setFromObject(model);
-                const sizeBeforeScale = new THREE.Vector3();
-                boxBeforeScale.getSize(sizeBeforeScale);
-                console.log('[DEBUG-H2] GLB BEFORE scale:', {minY:boxBeforeScale.min.y, maxY:boxBeforeScale.max.y, sizeX:sizeBeforeScale.x, sizeY:sizeBeforeScale.y, sizeZ:sizeBeforeScale.z});
-                // #endregion
-                
                 // Scale fixe calibré pour le modèle GLB
                 // Le modèle GLB natif fait ~0.47 unités de haut
                 scale = 2.0;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
-                // #region agent log
-                console.log('[DEBUG-H4] Scale applied:', scale);
-                // #endregion
-                
                 // Centrer le modèle après scaling
                 const box = new THREE.Box3().setFromObject(model);
                 const center = new THREE.Vector3();
                 box.getCenter(center);
-                const size = new THREE.Vector3();
-                box.getSize(size);
-                
-                // #region agent log
-                console.log('[DEBUG-H2-H3] Box AFTER scale:', {minY:box.min.y, maxY:box.max.y, sizeY:size.y, centerY:center.y});
-                // #endregion
                 
                 // Centrer horizontalement et en profondeur
                 model.position.set(-center.x, 0, -center.z);
                 
                 // Placer les pieds plus bas
                 model.position.y = -box.min.y - 2.0;
-                
-                // #region agent log
-                console.log('[DEBUG-H3-H5] FINAL position:', {posX:model.position.x, posY:model.position.y, posZ:model.position.z, finalHeight:size.y});
-                // #endregion
             } else {
                 // FBX: logique existante
                 scale = this.calculateResponsiveScale();
@@ -315,9 +281,6 @@ class AvatarScene {
             }));
             
         } catch (error) {
-            // #region agent log
-            console.log('[DEBUG-ERROR] GLB/FBX loading FAILED:', error.message);
-            // #endregion
             console.error(error);
             window.dispatchEvent(new CustomEvent('avatarError', { 
                 detail: { trackName: track.name } 

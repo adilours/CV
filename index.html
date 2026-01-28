@@ -8,6 +8,8 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <script type="importmap">
 {
@@ -169,6 +171,18 @@
                 transform: scale(0.9);
             }
         }
+        
+        /* Hero Reveal Animation - Guimauve style */
+        .hero-reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hero-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="bg-stone-50 text-stone-900 antialiased selection:bg-stone-200 selection:text-stone-900 min-h-screen flex flex-col">
@@ -208,7 +222,7 @@
         
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-col gap-8 max-w-5xl relative z-20">
-                <div class="reveal inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/50 border border-emerald-200/40 w-fit">
+                <div class="hero-reveal inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50/50 border border-emerald-200/40 w-fit" data-delay="0">
                     <span class="relative flex h-2 w-2">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500/70"></span>
@@ -219,15 +233,18 @@
                     </span>
                 </div>
                 
-                <h1 class="reveal text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-stone-900 leading-[1.05]" data-fr="Je simplifie<br>les systèmes<br><span class='text-stone-400 italic'>pour libérer<br>les décisions.</span>" data-en="I simplify<br>systems<br><span class='text-stone-400 italic'>to unlock<br>decisions.</span>" data-zb-fr="Je rends actionnable<br><span class='text-stone-400 italic'>ce que personne<br>ne comprend.</span>" data-zb-en="I make actionable<br><span class='text-stone-400 italic'>what nobody<br>understands.</span>">
-                    Je simplifie<br>les systèmes<br><span class="text-stone-400 italic">pour libérer<br>les décisions.</span>
+                <h1 class="text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-stone-900 leading-[1.05]" data-fr="Je simplifie<br>les systèmes<br><span class='text-stone-400 italic'>pour libérer<br>les décisions.</span>" data-en="I simplify<br>systems<br><span class='text-stone-400 italic'>to unlock<br>decisions.</span>" data-zb-fr="Je rends actionnable<br><span class='text-stone-400 italic'>ce que personne<br>ne comprend.</span>" data-zb-en="I make actionable<br><span class='text-stone-400 italic'>what nobody<br>understands.</span>">
+                    <span class="hero-reveal block" data-delay="150">Je simplifie</span>
+                    <span class="hero-reveal block" data-delay="300">les systèmes</span>
+                    <span class="hero-reveal block text-stone-400 italic" data-delay="450">pour libérer</span>
+                    <span class="hero-reveal block text-stone-400 italic" data-delay="600">les décisions.</span>
                 </h1>
                 
-                <p class="reveal text-lg md:text-xl text-stone-500 font-light leading-relaxed max-w-2xl" style="transition-delay: 0.1s;" data-fr="J'ai designé des produits. Je designe maintenant des organisations.<br>Les deux se nourrissent." data-en="I've designed products. Now I design organizations.<br>The two feed each other.">
+                <p class="hero-reveal text-lg md:text-xl text-stone-500 font-light leading-relaxed max-w-2xl" data-delay="800" data-fr="J'ai designé des produits. Je designe maintenant des organisations.<br>Les deux se nourrissent." data-en="I've designed products. Now I design organizations.<br>The two feed each other.">
                     J'ai designé des produits. Je designe maintenant des organisations.<br>Les deux se nourrissent.
                 </p>
 
-                <div class="reveal flex flex-wrap gap-3 mt-4" style="transition-delay: 0.2s;">
+                <div class="hero-reveal flex flex-wrap gap-3 mt-4" data-delay="1000">
                     <span class="text-[10px] font-medium uppercase tracking-widest px-3 py-1 border border-stone-200 rounded-md text-stone-400">Complexity Mapping</span>
                     <span class="text-[10px] font-medium uppercase tracking-widest px-3 py-1 border border-stone-200 rounded-md text-stone-400">Strategic Decisions</span>
                     <span class="text-[10px] font-medium uppercase tracking-widest px-3 py-1 border border-stone-200 rounded-md text-stone-400">Delivery</span>
@@ -587,10 +604,21 @@
 
     <audio id="audio-element" preload="none"></audio>
 
-    <script type="module" src="./avatar-scene.js?v=35"></script>
-    <script type="module" src="./audio-player.js?v=35"></script>
+    <script type="module" src="./avatar-scene.js?v=36"></script>
+    <script type="module" src="./audio-player.js?v=36"></script>
     <script>
-        // Reveal Logic
+        // Hero Reveal Animation - Guimauve style on page load
+        function startHeroReveal() {
+            document.querySelectorAll('.hero-reveal').forEach(el => {
+                const delay = parseInt(el.dataset.delay || 0);
+                setTimeout(() => el.classList.add('visible'), delay);
+            });
+        }
+        
+        // Start hero animation immediately
+        startHeroReveal();
+        
+        // Reveal Logic for other sections (scroll-based)
         const observerOptions = { threshold: 0.1 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
