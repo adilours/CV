@@ -141,15 +141,15 @@ class AvatarScene {
         pointLight2.position.set(-2, 1, 3);
         this.scene.add(pointLight2);
         
-        // Camera position - Plus reculée pour éviter le crop
-        this.camera.position.set(4, 1.5, 0); // Position latérale plus éloignée
+        // Camera position - Plus reculée et décalée pour éviter le crop
+        // On décale la caméra pour que le centre de la scène soit à droite de l'écran
+        this.camera.position.set(6, 2, 0); 
         this.camera.lookAt(0, 1, 0);
         
         // #region agent log
-        console.log('[DEBUG E] Camera config:', {
+        console.log('[DEBUG E] Camera config (Wide Canvas):', {
             position: {x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z},
-            fov: this.camera.fov,
-            aspect: this.camera.aspect.toFixed(2)
+            canvasWidth: this.container.offsetWidth
         });
         // #endregion
         
@@ -339,6 +339,16 @@ class AvatarScene {
         // Subtle rotation continue pour dynamisme
         if (this.avatar) {
             this.avatar.rotation.y += 0.0005; // Rotation encore plus subtile
+            
+            // #region agent log
+            if (Math.random() < 0.01) { // Log périodique
+                console.log('[DEBUG Animation] Model position:', {
+                    x: this.avatar.position.x,
+                    visible: this.avatar.visible,
+                    canvasWidth: this.renderer.domElement.width
+                });
+            }
+            // #endregion
         }
         
         this.renderer.render(this.scene, this.camera);

@@ -132,7 +132,7 @@
             position: absolute;
             top: 0;
             right: 0;
-            width: 50%;
+            width: 100%; /* CHANGÉ : 100% au lieu de 50% pour éviter le crop */
             height: 100%;
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
@@ -202,7 +202,7 @@
     <header class="relative pt-40 pb-24 px-6 md:pt-56 md:pb-32" style="background: transparent;">
         
         <!-- 3D Avatar Container - INSIDE header for proper scrolling -->
-        <div id="avatar-3d-container" class="hidden md:block">
+        <div id="avatar-3d-container" class="hidden md:block absolute inset-0 w-full h-full">
             <canvas id="avatar-canvas"></canvas>
         </div>
         
@@ -587,8 +587,8 @@
 
     <audio id="audio-element" preload="none"></audio>
 
-    <script type="module" src="./avatar-scene.js?v=8"></script>
-    <script type="module" src="./audio-player.js?v=8"></script>
+    <script type="module" src="./avatar-scene.js?v=9"></script>
+    <script type="module" src="./audio-player.js?v=9"></script>
     <script>
         // Reveal Logic
         const observerOptions = { threshold: 0.1 };
