@@ -119,11 +119,13 @@
         /* 3D Avatar Scene */
         header {
             overflow: visible !important;
+            background: transparent !important;
         }
         #avatar-3d-container {
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
             overflow: visible !important;
+            background: transparent !important;
         }
         #avatar-3d-container.loaded {
             opacity: 0.85; /* Professionnel mais moderne - présence sans être distrayant */
@@ -133,6 +135,7 @@
             height: 100%;
             display: block;
             overflow: visible !important;
+            background: transparent !important;
         }
         
         /* Audio Player Styles */
@@ -184,7 +187,7 @@
     <!-- Hero Section -->
     <header class="relative pt-40 pb-24 px-6 md:pt-56 md:pb-32">
         <!-- 3D Avatar Container - Right 50% -->
-        <div id="avatar-3d-container" class="hidden md:block absolute top-0 right-0 w-1/2 h-full pointer-events-none z-10">
+        <div id="avatar-3d-container" class="hidden md:block absolute top-0 right-0 w-1/2 pointer-events-none z-10" style="height: 120vh;">
             <canvas id="avatar-canvas"></canvas>
         </div>
         

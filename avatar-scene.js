@@ -77,6 +77,7 @@ class AvatarScene {
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: this.canvas, 
             alpha: true,
+            premultipliedAlpha: false,
             antialias: true 
         });
         this.renderer.setSize(
