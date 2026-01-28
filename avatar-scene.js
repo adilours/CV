@@ -258,8 +258,8 @@ class AvatarScene {
                 // #endregion
                 
                 // Scale fixe calibré pour le modèle GLB
-                // Le modèle GLB natif fait ~0.47 unités de haut, on veut ~1.5 unités
-                scale = 3.5;
+                // Le modèle GLB natif fait ~0.47 unités de haut
+                scale = 2.0;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
@@ -281,8 +281,8 @@ class AvatarScene {
                 // Centrer horizontalement et en profondeur
                 model.position.set(-center.x, 0, -center.z);
                 
-                // Placer les pieds au sol (Y=0)
-                model.position.y = -box.min.y;
+                // Placer les pieds plus bas
+                model.position.y = -box.min.y - 0.6;
                 
                 // #region agent log
                 console.log('[DEBUG-H3-H5] FINAL position:', {posX:model.position.x, posY:model.position.y, posZ:model.position.z, finalHeight:size.y});
