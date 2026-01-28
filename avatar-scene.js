@@ -248,8 +248,8 @@ class AvatarScene {
                 const center = new THREE.Vector3();
                 box.getCenter(center);
                 
-                // Centrer horizontalement et en profondeur
-                model.position.set(-center.x, 0, -center.z);
+                // Centrer horizontalement et en profondeur, avec décalage vers la gauche
+                model.position.set(-center.x - 0.3, 0, -center.z);
                 
                 // Placer les pieds plus bas
                 model.position.y = -box.min.y - 2.0;
