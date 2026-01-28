@@ -235,7 +235,13 @@ class AvatarScene {
             }
             
             // Configurer le modèle
-            const scale = this.calculateResponsiveScale();
+            let scale;
+            if (track.type === 'glb') {
+                // Les fichiers GLB nécessitent un scale beaucoup plus important
+                scale = this.calculateResponsiveScale() * 100; // 100x plus grand pour le GLB
+            } else {
+                scale = this.calculateResponsiveScale();
+            }
             model.scale.setScalar(scale);
             
             // Position centrale dans son container (le container est décalé par CSS)
