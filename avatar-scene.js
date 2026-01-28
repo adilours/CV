@@ -11,6 +11,39 @@ class AvatarScene {
             return;
         }
         
+        // Configuration des tracks (musique + danse)
+        this.tracks = [
+            {
+                id: 'carlton',
+                name: 'Carlton Dance',
+                fbx: './carlton Dancing.fbx',
+                audio: './It s Not Unusual.mp3'
+            },
+            {
+                id: 'thriller',
+                name: 'Thriller',
+                fbx: './thriller.fbx',
+                audio: './Michael Jackson Thriller Official Video Shortened Version.mp3'
+            },
+            {
+                id: 'sugarhill',
+                name: 'Sugarhill Gang',
+                fbx: './charley.fbx',
+                audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3'
+            },
+            {
+                id: 'hiphop',
+                name: 'Hip Hop',
+                fbx: './Hip Hop Dancing.fbx',
+                audio: './19 - Cut Killer - Mystical Scratch.mp3'
+            }
+        ];
+        
+        this.currentTrackIndex = 3; // Démarre avec Hip Hop (déjà chargé)
+        this.loadedModels = new Map(); // Cache des modèles FBX
+        this.isLoading = false;
+        this.animationStarted = false;
+        
         this.init();
     }
 
@@ -77,8 +110,8 @@ class AvatarScene {
         this.camera.position.set(4, 1.5, 0); // Position latérale plus éloignée
         this.camera.lookAt(0, 1, 0);
         
-        // Load FBX
-        this.loadAvatar();
+        // Load initial track
+        this.loadTrack(this.currentTrackIndex);
         
         // Handle resize
         window.addEventListener('resize', () => this.onResize());
@@ -87,48 +120,129 @@ class AvatarScene {
         this.setupDarkModeObserver();
     }
 
-    loadAvatar() {
+    async loadTrack(trackIndex) {
+        if (this.isLoading) return;
+        this.isLoading = true;
+        
+        const track = this.tracks[trackIndex];
+        
+        // Émission d'événement pour UI
+        window.dispatchEvent(new CustomEvent('avatarLoading', { 
+            detail: { trackName: track.name } 
+        }));
+        
+        // Vérifier si déjà en cache
+        if (this.loadedModels.has(track.id)) {
+            this.switchToModel(track.id);
+            this.isLoading = false;
+            window.dispatchEvent(new CustomEvent('avatarLoaded', { 
+                detail: { trackName: track.name } 
+            }));
+            return;
+        }
+        
         const loader = new FBXLoader();
         
-        loader.load(
-            './Hip Hop Dancing.fbx',
-            (fbx) => {
-                this.avatar = fbx;
-                this.scene.add(fbx);
-                
-                // Scale augmenté 3-4x pour meilleure visibilité
-                fbx.scale.setScalar(0.035); 
-                fbx.position.set(0, 0, 0);
-                
-                // Rotation pour vue de profil optimale
-                fbx.rotation.y = Math.PI / 4; // 45° pour angle dynamique
-                
-                // Animation setup
-                if (fbx.animations && fbx.animations.length > 0) {
-                    this.mixer = new THREE.AnimationMixer(fbx);
-                    const action = this.mixer.clipAction(fbx.animations[0]);
-                    action.setLoop(THREE.LoopRepeat, Infinity);
-                    action.play();
-                }
-                
-                // Fade in
-                this.container.classList.add('loaded');
-                
-                // Start animation loop
-                this.animate();
-                
-                console.log('Avatar loaded successfully');
-            },
-            (progress) => {
-                if (progress.total > 0) {
-                    const percent = (progress.loaded / progress.total * 100).toFixed(0);
-                    console.log(`Loading avatar: ${percent}%`);
-                }
-            },
-            (error) => {
-                console.error('Error loading FBX:', error);
+        try {
+            const fbx = await new Promise((resolve, reject) => {
+                loader.load(
+                    track.fbx,
+                    resolve,
+                    (progress) => {
+                        if (progress.total > 0) {
+                            const percent = (progress.loaded / progress.total * 100).toFixed(0);
+                            console.log(`Loading ${track.name}: ${percent}%`);
+                        }
+                    },
+                    reject
+                );
+            });
+            
+            // Configurer le modèle
+            fbx.scale.setScalar(0.035);
+            fbx.position.set(0, 0, 0);
+            fbx.rotation.y = Math.PI / 4;
+            
+            // Setup animation
+            let mixer = null;
+            if (fbx.animations && fbx.animations.length > 0) {
+                mixer = new THREE.AnimationMixer(fbx);
+                const action = mixer.clipAction(fbx.animations[0]);
+                action.setLoop(THREE.LoopRepeat, Infinity);
+                action.play();
             }
-        );
+            
+            // Stocker en cache
+            this.loadedModels.set(track.id, { model: fbx, mixer });
+            
+            // Basculer vers ce modèle
+            this.switchToModel(track.id);
+            
+            // Fade in
+            this.container.classList.add('loaded');
+            
+            window.dispatchEvent(new CustomEvent('avatarLoaded', { 
+                detail: { trackName: track.name } 
+            }));
+            
+            console.log('Avatar loaded successfully:', track.name);
+            
+        } catch (error) {
+            console.error('Error loading track:', track.name, error);
+            window.dispatchEvent(new CustomEvent('avatarError', { 
+                detail: { trackName: track.name } 
+            }));
+        }
+        
+        this.isLoading = false;
+    }
+
+    switchToModel(trackId) {
+        // Retirer le modèle actuel
+        if (this.avatar) {
+            this.scene.remove(this.avatar);
+        }
+        
+        // Ajouter le nouveau modèle
+        const cached = this.loadedModels.get(trackId);
+        if (cached) {
+            this.avatar = cached.model;
+            this.mixer = cached.mixer;
+            this.scene.add(this.avatar);
+            
+            if (!this.animationStarted) {
+                this.animate();
+                this.animationStarted = true;
+            }
+        }
+    }
+
+    cleanupCache(keepTrackId) {
+        if (this.loadedModels.size > 3) {
+            for (let [id, data] of this.loadedModels.entries()) {
+                if (id !== keepTrackId) {
+                    // Dispose geometry et materials
+                    data.model.traverse((child) => {
+                        if (child.geometry) child.geometry.dispose();
+                        if (child.material) {
+                            if (Array.isArray(child.material)) {
+                                child.material.forEach(m => m.dispose());
+                            } else {
+                                child.material.dispose();
+                            }
+                        }
+                    });
+                    this.loadedModels.delete(id);
+                    console.log('Cleaned up model:', id);
+                    break; // Ne supprimer qu'un à la fois
+                }
+            }
+        }
+    }
+
+    loadAvatar() {
+        // Deprecated - kept for compatibility, use loadTrack instead
+        this.loadTrack(this.currentTrackIndex);
     }
 
     animate() {
