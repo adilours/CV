@@ -18,28 +18,28 @@ class AvatarScene {
         
         // Configuration des animations selon le mode
         if (this.isZeroBullshitMode) {
-            // Mode ZB : danses avec changement de tracks
+            // Mode ZB : danses avec changement de tracks (GLB compressés)
             this.tracks = [
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton Dancing.fbx',
-                    audio: './It s Not Unusual.mp3',
-                    type: 'fbx'
+                    fbx: './carlton_dance.glb',
+                    audio: './carlton.mp3',
+                    type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller.fbx',
-                    audio: './Michael Jackson Thriller Official Video Shortened Version.mp3',
-                    type: 'fbx'
+                    fbx: './thriller_dance.glb',
+                    audio: './thriller.mp3',
+                    type: 'glb'
                 },
                 {
-                    id: 'sugarhill',
-                    name: 'Sugarhill Gang',
-                    fbx: './charley.fbx',
-                    audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3',
-                    type: 'fbx'
+                    id: 'awa',
+                    name: 'Awa Dance',
+                    fbx: './awa_dance.glb',
+                    audio: './awa.mp3',
+                    type: 'glb'
                 }
             ];
         } else {
@@ -449,23 +449,23 @@ class AvatarScene {
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton Dancing.fbx',
-                    audio: './It s Not Unusual.mp3',
-                    type: 'fbx'
+                    fbx: './carlton_dance.glb',
+                    audio: './carlton.mp3',
+                    type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller.fbx',
-                    audio: './Michael Jackson Thriller Official Video Shortened Version.mp3',
-                    type: 'fbx'
+                    fbx: './thriller_dance.glb',
+                    audio: './thriller.mp3',
+                    type: 'glb'
                 },
                 {
-                    id: 'sugarhill',
-                    name: 'Sugarhill Gang',
-                    fbx: './charley.fbx',
-                    audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3',
-                    type: 'fbx'
+                    id: 'awa',
+                    name: 'Awa Dance',
+                    fbx: './awa_dance.glb',
+                    audio: './awa.mp3',
+                    type: 'glb'
                 }
             ];
             this.currentTrackIndex = 0;

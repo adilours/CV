@@ -565,6 +565,147 @@
         </div>
     </footer>
 
+    <!-- TEMP: Debug Controls for 3D positioning (Zero BS mode only) -->
+    <div id="debug-controls" style="display: none;" class="fixed top-20 left-4 z-[100] bg-black/95 text-white p-4 rounded-lg text-xs font-mono" style="width: 300px;">
+        <div class="font-bold mb-3 text-yellow-400">3D Position Debug (ZB Mode)</div>
+        
+        <div class="mb-3">
+            <label class="block mb-1">Track:</label>
+            <select id="track-select" class="w-full bg-stone-800 text-white p-1 rounded">
+                <option value="0">Carlton Dance</option>
+                <option value="1">Thriller</option>
+                <option value="2">Awa Dance</option>
+            </select>
+        </div>
+        
+        <div class="mb-2">
+            <label class="block mb-1">Position X: <span id="val-x">0</span></label>
+            <input type="range" id="pos-x" min="-5" max="5" step="0.1" value="0" class="w-full">
+        </div>
+        
+        <div class="mb-2">
+            <label class="block mb-1">Position Y: <span id="val-y">-1.6</span></label>
+            <input type="range" id="pos-y" min="-5" max="2" step="0.1" value="-1.6" class="w-full">
+        </div>
+        
+        <div class="mb-2">
+            <label class="block mb-1">Position Z: <span id="val-z">0</span></label>
+            <input type="range" id="pos-z" min="-3" max="5" step="0.1" value="0" class="w-full">
+        </div>
+        
+        <div class="mb-3">
+            <label class="block mb-1">Scale: <span id="val-scale">2.2</span></label>
+            <input type="range" id="scale" min="0.5" max="5" step="0.1" value="2.2" class="w-full">
+        </div>
+        
+        <div class="mt-3 p-2 bg-stone-800 rounded text-[10px]">
+            <div class="text-stone-400 mb-1">Valeurs pour ce track:</div>
+            <code id="final-values" class="text-green-400 block">...</code>
+        </div>
+        
+        <button id="save-position" class="mt-2 w-full bg-green-600 hover:bg-green-500 text-white py-1 px-2 rounded text-xs">
+            Sauvegarder cette position
+        </button>
+        
+        <div id="saved-positions" class="mt-3 text-[9px] text-stone-400 max-h-32 overflow-y-auto">
+            <div class="font-bold mb-1">Positions sauvegardées:</div>
+        </div>
+    </div>
+    
+    <script>
+        // Debug controls for 3D positioning in ZB mode
+        const savedPositions = {};
+        
+        function initDebugControls() {
+            const debugPanel = document.getElementById('debug-controls');
+            const trackSelect = document.getElementById('track-select');
+            const controls = {
+                x: document.getElementById('pos-x'),
+                y: document.getElementById('pos-y'),
+                z: document.getElementById('pos-z'),
+                scale: document.getElementById('scale')
+            };
+            const values = {
+                x: document.getElementById('val-x'),
+                y: document.getElementById('val-y'),
+                z: document.getElementById('val-z'),
+                scale: document.getElementById('val-scale')
+            };
+            const finalOutput = document.getElementById('final-values');
+            const savedOutput = document.getElementById('saved-positions');
+            
+            // Show/hide based on ZB mode
+            function updateVisibility() {
+                const isZB = document.body.classList.contains('zb-mode');
+                debugPanel.style.display = isZB ? 'block' : 'none';
+            }
+            
+            // Watch for ZB mode changes
+            const observer = new MutationObserver(updateVisibility);
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+            updateVisibility();
+            
+            function updateAvatar() {
+                const avatar = window.avatarScene?.avatar;
+                if (!avatar) return;
+                
+                const x = parseFloat(controls.x.value);
+                const y = parseFloat(controls.y.value);
+                const z = parseFloat(controls.z.value);
+                const s = parseFloat(controls.scale.value);
+                
+                avatar.position.set(x, y, z);
+                avatar.scale.setScalar(s);
+                
+                values.x.textContent = x.toFixed(1);
+                values.y.textContent = y.toFixed(1);
+                values.z.textContent = z.toFixed(1);
+                values.scale.textContent = s.toFixed(1);
+                
+                const trackName = trackSelect.options[trackSelect.selectedIndex].text;
+                finalOutput.textContent = `${trackName}: X:${x} Y:${y} Z:${z} S:${s}`;
+            }
+            
+            // Track change - switch to that track
+            trackSelect.addEventListener('change', () => {
+                const idx = parseInt(trackSelect.value);
+                if (window.avatarScene) {
+                    window.avatarScene.currentTrackIndex = idx;
+                    window.avatarScene.loadTrack(idx);
+                }
+            });
+            
+            Object.values(controls).forEach(c => c.addEventListener('input', updateAvatar));
+            
+            // Save position button
+            document.getElementById('save-position').addEventListener('click', () => {
+                const trackIdx = trackSelect.value;
+                const trackName = trackSelect.options[trackSelect.selectedIndex].text;
+                const pos = {
+                    x: parseFloat(controls.x.value),
+                    y: parseFloat(controls.y.value),
+                    z: parseFloat(controls.z.value),
+                    s: parseFloat(controls.scale.value)
+                };
+                savedPositions[trackIdx] = { name: trackName, ...pos };
+                
+                // Update display
+                let html = '<div class="font-bold mb-1">Positions sauvegardées:</div>';
+                for (const [idx, p] of Object.entries(savedPositions)) {
+                    html += `<div class="text-green-400">${p.name}: X:${p.x} Y:${p.y} Z:${p.z} S:${p.s}</div>`;
+                }
+                savedOutput.innerHTML = html;
+            });
+            
+            // Wait for avatar to load
+            window.addEventListener('avatarLoaded', () => {
+                setTimeout(updateAvatar, 200);
+            });
+        }
+        
+        initDebugControls();
+    </script>
+
     <!-- Audio Player Floating - Minimal (Hidden by default, visible in Zero BS mode only) -->
     <div id="audio-player" style="display: none;" class="fixed bottom-6 right-6 z-50 bg-stone-900/90 backdrop-blur-sm rounded-full shadow-xl">
         <div class="flex items-center gap-1 px-2 py-2">
@@ -604,8 +745,8 @@
 
     <audio id="audio-element" preload="none"></audio>
 
-    <script type="module" src="./avatar-scene.js?v=44"></script>
-    <script type="module" src="./audio-player.js?v=44"></script>
+    <script type="module" src="./avatar-scene.js?v=45"></script>
+    <script type="module" src="./audio-player.js?v=45"></script>
     <script>
         // Hero Reveal Animation - Guimauve style on page load
         function startHeroReveal() {
