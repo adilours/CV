@@ -245,7 +245,12 @@ class AvatarScene {
             model.scale.setScalar(scale);
             
             // Position centrale dans son container (le container est décalé par CSS)
-            model.position.set(0, 0, 0); 
+            if (track.type === 'glb') {
+                // Pour le GLB, ajuster la hauteur pour voir le personnage en entier
+                model.position.set(0, -0.5, 0); // Descendre un peu pour recentrer
+            } else {
+                model.position.set(0, 0, 0);
+            }
             model.rotation.y = Math.PI / 4;
             
             // Stocker en cache
