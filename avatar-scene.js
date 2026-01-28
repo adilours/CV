@@ -246,8 +246,8 @@ class AvatarScene {
             
             // Position centrale dans son container (le container est décalé par CSS)
             if (track.type === 'glb') {
-                // Pour le GLB, ajuster la hauteur pour voir le personnage en entier
-                model.position.set(0, -0.5, 0); // Descendre un peu pour recentrer
+                // Pour le GLB, remonter le personnage pour le voir en entier
+                model.position.set(0, 0.8, 0); // Monter pour centrer le personnage
             } else {
                 model.position.set(0, 0, 0);
             }
