@@ -128,46 +128,20 @@
         }
         
         /* Audio Player Styles */
+        /* Audio Player Minimal */
         #audio-player {
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            transition: opacity 0.3s ease;
         }
-        #audio-player.minimized #player-content {
-            display: none;
-        }
-        #audio-player.minimized {
-            width: auto;
+        #audio-player:hover {
+            opacity: 1 !important;
         }
         
-        /* Track item active state */
-        .track-item.active {
-            background-color: rgba(245, 245, 244, 0.1);
-            border-left: 2px solid #a8a29e;
-        }
-        
-        /* Custom progress bar */
-        #progress-bar::-webkit-slider-thumb {
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #fafaf9;
-            cursor: pointer;
-        }
-        #progress-bar::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #fafaf9;
-            cursor: pointer;
-            border: none;
-        }
-        
-        /* Hide on mobile */
-        @media (max-width: 768px) {
+        /* Hide on very small mobile */
+        @media (max-width: 640px) {
             #audio-player {
-                bottom: 1rem;
-                right: 1rem;
-                width: 240px;
+                bottom: 0.75rem;
+                right: 0.75rem;
+                transform: scale(0.9);
             }
         }
     </style>
@@ -548,92 +522,37 @@
         </div>
     </footer>
 
-    <!-- Audio Player Floating -->
-    <div id="audio-player" class="fixed bottom-6 right-6 z-50 bg-stone-900/95 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden" style="width: 280px;">
-        <!-- Header -->
-        <div class="px-4 py-3 border-b border-stone-700/50">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-medium text-stone-400 uppercase tracking-widest">Dance Mix</span>
-                <button id="player-minimize" class="text-stone-500 hover:text-stone-300 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Player Content -->
-        <div id="player-content" class="p-4">
-            <!-- Track Info -->
-            <div class="mb-4">
-                <h3 id="track-name" class="text-sm font-medium text-stone-100 mb-1">Hip Hop</h3>
-                <p id="track-artist" class="text-xs text-stone-500">Cut Killer</p>
-            </div>
+    <!-- Audio Player Floating - Minimal -->
+    <div id="audio-player" class="fixed bottom-6 right-6 z-50 bg-stone-900/90 backdrop-blur-sm rounded-full shadow-xl overflow-hidden">
+        <div class="flex items-center gap-2 px-3 py-2">
+            <!-- Previous -->
+            <button id="prev-btn" class="text-stone-400 hover:text-stone-100 transition-colors p-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                </svg>
+            </button>
             
-            <!-- Progress Bar -->
-            <div class="mb-4">
-                <input 
-                    type="range" 
-                    id="progress-bar" 
-                    min="0" 
-                    max="100" 
-                    value="0" 
-                    class="w-full h-1 bg-stone-700 rounded-lg appearance-none cursor-pointer"
-                />
-                <div class="flex justify-between text-xs text-stone-500 mt-1">
-                    <span id="current-time">0:00</span>
-                    <span id="duration">0:00</span>
-                </div>
-            </div>
+            <!-- Play/Stop -->
+            <button id="play-pause-btn" class="bg-stone-100 text-stone-900 rounded-full p-2 hover:bg-white transition-colors">
+                <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg id="pause-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                    <rect x="6" y="4" width="4" height="16"/>
+                    <rect x="14" y="4" width="4" height="16"/>
+                </svg>
+            </button>
             
-            <!-- Controls -->
-            <div class="flex items-center justify-center gap-4 mb-4">
-                <button id="prev-btn" class="text-stone-400 hover:text-stone-100 transition-colors">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                    </svg>
-                </button>
-                
-                <button id="play-pause-btn" class="bg-stone-100 text-stone-900 rounded-full p-3 hover:bg-white transition-colors">
-                    <svg id="play-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    <svg id="pause-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
-                        <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
-                    </svg>
-                </button>
-                
-                <button id="next-btn" class="text-stone-400 hover:text-stone-100 transition-colors">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Track List -->
-            <div class="space-y-2">
-                <button class="track-item w-full text-left px-3 py-2 rounded-lg hover:bg-stone-800/50 transition-colors" data-track="0">
-                    <div class="text-xs font-medium text-stone-300">Carlton Dance</div>
-                    <div class="text-xs text-stone-600">It's Not Unusual</div>
-                </button>
-                <button class="track-item w-full text-left px-3 py-2 rounded-lg hover:bg-stone-800/50 transition-colors" data-track="1">
-                    <div class="text-xs font-medium text-stone-300">Thriller</div>
-                    <div class="text-xs text-stone-600">Michael Jackson</div>
-                </button>
-                <button class="track-item w-full text-left px-3 py-2 rounded-lg hover:bg-stone-800/50 transition-colors" data-track="2">
-                    <div class="text-xs font-medium text-stone-300">Sugarhill Gang</div>
-                    <div class="text-xs text-stone-600">Apache Jump On It</div>
-                </button>
-                <button class="track-item w-full text-left px-3 py-2 rounded-lg hover:bg-stone-800/50 transition-colors active" data-track="3">
-                    <div class="text-xs font-medium text-stone-300">Hip Hop</div>
-                    <div class="text-xs text-stone-600">Cut Killer</div>
-                </button>
-            </div>
+            <!-- Next -->
+            <button id="next-btn" class="text-stone-400 hover:text-stone-100 transition-colors p-1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
+                </svg>
+            </button>
             
             <!-- Loading Indicator -->
-            <div id="loading-indicator" class="hidden mt-3 text-center">
-                <div class="inline-block animate-spin rounded-full h-4 w-4 border-2 border-stone-500 border-t-stone-200"></div>
-                <span class="text-xs text-stone-500 ml-2">Chargement...</span>
+            <div id="loading-indicator" class="hidden ml-1">
+                <div class="inline-block animate-spin rounded-full h-3 w-3 border-2 border-stone-500 border-t-stone-200"></div>
             </div>
         </div>
     </div>
