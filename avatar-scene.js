@@ -147,8 +147,8 @@ class AvatarScene {
         this.scene.add(pointLight2);
         
         // Camera position - Recentré car le container est maintenant décalé via CSS
-        this.camera.position.set(4.5, 1.2, 0); 
-        this.camera.lookAt(0, 0, 0);
+        this.camera.position.set(4.5, 0.8, 0); 
+        this.camera.lookAt(0, 0.5, 0);
         
         // Load initial track
         this.loadTrack(this.currentTrackIndex);
@@ -237,31 +237,24 @@ class AvatarScene {
             // Configurer le modèle
             let scale;
             if (track.type === 'glb') {
-                // Ajustement auto: fitter la hauteur du personnage pour éviter le crop
-                const box = new THREE.Box3().setFromObject(model);
-                const size = new THREE.Vector3();
-                box.getSize(size);
-
-                const targetHeight = 1.4; 
-                scale = targetHeight / Math.max(size.y, 0.0001);
-                
-                // Mémoriser le scale multiplicateur pour le resize
-                model.userData.baseScale = scale;
+                // Scale fixe calibré pour le modèle GLB (empirique)
+                // Le modèle GLB utilise des unités différentes des FBX
+                scale = 0.018;
                 model.scale.setScalar(scale);
-
-                // Centrage et positionnement vertical
-                model.position.set(0, 0, 0); // Reset
-                const updatedBox = new THREE.Box3().setFromObject(model);
-                const center = new THREE.Vector3();
-                updatedBox.getCenter(center);
+                model.userData.baseScale = scale;
                 
-                model.position.x -= center.x;
-                model.position.y -= center.y;
-                model.position.z -= center.z;
-
-                // Abaisser le modèle
-                model.position.y -= 0.5;
+                // Centrer le modèle après scaling
+                const box = new THREE.Box3().setFromObject(model);
+                const center = new THREE.Vector3();
+                box.getCenter(center);
+                
+                // Centrer horizontalement et en profondeur
+                model.position.set(-center.x, 0, -center.z);
+                
+                // Placer les pieds au niveau du sol (Y=0)
+                model.position.y = -box.min.y;
             } else {
+                // FBX: logique existante
                 scale = this.calculateResponsiveScale();
                 model.userData.baseScale = scale;
                 model.scale.setScalar(scale);
@@ -406,20 +399,8 @@ class AvatarScene {
             this.container.offsetHeight
         );
         
-        // Mettre à jour l'échelle du modèle actuel
-        if (this.avatar) {
-            const track = this.tracks[this.currentTrackIndex];
-            if (track.type === 'glb') {
-                // Pour le GLB, on garde le scale auto-calculé
-                if (this.avatar.userData.baseScale) {
-                    this.avatar.scale.setScalar(this.avatar.userData.baseScale);
-                }
-            } else {
-                // Pour le FBX, on utilise l'échelle responsive
-                const newScale = this.calculateResponsiveScale();
-                this.avatar.scale.setScalar(newScale);
-            }
-        }
+        // Ne PAS modifier le scale au resize
+        // Le scale est fixe et ne dépend pas de la taille du viewport
     }
     
     setupDarkModeObserver() {
