@@ -116,6 +116,17 @@
             transition: opacity 0.3s ease;
         }
         
+        /* Z-index hierarchy for proper layering */
+        nav {
+            z-index: 50 !important; /* Nav au-dessus de tout */
+        }
+        
+        section, header, footer {
+            position: relative;
+            z-index: 1; /* Sections en bas de pile */
+            background: transparent; /* S'assurer que le background ne bloque pas */
+        }
+        
         /* 3D Avatar Scene - Fixed positioning outside header */
         #avatar-3d-container {
             position: fixed;
@@ -128,7 +139,7 @@
             overflow: visible !important;
             background: transparent !important;
             pointer-events: none;
-            z-index: 10;
+            z-index: 5; /* Sous la nav, au-dessus des sections */
         }
         #avatar-3d-container.loaded {
             opacity: 0.85; /* Professionnel mais moderne - présence sans être distrayant */
