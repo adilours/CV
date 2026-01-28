@@ -48,7 +48,7 @@ class AvatarScene {
                 {
                     id: 'running',
                     name: 'Running',
-                    fbx: './Jogging_compressed.glb',
+                    fbx: './Jogging_optimized.glb',
                     audio: null,
                     type: 'glb'
                 }
@@ -483,7 +483,7 @@ class AvatarScene {
                 {
                     id: 'running',
                     name: 'Running',
-                    fbx: './Jogging_compressed.glb',
+                    fbx: './Jogging_optimized.glb',
                     audio: null,
                     type: 'glb'
                 }
