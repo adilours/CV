@@ -18,6 +18,9 @@
 }
 </script>
     <style>
+        html, body {
+            overflow-x: visible;
+        }
         body {
             font-family: 'Inter', sans-serif;
             font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -114,9 +117,13 @@
         }
         
         /* 3D Avatar Scene */
+        header {
+            overflow: visible !important;
+        }
         #avatar-3d-container {
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
+            overflow: visible !important;
         }
         #avatar-3d-container.loaded {
             opacity: 0.85; /* Professionnel mais moderne - présence sans être distrayant */
@@ -125,6 +132,7 @@
             width: 100%;
             height: 100%;
             display: block;
+            overflow: visible !important;
         }
         
         /* Audio Player Styles */
