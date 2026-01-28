@@ -30,16 +30,10 @@ class AvatarScene {
                 name: 'Sugarhill Gang',
                 fbx: './charley.fbx',
                 audio: './The Sugarhill Gang Apache Jump On It Official Video.mp3'
-            },
-            {
-                id: 'hiphop',
-                name: 'Hip Hop',
-                fbx: './Hip Hop Dancing.fbx',
-                audio: './19 - Cut Killer - Mystical Scratch.mp3'
             }
         ];
         
-        this.currentTrackIndex = 3; // Démarre avec Hip Hop (déjà chargé)
+        this.currentTrackIndex = 0; // Démarre avec Carlton
         this.loadedModels = new Map(); // Cache des modèles FBX
         this.isLoading = false;
         this.animationStarted = false;

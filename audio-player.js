@@ -9,9 +9,10 @@ class AudioPlayer {
         
         this.avatarScene = avatarScene;
         this.tracks = avatarScene.tracks || [];
-        this.currentTrackIndex = 3; // Hip Hop par défaut
-        this.isRandom = true; // Mode aléatoire activé par défaut
+        this.currentTrackIndex = 0; // Carlton par défaut
+        this.isRandom = false; // Mode séquentiel activé par défaut
         
+        // Récupérer les éléments DOM avec vérification
         this.audio = document.getElementById('audio-element');
         this.playPauseBtn = document.getElementById('play-pause-btn');
         this.playIcon = document.getElementById('play-icon');
@@ -29,6 +30,17 @@ class AudioPlayer {
             nextBtn: !!this.nextBtn,
             loadingIndicator: !!this.loadingIndicator
         });
+        
+        // Vérifier que les éléments critiques existent
+        if (!this.audio) {
+            console.error('[AudioPlayer] Critical: audio element not found!');
+            return;
+        }
+        
+        if (!this.playPauseBtn || !this.prevBtn || !this.nextBtn) {
+            console.error('[AudioPlayer] Critical: player buttons not found!');
+            return;
+        }
         
         this.init();
     }
@@ -172,41 +184,73 @@ class AudioPlayer {
 }
 
 // Initialize after avatar scene is ready
-window.addEventListener('DOMContentLoaded', () => {
-    console.log('[AudioPlayer] DOMContentLoaded fired');
+(function initAudioPlayer() {
+    console.log('[AudioPlayer] Initializing...');
     
-    // Protection : vérifier qu'on ne crée qu'une seule instance
-    if (window.audioPlayer) {
-        console.warn('[AudioPlayer] Instance already exists, skipping initialization');
+    // Protection globale : empêcher toute double initialisation
+    if (window.__audioPlayerInitialized) {
+        console.warn('[AudioPlayer] Already initialized, aborting');
+        return;
+    }
+    window.__audioPlayerInitialized = true;
+    
+    // Fonction d'initialisation
+    function tryInit() {
+        console.log('[AudioPlayer] tryInit - checking conditions', {
+            DOMReady: document.readyState,
+            avatarScene: !!window.avatarScene,
+            tracks: window.avatarScene?.tracks?.length,
+            audioPlayer: !!window.audioPlayer
+        });
+        
+        // Vérifier que tout est prêt
+        if (document.readyState === 'loading') {
+            console.log('[AudioPlayer] DOM not ready, waiting...');
+            return false;
+        }
+        
+        if (!window.avatarScene || !window.avatarScene.tracks || window.avatarScene.tracks.length === 0) {
+            console.log('[AudioPlayer] AvatarScene not ready');
+            return false;
+        }
+        
+        if (window.audioPlayer) {
+            console.log('[AudioPlayer] Instance already exists');
+            return true; // Déjà initialisé, pas besoin de continuer
+        }
+        
+        // Tout est prêt, créer l'instance
+        console.log('[AudioPlayer] Creating instance');
+        window.audioPlayer = new AudioPlayer(window.avatarScene);
+        return true;
+    }
+    
+    // Essayer d'initialiser immédiatement
+    if (tryInit()) {
+        console.log('[AudioPlayer] Initialized immediately');
         return;
     }
     
-    let checkCount = 0;
-    // Attendre que avatarScene soit disponible
-    const checkAvatarScene = setInterval(() => {
-        checkCount++;
-        console.log(`[AudioPlayer] Check #${checkCount}: avatarScene=${!!window.avatarScene}, tracks=${window.avatarScene?.tracks?.length}, audioPlayer=${!!window.audioPlayer}`);
-        
-        // Timeout de sécurité : arrêter après 50 tentatives (5 secondes)
-        if (checkCount > 50) {
-            console.error('[AudioPlayer] Timeout: avatarScene not ready after 5 seconds');
-            clearInterval(checkAvatarScene);
-            return;
-        }
-        
-        if (window.avatarScene && window.avatarScene.tracks && window.avatarScene.tracks.length > 0) {
-            console.log('[AudioPlayer] Condition met - creating AudioPlayer');
-            
-            // Double protection : vérifier à nouveau qu'on n'a pas déjà créé l'instance
-            if (window.audioPlayer) {
-                console.warn('[AudioPlayer] Race condition detected, instance already created');
-                clearInterval(checkAvatarScene);
-                return;
+    // Sinon, attendre DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('[AudioPlayer] DOMContentLoaded event');
+            if (tryInit()) {
+                console.log('[AudioPlayer] Initialized on DOMContentLoaded');
             }
-            
-            window.audioPlayer = new AudioPlayer(window.avatarScene);
-            console.log('[AudioPlayer] Instance created, clearing interval');
-            clearInterval(checkAvatarScene);
+        }, { once: true });
+    }
+    
+    // Et aussi attendre avatarScene avec un interval limité
+    let attempts = 0;
+    const maxAttempts = 30;
+    const checkInterval = setInterval(() => {
+        attempts++;
+        console.log(`[AudioPlayer] Attempt ${attempts}/${maxAttempts}`);
+        
+        if (tryInit() || attempts >= maxAttempts) {
+            console.log('[AudioPlayer] Stopping interval', { success: !!window.audioPlayer, attempts });
+            clearInterval(checkInterval);
         }
-    }, 100);
-});
+    }, 200);
+})();
