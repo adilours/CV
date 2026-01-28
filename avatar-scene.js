@@ -239,7 +239,7 @@ class AvatarScene {
             if (track.type === 'glb') {
                 // Scale fixe calibré pour le modèle GLB (empirique)
                 // Le modèle GLB utilise des unités différentes des FBX
-                scale = 0.018;
+                scale = 0.012;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
@@ -251,8 +251,8 @@ class AvatarScene {
                 // Centrer horizontalement et en profondeur
                 model.position.set(-center.x, 0, -center.z);
                 
-                // Placer les pieds au niveau du sol (Y=0)
-                model.position.y = -box.min.y;
+                // Placer les pieds au niveau du sol et descendre un peu
+                model.position.y = -box.min.y - 0.3;
             } else {
                 // FBX: logique existante
                 scale = this.calculateResponsiveScale();
