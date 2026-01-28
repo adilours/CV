@@ -237,22 +237,13 @@ class AvatarScene {
             // Configurer le modèle
             let scale;
             if (track.type === 'glb') {
-                // Scale fixe calibré pour le modèle GLB
-                // Le modèle GLB natif fait ~0.47 unités de haut
-                scale = 4.0;
+                // Scale et position calibrés pour le modèle GLB optimisé
+                scale = 2.2;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
-                // Centrer le modèle après scaling
-                const box = new THREE.Box3().setFromObject(model);
-                const center = new THREE.Vector3();
-                box.getCenter(center);
-                
-                // Centrer horizontalement et décaler vers la gauche (Z positif = gauche écran)
-                model.position.set(-center.x, 0, -center.z + 1.0);
-                
-                // Placer les pieds plus bas
-                model.position.y = -box.min.y - 2.0;
+                // Position calibrée via debug UI
+                model.position.set(-0.6, -1.6, -0.4);
             } else {
                 // FBX: logique existante
                 scale = this.calculateResponsiveScale();
