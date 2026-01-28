@@ -184,6 +184,10 @@ class AvatarScene {
             return;
         }
         
+        // #region agent log
+        console.log('[DEBUG-H1] loadTrack START - track:', track.id, 'type:', track.type, 'file:', track.fbx);
+        // #endregion
+        
         // Choisir le bon loader selon le type
         let loader;
         
@@ -193,6 +197,9 @@ class AvatarScene {
             const dracoLoader = new DRACOLoader();
             dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
             loader.setDRACOLoader(dracoLoader);
+            // #region agent log
+            console.log('[DEBUG-H1] GLB loader configured with DRACO');
+            // #endregion
         } else {
             loader = new FBXLoader();
         }
@@ -201,10 +208,16 @@ class AvatarScene {
             let model;
             
             if (track.type === 'glb') {
+                // #region agent log
+                console.log('[DEBUG-H1] Loading GLB file...');
+                // #endregion
                 // Charger GLB
                 const gltf = await new Promise((resolve, reject) => {
                     loader.load(track.fbx, resolve, undefined, reject);
                 });
+                // #region agent log
+                console.log('[DEBUG-H1] GLB loaded successfully, scene:', gltf.scene ? 'exists' : 'null', 'animations:', gltf.animations?.length || 0);
+                // #endregion
                 model = gltf.scene;
                 
                 // Pour GLB, les animations sont dans gltf.animations
@@ -302,6 +315,9 @@ class AvatarScene {
             }));
             
         } catch (error) {
+            // #region agent log
+            console.log('[DEBUG-ERROR] GLB/FBX loading FAILED:', error.message);
+            // #endregion
             console.error(error);
             window.dispatchEvent(new CustomEvent('avatarError', { 
                 detail: { trackName: track.name } 
