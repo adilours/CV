@@ -1,7 +1,7 @@
 class AudioPlayer {
     constructor(avatarScene) {
         this.avatarScene = avatarScene;
-        this.tracks = avatarScene.tracks;
+        this.tracks = avatarScene.tracks || [];
         this.currentTrackIndex = 3; // Hip Hop par défaut
         this.isRandom = true; // Mode aléatoire activé par défaut
         
@@ -17,13 +17,21 @@ class AudioPlayer {
     }
     
     init() {
-        // Event listeners
-        this.playPauseBtn.addEventListener('click', () => this.togglePlay());
-        this.prevBtn.addEventListener('click', () => this.previousTrack());
-        this.nextBtn.addEventListener('click', () => this.nextTrack());
+        // Event listeners - vérifier que les éléments existent
+        if (this.playPauseBtn) {
+            this.playPauseBtn.addEventListener('click', () => this.togglePlay());
+        }
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => this.previousTrack());
+        }
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => this.nextTrack());
+        }
         
         // Audio events
-        this.audio.addEventListener('ended', () => this.nextTrack());
+        if (this.audio) {
+            this.audio.addEventListener('ended', () => this.nextTrack());
+        }
         
         // Avatar loading events
         window.addEventListener('avatarLoading', () => this.showLoading());
@@ -32,19 +40,24 @@ class AudioPlayer {
     }
     
     async selectTrack(index) {
+        if (!this.tracks || !this.tracks.length) return;
         if (index === this.currentTrackIndex || this.avatarScene.isLoading) return;
         
-        const wasPlaying = !this.audio.paused;
+        const wasPlaying = this.audio && !this.audio.paused;
         
         // Pause current
-        this.audio.pause();
+        if (this.audio) {
+            this.audio.pause();
+        }
         
         // Update index
         this.currentTrackIndex = index;
         
         // Load new track
         const track = this.tracks[index];
-        this.audio.src = track.audio;
+        if (this.audio && track) {
+            this.audio.src = track.audio;
+        }
         
         // Load 3D model
         await this.avatarScene.loadTrack(index);
@@ -53,18 +66,22 @@ class AudioPlayer {
         this.avatarScene.cleanupCache(track.id);
         
         // Auto-play if was playing
-        if (wasPlaying) {
+        if (wasPlaying && this.audio) {
             this.audio.play();
             this.updatePlayPauseIcon(true);
         }
     }
     
     togglePlay() {
+        if (!this.audio || !this.tracks || !this.tracks.length) return;
+        
         if (this.audio.paused) {
             // Si l'audio est à la fin ou jamais lancé, charger la track
             if (!this.audio.src || this.audio.currentTime >= this.audio.duration) {
                 const track = this.tracks[this.currentTrackIndex];
-                this.audio.src = track.audio;
+                if (track) {
+                    this.audio.src = track.audio;
+                }
             }
             this.audio.play();
             this.updatePlayPauseIcon(true);
@@ -77,6 +94,8 @@ class AudioPlayer {
     }
     
     previousTrack() {
+        if (!this.tracks || !this.tracks.length) return;
+        
         let newIndex;
         if (this.isRandom) {
             // Mode aléatoire : choisir une track différente de la courante
@@ -90,6 +109,8 @@ class AudioPlayer {
     }
     
     nextTrack() {
+        if (!this.tracks || !this.tracks.length) return;
+        
         let newIndex;
         if (this.isRandom) {
             // Mode aléatoire : choisir une track différente de la courante
@@ -103,6 +124,8 @@ class AudioPlayer {
     }
     
     updatePlayPauseIcon(isPlaying) {
+        if (!this.playIcon || !this.pauseIcon) return;
+        
         if (isPlaying) {
             this.playIcon.style.display = 'none';
             this.pauseIcon.style.display = 'block';
@@ -113,11 +136,15 @@ class AudioPlayer {
     }
     
     showLoading() {
-        this.loadingIndicator.classList.remove('hidden');
+        if (this.loadingIndicator) {
+            this.loadingIndicator.classList.remove('hidden');
+        }
     }
     
     hideLoading() {
-        this.loadingIndicator.classList.add('hidden');
+        if (this.loadingIndicator) {
+            this.loadingIndicator.classList.add('hidden');
+        }
     }
 }
 
@@ -125,7 +152,7 @@ class AudioPlayer {
 window.addEventListener('DOMContentLoaded', () => {
     // Attendre que avatarScene soit disponible
     const checkAvatarScene = setInterval(() => {
-        if (window.avatarScene && window.avatarScene.tracks) {
+        if (window.avatarScene && window.avatarScene.tracks && window.avatarScene.tracks.length > 0) {
             window.audioPlayer = new AudioPlayer(window.avatarScene);
             clearInterval(checkAvatarScene);
         }
