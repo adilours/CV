@@ -257,9 +257,9 @@ class AvatarScene {
                 console.log('[DEBUG-H2] GLB BEFORE scale:', {minY:boxBeforeScale.min.y, maxY:boxBeforeScale.max.y, sizeX:sizeBeforeScale.x, sizeY:sizeBeforeScale.y, sizeZ:sizeBeforeScale.z});
                 // #endregion
                 
-                // Scale fixe calibré pour le modèle GLB (empirique)
-                // Le modèle GLB utilise des unités différentes des FBX
-                scale = 1.0;
+                // Scale fixe calibré pour le modèle GLB
+                // Le modèle GLB natif fait ~0.47 unités de haut, on veut ~1.5 unités
+                scale = 3.5;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
@@ -271,21 +271,21 @@ class AvatarScene {
                 const box = new THREE.Box3().setFromObject(model);
                 const center = new THREE.Vector3();
                 box.getCenter(center);
+                const size = new THREE.Vector3();
+                box.getSize(size);
                 
                 // #region agent log
-                const sizeAfterScale = new THREE.Vector3();
-                box.getSize(sizeAfterScale);
-                console.log('[DEBUG-H2-H3] Box AFTER scale:', {minY:box.min.y, maxY:box.max.y, centerX:center.x, centerY:center.y, centerZ:center.z, sizeY:sizeAfterScale.y});
+                console.log('[DEBUG-H2-H3] Box AFTER scale:', {minY:box.min.y, maxY:box.max.y, sizeY:size.y, centerY:center.y});
                 // #endregion
                 
                 // Centrer horizontalement et en profondeur
                 model.position.set(-center.x, 0, -center.z);
                 
-                // Placer les pieds au niveau du sol et descendre un peu
-                model.position.y = -box.min.y - 0.3;
+                // Placer les pieds au sol (Y=0)
+                model.position.y = -box.min.y;
                 
                 // #region agent log
-                console.log('[DEBUG-H3-H5] FINAL position:', {posX:model.position.x, posY:model.position.y, posZ:model.position.z, scaleActual:model.scale.x});
+                console.log('[DEBUG-H3-H5] FINAL position:', {posX:model.position.x, posY:model.position.y, posZ:model.position.z, finalHeight:size.y});
                 // #endregion
             } else {
                 // FBX: logique existante
