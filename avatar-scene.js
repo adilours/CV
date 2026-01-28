@@ -87,14 +87,17 @@ class AvatarScene {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimisation perfs
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         
+        // CRITICAL FIX: Set clear color to transparent
+        this.renderer.setClearColor(0x000000, 0); // Black with alpha 0 = fully transparent
+        
         // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:88',message:'Renderer initialized',data:{alpha:this.renderer.domElement.style.background,clearColor:this.renderer.getClearColor().getHexString(),clearAlpha:this.renderer.getClearAlpha(),canvasWidth:this.renderer.domElement.width,canvasHeight:this.renderer.domElement.height},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:91',message:'Renderer initialized with clearColor',data:{clearColorHex:this.renderer.getClearColor().getHexString(),clearAlpha:this.renderer.getClearAlpha(),canvasWidth:this.renderer.domElement.width,canvasHeight:this.renderer.domElement.height},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
         // #endregion
         
         // #region agent log
         const containerStyles = window.getComputedStyle(this.container);
         const canvasStyles = window.getComputedStyle(this.canvas);
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:93',message:'Container and canvas computed styles',data:{containerBg:containerStyles.backgroundColor,containerZIndex:containerStyles.zIndex,containerPosition:containerStyles.position,canvasBg:canvasStyles.backgroundColor,canvasZIndex:canvasStyles.zIndex,canvasDisplay:canvasStyles.display},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:97',message:'Container and canvas computed styles',data:{containerBg:containerStyles.backgroundColor,containerZIndex:containerStyles.zIndex,containerPosition:containerStyles.position,canvasBg:canvasStyles.backgroundColor,canvasZIndex:canvasStyles.zIndex,canvasDisplay:canvasStyles.display},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
         // #endregion
         
         // Lighting - Éclairage soft et enveloppant
