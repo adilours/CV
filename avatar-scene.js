@@ -239,7 +239,7 @@ class AvatarScene {
             if (track.type === 'glb') {
                 // Scale fixe calibré pour le modèle GLB
                 // Le modèle GLB natif fait ~0.47 unités de haut
-                scale = 2.0;
+                scale = 3.4;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
@@ -249,7 +249,7 @@ class AvatarScene {
                 box.getCenter(center);
                 
                 // Centrer horizontalement et en profondeur, avec décalage vers la gauche
-                model.position.set(-center.x - 5.0, 0, -center.z);
+                model.position.set(-center.x - 10.0, 0, -center.z);
                 
                 // Placer les pieds plus bas
                 model.position.y = -box.min.y - 2.0;
