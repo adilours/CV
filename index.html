@@ -131,8 +131,8 @@
         #avatar-3d-container {
             position: absolute;
             top: 0;
-            right: 0;
-            width: 100%; /* CHANGÉ : 100% au lieu de 50% pour éviter le crop */
+            left: 33%; /* Décalage suggéré : 33% vers la droite */
+            width: 67%; /* Occupe le reste de la largeur */
             height: 100%;
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
@@ -201,8 +201,8 @@
     <!-- Hero Section -->
     <header class="relative pt-40 pb-24 px-6 md:pt-56 md:pb-32" style="background: transparent;">
         
-        <!-- 3D Avatar Container - INSIDE header for proper scrolling -->
-        <div id="avatar-3d-container" class="hidden md:block absolute inset-0 w-full h-full">
+        <!-- 3D Avatar Container - INSIDE header with 33% offset -->
+        <div id="avatar-3d-container" class="hidden md:block">
             <canvas id="avatar-canvas"></canvas>
         </div>
         
@@ -587,8 +587,8 @@
 
     <audio id="audio-element" preload="none"></audio>
 
-    <script type="module" src="./avatar-scene.js?v=10"></script>
-    <script type="module" src="./audio-player.js?v=10"></script>
+    <script type="module" src="./avatar-scene.js?v=11"></script>
+    <script type="module" src="./audio-player.js?v=11"></script>
     <script>
         // Reveal Logic
         const observerOptions = { threshold: 0.1 };

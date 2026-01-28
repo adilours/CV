@@ -141,15 +141,14 @@ class AvatarScene {
         pointLight2.position.set(-2, 1, 3);
         this.scene.add(pointLight2);
         
-        // Camera position - Optimisée pour le décalage à droite
-        // On se place à X=6, Y=2 et on regarde vers le point décalé
-        this.camera.position.set(6, 2, -1); 
-        this.camera.lookAt(0, 1, -2.5);
+        // Camera position - Recentré car le container est maintenant décalé via CSS
+        this.camera.position.set(4.5, 1.5, 0); 
+        this.camera.lookAt(0, 1, 0);
         
         // #region agent log
-        console.log('[DEBUG E] Camera config (Offset):', {
+        console.log('[DEBUG E] Camera config (33% Offset CSS):', {
             position: this.camera.position,
-            target: {x: 0, y: 1, z: -2.5}
+            containerLeft: this.container.style.left
         });
         // #endregion
         
@@ -217,8 +216,8 @@ class AvatarScene {
             const scale = this.calculateResponsiveScale();
             fbx.scale.setScalar(scale);
             
-            // Décaler le modèle sur la droite (Axe Z car la caméra est sur l'axe X)
-            fbx.position.set(0, 0, -2.5); 
+            // Position centrale dans son container (le container est décalé par CSS)
+            fbx.position.set(0, 0, 0); 
             fbx.rotation.y = Math.PI / 4;
             
             // #region agent log
@@ -272,8 +271,8 @@ class AvatarScene {
             this.avatar = cached.model;
             this.mixer = cached.mixer;
             
-            // S'assurer que la position est correcte (décalée à droite)
-            this.avatar.position.set(0, 0, -2.5);
+            // S'assurer que la position est centrale dans le container décalé
+            this.avatar.position.set(0, 0, 0);
             
             this.scene.add(this.avatar);
             
