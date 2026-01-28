@@ -147,8 +147,8 @@ class AvatarScene {
         this.scene.add(pointLight2);
         
         // Camera position - Recentré car le container est maintenant décalé via CSS
-        this.camera.position.set(4.5, 1.5, 0); 
-        this.camera.lookAt(0, 1, 0);
+        this.camera.position.set(4.5, 1.2, 0); 
+        this.camera.lookAt(0, 0, 0);
         
         // Load initial track
         this.loadTrack(this.currentTrackIndex);
@@ -240,21 +240,27 @@ class AvatarScene {
                 // Ajustement auto: fitter la hauteur du personnage pour éviter le crop
                 const box = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
-                const center = new THREE.Vector3();
                 box.getSize(size);
-                box.getCenter(center);
 
-                const targetHeight = 1.6; // Hauteur cible plus compacte pour éviter le crop
+                const targetHeight = 1.4; // Légèrement plus petit
                 scale = targetHeight / Math.max(size.y, 0.0001);
                 model.scale.setScalar(scale);
 
-                // Recentrer sur l'origine et poser les pieds au sol
-                model.position.sub(center);
-                const scaledBox = new THREE.Box3().setFromObject(model);
-                const minY = scaledBox.min.y;
-                model.position.y -= minY;
-                // Descendre légèrement l'ensemble pour garder la tête visible
-                model.position.y -= targetHeight * 0.25;
+                // Centrage et positionnement vertical
+                model.position.set(0, 0, 0); // Reset
+                const updatedBox = new THREE.Box3().setFromObject(model);
+                const center = new THREE.Vector3();
+                updatedBox.getCenter(center);
+                
+                // Centrer horizontalement et verticalement à l'origine
+                model.position.x -= center.x;
+                model.position.y -= center.y;
+                model.position.z -= center.z;
+
+                // Abaisser le modèle pour qu'il soit bien placé dans le header (pas en haut de l'écran)
+                model.position.y -= 0.5;
+
+                console.log('[DEBUG GLB] Size:', size.y, 'Scale:', scale, 'Final Y:', model.position.y);
             } else {
                 scale = this.calculateResponsiveScale();
                 model.scale.setScalar(scale);
