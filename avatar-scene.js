@@ -87,6 +87,16 @@ class AvatarScene {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimisation perfs
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         
+        // #region agent log
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:88',message:'Renderer initialized',data:{alpha:this.renderer.domElement.style.background,clearColor:this.renderer.getClearColor().getHexString(),clearAlpha:this.renderer.getClearAlpha(),canvasWidth:this.renderer.domElement.width,canvasHeight:this.renderer.domElement.height},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        
+        // #region agent log
+        const containerStyles = window.getComputedStyle(this.container);
+        const canvasStyles = window.getComputedStyle(this.canvas);
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:93',message:'Container and canvas computed styles',data:{containerBg:containerStyles.backgroundColor,containerZIndex:containerStyles.zIndex,containerPosition:containerStyles.position,canvasBg:canvasStyles.backgroundColor,canvasZIndex:canvasStyles.zIndex,canvasDisplay:canvasStyles.display},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B,C'})}).catch(()=>{});
+        // #endregion
+        
         // Lighting - Éclairage soft et enveloppant
         // Lumière ambiante forte pour illumination globale soft
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
@@ -125,8 +135,31 @@ class AvatarScene {
         this.camera.position.set(4, 1.5, 0); // Position latérale plus éloignée
         this.camera.lookAt(0, 1, 0);
         
+        // #region agent log
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:126',message:'Camera configuration',data:{position:{x:this.camera.position.x,y:this.camera.position.y,z:this.camera.position.z},fov:this.camera.fov,aspect:this.camera.aspect,near:this.camera.near,far:this.camera.far},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
+        // #endregion
+        
         // Load initial track
         this.loadTrack(this.currentTrackIndex);
+        
+        // #region agent log
+        // Check sections z-index after DOM is ready
+        setTimeout(() => {
+            const sections = document.querySelectorAll('section, header, footer');
+            const sectionData = Array.from(sections).slice(0, 5).map((el, i) => {
+                const styles = window.getComputedStyle(el);
+                return {
+                    index: i,
+                    tagName: el.tagName,
+                    className: el.className.substring(0, 50),
+                    zIndex: styles.zIndex,
+                    position: styles.position,
+                    backgroundColor: styles.backgroundColor
+                };
+            });
+            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:129',message:'Section stacking contexts',data:{sections:sectionData},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
+        }, 1000);
+        // #endregion
         
         // Handle resize
         window.addEventListener('resize', () => this.onResize());
