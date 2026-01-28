@@ -249,7 +249,7 @@ class AvatarScene {
                 box.getCenter(center);
                 
                 // Centrer horizontalement et en profondeur, avec décalage vers la gauche
-                model.position.set(-center.x - 0.3, 0, -center.z);
+                model.position.set(-center.x - 1.5, 0, -center.z);
                 
                 // Placer les pieds plus bas
                 model.position.y = -box.min.y - 2.0;
