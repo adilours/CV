@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 class AvatarScene {
     constructor() {
@@ -184,7 +185,17 @@ class AvatarScene {
         }
         
         // Choisir le bon loader selon le type
-        const loader = track.type === 'glb' ? new GLTFLoader() : new FBXLoader();
+        let loader;
+        
+        if (track.type === 'glb') {
+            // Configuration du GLTFLoader avec DRACO support
+            loader = new GLTFLoader();
+            const dracoLoader = new DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+            loader.setDRACOLoader(dracoLoader);
+        } else {
+            loader = new FBXLoader();
+        }
         
         try {
             let model;
