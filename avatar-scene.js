@@ -282,7 +282,7 @@ class AvatarScene {
                 model.position.set(-center.x, 0, -center.z);
                 
                 // Placer les pieds plus bas
-                model.position.y = -box.min.y - 1.5;
+                model.position.y = -box.min.y - 2.0;
                 
                 // #region agent log
                 console.log('[DEBUG-H3-H5] FINAL position:', {posX:model.position.x, posY:model.position.y, posZ:model.position.z, finalHeight:size.y});
