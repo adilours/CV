@@ -254,6 +254,19 @@ class AvatarScene {
 
             model.rotation.y = Math.PI / 4;
             
+            // Fix pour les faces transparentes - forcer DoubleSide sur tous les matériaux
+            model.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(m => {
+                            m.side = THREE.DoubleSide;
+                        });
+                    } else {
+                        child.material.side = THREE.DoubleSide;
+                    }
+                }
+            });
+            
             // Stocker en cache
             this.loadedModels.set(track.id, { 
                 model: model, 
