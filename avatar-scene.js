@@ -23,21 +23,21 @@ class AvatarScene {
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb',
+                    fbx: './carlton_dance.glb?v=2',
                     audio: './carlton.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller_dance.glb',
+                    fbx: './thriller_dance.glb?v=2',
                     audio: './thriller.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'awa',
                     name: 'Awa Dance',
-                    fbx: './awa_dance.glb',
+                    fbx: './awa_dance.glb?v=2',
                     audio: './awa.mp3',
                     type: 'glb'
                 }
@@ -449,21 +449,21 @@ class AvatarScene {
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb',
+                    fbx: './carlton_dance.glb?v=2',
                     audio: './carlton.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller_dance.glb',
+                    fbx: './thriller_dance.glb?v=2',
                     audio: './thriller.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'awa',
                     name: 'Awa Dance',
-                    fbx: './awa_dance.glb',
+                    fbx: './awa_dance.glb?v=2',
                     audio: './awa.mp3',
                     type: 'glb'
                 }
