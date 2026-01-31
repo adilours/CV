@@ -5,10 +5,188 @@
  * - Max 8 visible at once (FIFO)
  * - Stick & snap drag effect
  * - Auto-falling after 8 seconds
+ * - Wire connections between post-its
  * - Easter egg after 10 clicks
  * Desktop only (>= 1024px)
  */
 
+/**
+ * WireSystem - Manages SVG wire connections between post-its
+ */
+class WireSystem {
+    constructor(postItsArray) {
+        this.svg = document.getElementById('hero-wires');
+        this.postIts = postItsArray;
+        this.pathCache = new Map(); // Cache paths to avoid recalculating on every frame
+    }
+
+    // Get center point of a post-it element
+    getCenter(element) {
+        const rect = element.getBoundingClientRect();
+        const heroRect = element.parentElement.getBoundingClientRect();
+        return {
+            x: rect.left - heroRect.left + rect.width / 2,
+            y: rect.top - heroRect.top + rect.height / 2
+        };
+    }
+
+    // Calculate distance between two points
+    distance(p1, p2) {
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // Find the 2 nearest neighbors of a post-it
+    findNearestNeighbors(postIt, count = 2) {
+        const center = this.getCenter(postIt);
+        const validPostIts = this.postIts.filter(p => 
+            p !== postIt && 
+            p.parentNode && 
+            !p.classList.contains('falling') &&
+            !p.classList.contains('fade-out')
+        );
+        
+        if (validPostIts.length === 0) return [];
+        
+        return validPostIts
+            .map(p => ({ postIt: p, dist: this.distance(center, this.getCenter(p)) }))
+            .sort((a, b) => a.dist - b.dist)
+            .slice(0, Math.min(count, validPostIts.length))
+            .map(x => x.postIt);
+    }
+
+    // Generate a path with rounded corners and random variations
+    generateOrthogonalPath(from, to, seed = 0) {
+        const r = 8;  // Corner radius
+        const jitterAmount = 15;
+        
+        // Seeded random for consistency during drag
+        const seededRandom = () => {
+            seed = (seed * 9301 + 49297) % 233280;
+            return (seed / 233280) - 0.5;
+        };
+        const jitter = () => seededRandom() * jitterAmount;
+
+        // Build intermediate points
+        const points = [{ x: from.x, y: from.y }];
+        
+        // Random number of segments (2 to 3)
+        const segments = 2 + Math.floor(Math.abs(seededRandom()) * 2);
+        
+        for (let i = 1; i < segments; i++) {
+            const t = i / segments;
+            const baseX = from.x + (to.x - from.x) * t;
+            const baseY = from.y + (to.y - from.y) * t;
+            
+            if (i % 2 === 1) {
+                points.push({ x: baseX + jitter(), y: points[points.length - 1].y });
+                points.push({ x: points[points.length - 1].x, y: baseY + jitter() });
+            } else {
+                points.push({ x: points[points.length - 1].x, y: baseY + jitter() });
+                points.push({ x: baseX + jitter(), y: points[points.length - 1].y });
+            }
+        }
+        points.push({ x: to.x, y: to.y });
+
+        // Build SVG path with quadratic curves for rounded corners
+        let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+        
+        for (let i = 1; i < points.length - 1; i++) {
+            const prev = points[i - 1];
+            const curr = points[i];
+            const next = points[i + 1];
+
+            const dx1 = curr.x - prev.x;
+            const dy1 = curr.y - prev.y;
+            const dx2 = next.x - curr.x;
+            const dy2 = next.y - curr.y;
+
+            const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
+            const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+            if (len1 === 0 || len2 === 0) continue;
+
+            const rr = Math.min(r, len1 / 2, len2 / 2);
+
+            const x1 = curr.x - (dx1 / len1) * rr;
+            const y1 = curr.y - (dy1 / len1) * rr;
+            const x2 = curr.x + (dx2 / len2) * rr;
+            const y2 = curr.y + (dy2 / len2) * rr;
+
+            d += ` L ${x1.toFixed(1)} ${y1.toFixed(1)} Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+        }
+        
+        d += ` L ${points[points.length - 1].x.toFixed(1)} ${points[points.length - 1].y.toFixed(1)}`;
+        return d;
+    }
+
+    // Generate a unique key for a pair of post-its
+    getPairKey(a, b) {
+        const idxA = this.postIts.indexOf(a);
+        const idxB = this.postIts.indexOf(b);
+        return idxA < idxB ? `${idxA}-${idxB}` : `${idxB}-${idxA}`;
+    }
+
+    // Update all wire connections
+    updateAllWires() {
+        if (!this.svg) return;
+        
+        this.svg.innerHTML = '';
+        
+        // Need at least 2 post-its for connections
+        const validPostIts = this.postIts.filter(p => 
+            p.parentNode && 
+            !p.classList.contains('falling') &&
+            !p.classList.contains('fade-out')
+        );
+        
+        if (validPostIts.length < 2) return;
+
+        const drawnPairs = new Set();
+
+        validPostIts.forEach((postIt) => {
+            const neighbors = this.findNearestNeighbors(postIt, 2);
+            
+            neighbors.forEach((neighbor, i) => {
+                const pairKey = this.getPairKey(postIt, neighbor);
+                
+                // Avoid duplicates
+                if (drawnPairs.has(pairKey)) return;
+                drawnPairs.add(pairKey);
+
+                this.createWire(postIt, neighbor, i % 2 === 1, pairKey);
+            });
+        });
+    }
+
+    // Create a single wire SVG path
+    createWire(from, to, reverse = false, pairKey = '') {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.classList.add('wire-path');
+        if (reverse) path.classList.add('reverse');
+        
+        // Use pairKey as seed for consistent randomness
+        const seed = pairKey.split('-').reduce((a, b) => a + parseInt(b || 0), 0) * 12345;
+        
+        const fromCenter = this.getCenter(from);
+        const toCenter = this.getCenter(to);
+        
+        path.setAttribute('d', this.generateOrthogonalPath(fromCenter, toCenter, seed));
+        this.svg.appendChild(path);
+    }
+
+    // Clear all wires
+    clearAll() {
+        if (this.svg) {
+            this.svg.innerHTML = '';
+        }
+    }
+}
+
+/**
+ * PostItSystem - Main controller for the interactive post-it grid
+ */
 class PostItSystem {
     constructor() {
         this.hero = document.getElementById('hero');
@@ -33,6 +211,9 @@ class PostItSystem {
         this.isInitialized = false;
         this.fallDelay = 8000; // 8 seconds before falling
 
+        // Initialize wire system
+        this.wireSystem = new WireSystem(this.visiblePostIts);
+
         // Build post-its data with FR/EN
         this.postItsData = this.buildPostItsData();
 
@@ -54,6 +235,7 @@ class PostItSystem {
             resizeTimeout = setTimeout(() => {
                 if (window.innerWidth >= 1024) {
                     this.createGrid();
+                    this.wireSystem.updateAllWires();
                 }
             }, 250);
         });
@@ -175,12 +357,20 @@ class PostItSystem {
         if (this.visiblePostIts.length >= this.maxVisible) {
             const oldest = this.visiblePostIts.shift();
             oldest.classList.add('fade-out');
-            setTimeout(() => oldest.remove(), 300);
+            setTimeout(() => {
+                oldest.remove();
+                this.wireSystem.updateAllWires();
+            }, 300);
         }
 
         // Create new post-it
         const postIt = this.createPostIt(x, y);
         this.visiblePostIts.push(postIt);
+
+        // Update wires after a small delay for animation
+        setTimeout(() => {
+            this.wireSystem.updateAllWires();
+        }, 100);
 
         this.totalClicks++;
         this.updateCounter();
@@ -222,11 +412,14 @@ class PostItSystem {
             // Only fall if still in DOM and not being dragged
             if (postIt.parentNode && !postIt.classList.contains('dragging')) {
                 postIt.classList.add('falling');
+                // Update wires immediately
+                this.wireSystem.updateAllWires();
                 // Remove from array and DOM after animation
                 setTimeout(() => {
                     const idx = this.visiblePostIts.indexOf(postIt);
                     if (idx > -1) this.visiblePostIts.splice(idx, 1);
                     postIt.remove();
+                    this.wireSystem.updateAllWires();
                 }, 2000);
             }
         }, this.fallDelay);
@@ -238,6 +431,7 @@ class PostItSystem {
         const stickThreshold = 15;
         let startX, startY, initialX, initialY;
         const originalRotation = element.style.getPropertyValue('--rotation');
+        let lastWireUpdate = 0;
 
         element.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -285,6 +479,13 @@ class PostItSystem {
                 const tilt = Math.max(-15, Math.min(15, dx * 0.1));
                 element.style.transform = `scale(1.02) rotate(${tilt}deg)`;
             }
+
+            // Update wires during drag (throttled to 60fps)
+            const now = Date.now();
+            if (now - lastWireUpdate > 16) {
+                this.wireSystem.updateAllWires();
+                lastWireUpdate = now;
+            }
         };
 
         const handleMouseUp = () => {
@@ -298,6 +499,8 @@ class PostItSystem {
             // Re-enable transition with bounce effect
             element.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
             element.style.transform = `scale(1) rotate(${originalRotation})`;
+            // Final wire update
+            this.wireSystem.updateAllWires();
         };
 
         document.addEventListener('mousemove', handleMouseMove);

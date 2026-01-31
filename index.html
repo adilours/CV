@@ -290,6 +290,50 @@
             opacity: 1;
         }
 
+        /* Wires Layer - connections between post-its */
+        #hero-wires {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            overflow: visible;
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            #hero-wires {
+                display: block;
+            }
+        }
+
+        .wire-path {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.06);
+            stroke-width: 1;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 6 4;
+            animation: wirePulse 2s linear infinite;
+        }
+
+        body.zb-mode .wire-path {
+            stroke: rgba(255, 255, 255, 0.08);
+        }
+
+        .wire-path.reverse {
+            animation-direction: reverse;
+        }
+
+        .wire-path.fading {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        @keyframes wirePulse {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -20; }
+        }
+
         /* Post-its Container */
         #hero-postits {
             position: absolute;
@@ -589,6 +633,9 @@
         
         <!-- Mouse Glow Effect -->
         <div id="hero-glow" aria-hidden="true"></div>
+        
+        <!-- Wires Layer (connections between post-its) -->
+        <svg id="hero-wires" aria-hidden="true"></svg>
         
         <!-- Post-its Container -->
         <div id="hero-postits" aria-hidden="true"></div>
