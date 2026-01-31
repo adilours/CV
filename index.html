@@ -252,13 +252,13 @@
         }
 
         .grid-cell {
-            border: 1px solid rgba(0, 0, 0, 0.06);
+            border: 0.5px solid rgba(0, 0, 0, 0.03);
             transition: background-color 0.2s ease, transform 0.15s ease-out;
             will-change: transform;
         }
 
         body.zb-mode .grid-cell {
-            border-color: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.02);
         }
 
         /* Mouse Glow */
@@ -294,7 +294,7 @@
         #hero-postits {
             position: absolute;
             inset: 0;
-            z-index: 10;
+            z-index: 3;  /* Behind 3D character (z-index: 5) */
             pointer-events: none;
             overflow: hidden;
             display: none;
@@ -306,21 +306,21 @@
             }
         }
 
-        /* Post-it Note - Square 180x180 */
+        /* Post-it Note - Square 135x135 (3/4 of original) */
         .postit-note {
             position: absolute;
-            width: 180px;
-            height: 180px;
+            width: 135px;
+            height: 135px;
             background: #f4f1e8;
             color: #1c1917;
-            padding: 20px;
-            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.15);
             transform: scale(0) rotate(var(--rotation, -2deg));
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             pointer-events: auto;
             cursor: grab;
             font-family: 'Caveat', cursive;
-            font-size: 15px;
+            font-size: 12px;
             line-height: 1.4;
             border-radius: 2px;
             display: flex;
@@ -332,11 +332,11 @@
             content: '';
             position: absolute;
             top: 0;
-            left: 20px;
-            width: 35px;
-            height: 8px;
+            left: 15px;
+            width: 25px;
+            height: 6px;
             background: rgba(0, 0, 0, 0.08);
-            border-radius: 0 0 3px 3px;
+            border-radius: 0 0 2px 2px;
         }
 
         .postit-note.active {
@@ -349,10 +349,43 @@
             transition: all 0.3s ease-out;
         }
 
+        /* Falling leaf animation */
+        @keyframes fallLeaf {
+            0% { 
+                opacity: 1; 
+                transform: scale(1) rotate(var(--rotation, -2deg)); 
+            }
+            25% { 
+                transform: scale(0.95) rotate(calc(var(--rotation, -2deg) + 10deg)) translateX(20px); 
+            }
+            50% { 
+                transform: scale(0.9) rotate(calc(var(--rotation, -2deg) - 15deg)) translateX(-15px) translateY(50px); 
+            }
+            75% { 
+                transform: scale(0.85) rotate(calc(var(--rotation, -2deg) + 20deg)) translateX(25px) translateY(150px); 
+                opacity: 0.6;
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(0.7) rotate(calc(var(--rotation, -2deg) + 45deg)) translateX(10px) translateY(300px); 
+            }
+        }
+
+        .postit-note.falling {
+            animation: fallLeaf 2s ease-in forwards;
+            pointer-events: none;
+        }
+
+        /* Unstuck effect when dragging */
+        .postit-note.unstuck {
+            box-shadow: 12px 12px 30px rgba(0, 0, 0, 0.25) !important;
+            filter: brightness(1.05);
+        }
+
         .postit-note:hover {
             transform: scale(1.03) rotate(var(--rotation, -2deg)) translateY(-3px);
             box-shadow: 8px 8px 24px rgba(0, 0, 0, 0.18);
-            z-index: 11;
+            z-index: 60;  /* In front of everything on hover */
         }
 
         .postit-note:active {
@@ -362,14 +395,14 @@
         /* Post-it Text Formatting */
         .postit-line1 {
             font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 6px;
+            font-size: 13px;
+            margin-bottom: 4px;
         }
 
         .postit-line2 {
-            font-size: 14px;
+            font-size: 11px;
             opacity: 0.85;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .postit-date {
