@@ -25,7 +25,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="diagnostic-terminal.css">
     <script type="importmap">
 {
   "imports": {
@@ -589,7 +590,68 @@
         </div>
     </section>
 
-    <!-- Footer / Contact -->
+    <!-- Diagnostic Terminal - Zero BS Mode Only -->
+    <section id="diagnostic-terminal" class="hidden">
+        <div class="terminal-container">
+            
+            <!-- Telemetry Panel (Left) -->
+            <aside class="telemetry-stream">
+                <div class="system-header">SYS_DIAGNOSTIC // v.4.0.1</div>
+                <div class="log-output" id="logStream">
+                    <!-- Logs will be injected here -->
+                </div>
+            </aside>
+
+            <!-- Main Workspace (Right) -->
+            <main class="diagnostic-workspace">
+                
+                <!-- Intro Screen -->
+                <div id="introScreen" class="intro-screen">
+                    <p id="introText" class="intro-text">Avant d'ouvrir mon agenda, je dois diagnostiquer votre niveau de bullshit organisationnel.</p>
+                    <button id="startDiagnostic" class="start-btn">Lancer le diagnostic</button>
+                </div>
+
+                <!-- Quiz Interface -->
+                <div id="quiz-interface" class="hidden">
+                    <div class="diagnostic-header">
+                        <span id="paramCounter">PARAMÈTRE 01/04</span>
+                        <span id="sessionTimer">SESSION: 00:00:00</span>
+                    </div>
+
+                    <div class="question-display">
+                        <span id="typewriterText"></span>
+                        <span class="terminal-cursor"></span>
+                    </div>
+
+                    <div class="response-options" id="optionsContainer">
+                        <!-- Options will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Analysis Overlay -->
+                <div class="overlay-screen hidden" id="analysisScreen">
+                    <div class="analysis-label" data-fr="ANALYSE DU NIVEAU DE BULLSHIT" data-en="BULLSHIT LEVEL ANALYSIS">ANALYSE DU NIVEAU DE BULLSHIT</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="analysis-status" id="statusText">
+                        CALCUL DES VECTEURS D'INERTIE...
+                    </div>
+                </div>
+
+                <!-- Results Overlay -->
+                <div class="overlay-screen hidden" id="resultsScreen">
+                    <div class="verdict-title" id="verdictTitle">DIAGNOSTIC</div>
+                    <div class="verdict-subtitle" id="verdictSubtitle">—</div>
+                    <div class="verdict-body" id="verdictText"></div>
+                    <div class="verdict-actions" id="verdictCTA"></div>
+                </div>
+
+            </main>
+        </div>
+    </section>
+
+    <!-- Footer / Contact - Normal Mode -->
     <footer id="contact" class="mt-auto py-24 px-6 border-t border-stone-200 bg-stone-50">
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
             <div class="reveal">
@@ -794,6 +856,9 @@
 
             // Update content
             updateContent();
+            
+            // Dispatch event for other components (like diagnostic terminal)
+            window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
 
             // Store preference
             localStorage.setItem('lang', lang);
@@ -809,8 +874,28 @@
             // Update toggle button styling
             zbToggle.classList.toggle('active', enabled);
             
+            // Toggle diagnostic terminal vs normal footer
+            const terminal = document.getElementById('diagnostic-terminal');
+            const footer = document.getElementById('contact');
+            if (terminal && footer) {
+                if (enabled) {
+                    terminal.classList.remove('hidden');
+                    footer.classList.add('hidden');
+                    // Initialize quiz if not already
+                    if (typeof DiagnosticQuiz !== 'undefined') {
+                        DiagnosticQuiz.init();
+                    }
+                } else {
+                    terminal.classList.add('hidden');
+                    footer.classList.remove('hidden');
+                }
+            }
+            
             // Update content
             updateContent();
+            
+            // Dispatch event for other components
+            window.dispatchEvent(new CustomEvent('zbModeChanged', { detail: { enabled } }));
             
             // Store preference
             localStorage.setItem('zbMode', enabled);
@@ -837,5 +922,8 @@
             setZBMode(true);
         }
     </script>
+    
+    <!-- Diagnostic Terminal Quiz -->
+    <script src="diagnostic-terminal.js"></script>
 </body>
 </html>

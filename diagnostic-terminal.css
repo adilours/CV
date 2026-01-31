@@ -1,0 +1,506 @@
+/* ============================================
+   DIAGNOSTIC TERMINAL - Strategic Compatibility Quiz
+   Cyberpunk minimal terminal aesthetic
+   ============================================ */
+
+/* CSS Variables */
+:root {
+    --terminal-bg: #0c0c0c;
+    --terminal-surface: #121212;
+    --terminal-border: #252525;
+    --terminal-text: #e0e0e0;
+    --terminal-muted: #555555;
+    --terminal-accent: #ffffff;
+    --terminal-success: #22c55e;
+    --terminal-warning: #f97316;
+    --terminal-error: #ef4444;
+}
+
+/* ============================================
+   MAIN CONTAINER
+   ============================================ */
+
+#diagnostic-terminal {
+    background: var(--terminal-bg);
+    min-height: 100vh;
+    padding: 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.terminal-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    background: var(--terminal-surface);
+    border: 1px solid var(--terminal-border);
+    min-height: 650px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   TELEMETRY STREAM (Left Panel)
+   ============================================ */
+
+.telemetry-stream {
+    border-right: 1px solid var(--terminal-border);
+    padding: 25px;
+    background: var(--terminal-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.system-header {
+    font-size: 10px;
+    color: var(--terminal-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--terminal-border);
+    margin-bottom: 20px;
+}
+
+.log-output {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--terminal-muted);
+    flex: 1;
+    overflow-y: auto;
+}
+
+.log-entry {
+    line-height: 1.6;
+    opacity: 0;
+    animation: logFadeIn 0.3s ease forwards;
+}
+
+.log-entry.system {
+    color: var(--terminal-muted);
+}
+
+.log-entry.detection {
+    color: var(--terminal-warning);
+}
+
+.log-entry.signal {
+    color: var(--terminal-success);
+}
+
+.log-entry.alert {
+    color: var(--terminal-error);
+}
+
+@keyframes logFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   DIAGNOSTIC WORKSPACE (Right Panel)
+   ============================================ */
+
+.diagnostic-workspace {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: var(--terminal-surface);
+}
+
+.diagnostic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 60px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--terminal-muted);
+}
+
+#paramCounter {
+    color: var(--terminal-accent);
+}
+
+#sessionTimer {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   QUESTION DISPLAY
+   ============================================ */
+
+.question-display {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.4;
+    min-height: 4em;
+    margin-bottom: 50px;
+    color: var(--terminal-text);
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.3em;
+    background: var(--terminal-accent);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ============================================
+   RESPONSE OPTIONS
+   ============================================ */
+
+.response-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.option-btn {
+    padding: 20px 25px;
+    border: 1px solid var(--terminal-border);
+    background: transparent;
+    color: var(--terminal-text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.option-btn::before {
+    content: '>';
+    position: absolute;
+    left: 10px;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.option-btn:hover {
+    background: var(--terminal-accent);
+    color: var(--terminal-bg);
+    padding-left: 35px;
+    border-color: var(--terminal-accent);
+}
+
+.option-btn:hover::before {
+    opacity: 1;
+    left: 15px;
+}
+
+.option-btn:active {
+    transform: scale(0.98);
+}
+
+/* ============================================
+   INTRO SCREEN
+   ============================================ */
+
+.intro-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px;
+}
+
+.intro-text {
+    font-size: 1.3rem;
+    color: var(--terminal-text);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.start-btn {
+    padding: 18px 50px;
+    background: var(--terminal-accent);
+    color: var(--terminal-bg);
+    border: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   ANALYSIS OVERLAY
+   ============================================ */
+
+.overlay-screen {
+    position: absolute;
+    inset: 0;
+    background: var(--terminal-surface);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+    z-index: 10;
+}
+
+.overlay-screen.hidden {
+    display: none;
+}
+
+.analysis-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--terminal-muted);
+    margin-bottom: 30px;
+}
+
+.progress-container {
+    width: 100%;
+    max-width: 400px;
+    height: 3px;
+    background: var(--terminal-border);
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--terminal-accent);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.analysis-status {
+    font-size: 11px;
+    color: var(--terminal-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    min-height: 1.5em;
+}
+
+/* ============================================
+   RESULTS SCREEN
+   ============================================ */
+
+.verdict-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    color: var(--terminal-muted);
+    margin-bottom: 15px;
+}
+
+.verdict-subtitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--terminal-accent);
+    margin-bottom: 40px;
+}
+
+.verdict-body {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--terminal-text);
+    max-width: 550px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.verdict-body p {
+    margin-bottom: 20px;
+}
+
+.verdict-body strong {
+    color: var(--terminal-accent);
+}
+
+.verdict-checklist {
+    text-align: left;
+    margin: 30px 0;
+    padding-left: 20px;
+}
+
+.verdict-checklist li {
+    margin-bottom: 10px;
+    color: var(--terminal-muted);
+}
+
+.verdict-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.cta-primary {
+    padding: 18px 40px;
+    background: var(--terminal-accent);
+    color: var(--terminal-bg);
+    border: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.cta-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2);
+}
+
+.cta-secondary {
+    padding: 12px 30px;
+    background: transparent;
+    color: var(--terminal-muted);
+    border: 1px solid var(--terminal-border);
+    font-family: inherit;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.cta-secondary:hover {
+    border-color: var(--terminal-accent);
+    color: var(--terminal-accent);
+}
+
+.compatibility-score {
+    font-size: 10px;
+    color: var(--terminal-muted);
+    margin-top: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+/* Result variants */
+.result-incompatible .verdict-subtitle {
+    color: var(--terminal-error);
+}
+
+.result-moderate .verdict-subtitle {
+    color: var(--terminal-warning);
+}
+
+.result-match .verdict-subtitle {
+    color: var(--terminal-success);
+}
+
+/* ============================================
+   RESPONSIVE - MOBILE
+   ============================================ */
+
+@media (max-width: 900px) {
+    .terminal-container {
+        grid-template-columns: 1fr;
+        min-height: auto;
+    }
+    
+    .telemetry-stream {
+        display: none;
+    }
+    
+    .diagnostic-workspace {
+        padding: 30px 20px;
+        min-height: 100vh;
+    }
+    
+    .diagnostic-header {
+        margin-bottom: 40px;
+    }
+    
+    .question-display {
+        font-size: 1.2rem;
+        min-height: 3em;
+        margin-bottom: 40px;
+    }
+    
+    .option-btn {
+        padding: 16px 20px;
+        font-size: 0.85rem;
+    }
+    
+    .intro-screen {
+        padding: 30px;
+    }
+    
+    .intro-text {
+        font-size: 1.1rem;
+    }
+    
+    .verdict-subtitle {
+        font-size: 1.4rem;
+    }
+    
+    .verdict-body {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .diagnostic-workspace {
+        padding: 20px 15px;
+    }
+    
+    .question-display {
+        font-size: 1rem;
+    }
+    
+    .option-btn {
+        padding: 14px 15px;
+        font-size: 0.8rem;
+    }
+    
+    .cta-primary,
+    .cta-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.hidden {
+    display: none !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
