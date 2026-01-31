@@ -649,7 +649,14 @@
                                 </label>
                             </div>
                             
-                            <button type="submit" class="terminal-btn" data-fr="INITIALISER MON DIAGNOSTIC →" data-en="INITIALIZE MY DIAGNOSTIC →">INITIALISER MON DIAGNOSTIC →</button>
+                            <button type="button" id="diagnosticStartBtn" class="terminal-btn" data-fr="INITIALISER MON DIAGNOSTIC →" data-en="INITIALIZE MY DIAGNOSTIC →">INITIALISER MON DIAGNOSTIC →</button>
+                            <div id="audioSelfTestStatus" class="audio-test-status muted"
+                                 data-fr="TEST AUDIO EN ATTENTE"
+                                 data-en="AUDIO TEST PENDING"
+                                 data-fr-ok="AUDIO OK - DIAGNOSTIC ACTIF"
+                                 data-en-ok="AUDIO OK - DIAGNOSTIC ACTIVE"
+                                 data-fr-fail="AUDIO BLOQUÉ - MODE TRANSCRIPT"
+                                 data-en-fail="AUDIO BLOCKED - TRANSCRIPT MODE">TEST AUDIO EN ATTENTE</div>
                         </form>
                         
                         <div class="privacy-note" data-fr="Vos données ne seront jamais partagées. Pas de spam." data-en="Your data will never be shared. No spam.">Vos données ne seront jamais partagées. Pas de spam.</div>

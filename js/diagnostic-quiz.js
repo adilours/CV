@@ -113,6 +113,8 @@ const diagnosticQuiz = {
     
     bindLeadCaptureForm() {
         const form = document.getElementById('leadCaptureForm');
+        const startBtn = document.getElementById('diagnosticStartBtn');
+        const statusEl = document.getElementById('audioSelfTestStatus');
         if (!form) return;
         
         // #region agent log
@@ -130,53 +132,87 @@ const diagnosticQuiz = {
             });
         }
         
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            // Detect audio capability (must be after user interaction)
+        const getStatusText = (kind) => {
+            if (!statusEl) return '';
+            const lang = window.currentLang || 'fr';
+            if (kind === 'pending') {
+                return statusEl.getAttribute(`data-${lang}`) || statusEl.textContent;
+            }
+            return statusEl.getAttribute(`data-${lang}-${kind}`) || statusEl.textContent;
+        };
+
+        const setStatus = (state, kind) => {
+            if (!statusEl) return;
+            statusEl.classList.remove('muted', 'success', 'error');
+            statusEl.classList.add(state);
+            const text = getStatusText(kind);
+            if (text) statusEl.textContent = text;
+        };
+
+        const handleStart = async (e) => {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            setStatus('muted', 'pending');
             await transcriptSystem.detectAudioCapability();
-            
+
             // #region agent log
             fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formSubmit',message:'Form submit triggered',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
             // #endregion
-            
+
             const firstName = document.getElementById('diagnosticFirstName')?.value.trim();
             const email = document.getElementById('diagnosticEmail')?.value.trim();
             const consentChecked = document.getElementById('diagnosticConsent')?.checked;
-            
+
             // #region agent log
             fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formValidation',message:'Form values',data:{firstName:firstName,email:email,consent:consentChecked},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
             // #endregion
-            
+
             if (!firstName || !email || !consentChecked) {
                 this.addLog('ERREUR : DONNÉES INCOMPLÈTES');
                 return;
             }
-            
+
             // Validate email
             if (!this.isValidEmail(email)) {
                 this.addLog('ERREUR : EMAIL INVALIDE');
                 return;
             }
-            
+
             this.firstName = firstName;
             this.email = email;
             this.lang = window.currentLang || 'fr';
-            
+
             // Store in localStorage
             localStorage.setItem('diagnostic_user', JSON.stringify({
                 firstName,
                 email,
                 timestamp: Date.now()
             }));
-            
+
             this.addLog(`IDENTIFICATION : ${firstName.toUpperCase()}`, true);
             this.addLog(`EMAIL ENREGISTRÉ : ${email}`);
-            
+
+            const selfTest = await audioSystem.runAudioSelfTest(this.lang);
+            window.__audioSelfTestResult = selfTest.ok;
+            if (selfTest.ok) {
+                transcriptSystem.isAudioEnabled = true;
+                setStatus('success', 'ok');
+            } else {
+                transcriptSystem.isAudioEnabled = false;
+                setStatus('error', 'fail');
+            }
+
             // Proceed to welcome screen
             await this.showWelcomeScreen();
-        });
+        };
+
+        form.addEventListener('submit', handleStart);
+        if (startBtn) {
+            startBtn.addEventListener('click', handleStart);
+        }
     },
     
     isValidEmail(email) {

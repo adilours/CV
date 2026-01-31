@@ -85,6 +85,41 @@ const audioSystem = {
             return null;
         }
     },
+
+    /**
+     * Run a short audio self-test to validate playback
+     * @param {string} lang - Language code
+     * @returns {Promise<{ok: boolean, error?: string}>}
+     */
+    async runAudioSelfTest(lang = 'fr') {
+        const testText = lang === 'fr'
+            ? 'Test audio. Diagnostic en cours.'
+            : 'Audio test. Diagnostic initializing.';
+        let audioUrl = null;
+
+        try {
+            audioUrl = await gradiumAPI.generateVoiceover(testText);
+            if (!audioUrl) {
+                return { ok: false, error: 'audio_url_missing' };
+            }
+
+            this.stop();
+            const audio = new Audio(audioUrl);
+            this.currentAudio = audio;
+
+            await audio.play();
+            await new Promise(resolve => audio.onended = resolve);
+            URL.revokeObjectURL(audioUrl);
+
+            return { ok: true };
+        } catch (error) {
+            if (audioUrl) {
+                URL.revokeObjectURL(audioUrl);
+            }
+            console.error('[AudioSystem] Self-test failed:', error);
+            return { ok: false, error: error.message };
+        }
+    },
     
     /**
      * Play audio with synchronized transcript display

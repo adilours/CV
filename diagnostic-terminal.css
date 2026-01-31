@@ -221,6 +221,25 @@
     max-width: 380px;
 }
 
+.audio-test-status {
+    margin-top: 12px;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.audio-test-status.muted {
+    color: var(--terminal-muted);
+}
+
+.audio-test-status.success {
+    color: var(--terminal-success);
+}
+
+.audio-test-status.error {
+    color: var(--terminal-error);
+}
+
 .form-group {
     margin-bottom: 25px;
 }
