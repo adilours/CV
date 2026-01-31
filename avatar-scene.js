@@ -18,37 +18,37 @@ class AvatarScene {
         
         // Configuration des animations selon le mode
         if (this.isZeroBullshitMode) {
-            // Mode ZB : danses avec changement de tracks (GLB compressés)
+            // Mode ZB : danses avec changement de tracks (GLB compressés Draco)
             this.tracks = [
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb?v=3',
+                    fbx: './carlton_dance.glb?v=4',
                     audio: './carlton.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller_dance.glb?v=3',
+                    fbx: './thriller_dance.glb?v=4',
                     audio: './thriller.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'awa',
                     name: 'Awa Dance',
-                    fbx: './awa_dance.glb?v=3',
+                    fbx: './awa_dance.glb?v=4',
                     audio: './awa.mp3',
                     type: 'glb'
                 }
             ];
         } else {
-            // Mode Normal : carlton dance en loop, pas de tracks audio
+            // Mode Normal : running en loop, pas de tracks audio
             this.tracks = [
                 {
-                    id: 'carlton',
-                    name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb?v=3',
+                    id: 'running',
+                    name: 'Running',
+                    fbx: './running.glb?v=4',
                     audio: null,
                     type: 'glb'
                 }
@@ -462,21 +462,21 @@ class AvatarScene {
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb?v=3',
+                    fbx: './carlton_dance.glb?v=4',
                     audio: './carlton.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller_dance.glb?v=3',
+                    fbx: './thriller_dance.glb?v=4',
                     audio: './thriller.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'awa',
                     name: 'Awa Dance',
-                    fbx: './awa_dance.glb?v=3',
+                    fbx: './awa_dance.glb?v=4',
                     audio: './awa.mp3',
                     type: 'glb'
                 }
@@ -485,9 +485,9 @@ class AvatarScene {
         } else {
             this.tracks = [
                 {
-                    id: 'carlton',
-                    name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb?v=3',
+                    id: 'running',
+                    name: 'Running',
+                    fbx: './running.glb?v=4',
                     audio: null,
                     type: 'glb'
                 }
