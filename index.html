@@ -243,6 +243,7 @@
             display: none;
             pointer-events: auto;
             overflow: hidden;
+            cursor: crosshair;
         }
 
         @media (min-width: 1024px) {
@@ -255,6 +256,7 @@
             border: 0.5px solid rgba(0, 0, 0, 0.03);
             transition: background-color 0.2s ease, transform 0.15s ease-out;
             will-change: transform;
+            pointer-events: none; /* Let clicks pass through to grid container */
         }
 
         body.zb-mode .grid-cell {

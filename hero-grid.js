@@ -333,13 +333,17 @@ class PostItSystem {
             cell.style.borderColor = isZbMode 
                 ? `rgba(255, 255, 255, ${borderOpacity * 0.7})`
                 : `rgba(0, 0, 0, ${borderOpacity})`;
-            cell.addEventListener('click', (e) => this.handleCellClick(e));
             this.grid.appendChild(cell);
             this.cells.push(cell);
         }
     }
 
     attachEvents() {
+        // Direct click on grid - much more responsive than per-cell listeners
+        this.grid.addEventListener('click', (e) => {
+            this.handleCellClick(e);
+        });
+
         // Mouse move for glow and cell repulsion effect
         this.hero.addEventListener('mousemove', (e) => {
             this.handleMouseMove(e);
@@ -525,6 +529,12 @@ class PostItSystem {
             element.style.transition = 'none';
             element.style.zIndex = '60';
             e.preventDefault();
+            e.stopPropagation(); // Don't trigger grid click
+        });
+
+        // Prevent click from propagating to grid
+        element.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
 
         const handleMouseMove = (e) => {
