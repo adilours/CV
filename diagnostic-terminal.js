@@ -577,11 +577,17 @@ const DiagnosticQuiz = {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize when terminal section exists
     const terminal = document.getElementById('diagnostic-terminal');
+    // #region agent log
+    fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-terminal.js:DOMContentLoaded',message:'DOMContentLoaded fired',data:{terminalFound:!!terminal,terminalClasses:terminal?.className},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
     if (terminal) {
         // Use MutationObserver to detect when terminal becomes visible
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-terminal.js:MutationObserver',message:'Class changed on terminal',data:{newClasses:terminal.className,isHidden:terminal.classList.contains('hidden')},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+                    // #endregion
                     if (!terminal.classList.contains('hidden')) {
                         DiagnosticQuiz.init();
                     }
@@ -592,6 +598,9 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(terminal, { attributes: true });
         
         // Also init immediately if already visible
+        // #region agent log
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-terminal.js:immediateCheck',message:'Checking if terminal already visible',data:{isHidden:terminal.classList.contains('hidden')},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+        // #endregion
         if (!terminal.classList.contains('hidden')) {
             DiagnosticQuiz.init();
         }

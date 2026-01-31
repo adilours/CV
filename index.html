@@ -866,6 +866,9 @@
 
         // Zero Bullshit Toggle
         function setZBMode(enabled) {
+            // #region agent log
+            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:setZBMode',message:'setZBMode called',data:{enabled:enabled,storedZB:localStorage.getItem('zbMode')},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+            // #endregion
             zbMode = enabled;
             
             // Toggle dark mode on body
@@ -877,6 +880,9 @@
             // Toggle diagnostic terminal vs normal footer
             const terminal = document.getElementById('diagnostic-terminal');
             const footer = document.getElementById('contact');
+            // #region agent log
+            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:setZBMode:elements',message:'Terminal and footer elements',data:{terminalFound:!!terminal,footerFound:!!footer,terminalClasses:terminal?.className,footerClasses:footer?.className},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
+            // #endregion
             if (terminal && footer) {
                 if (enabled) {
                     terminal.classList.remove('hidden');
@@ -914,6 +920,10 @@
         const storedLang = localStorage.getItem('lang');
         const storedZB = localStorage.getItem('zbMode');
         
+        // #region agent log
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:init',message:'Page init - stored preferences',data:{storedLang:storedLang,storedZB:storedZB,terminalClasses:document.getElementById('diagnostic-terminal')?.className,footerClasses:document.getElementById('contact')?.className,hiddenElementsCount:document.querySelectorAll('.hidden').length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1-H3'})}).catch(()=>{});
+        // #endregion
+        
         if (storedLang) {
             setLanguage(storedLang);
         }
@@ -921,6 +931,10 @@
         if (storedZB === 'true') {
             setZBMode(true);
         }
+        
+        // #region agent log
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:afterInit',message:'After init - element visibility',data:{terminalVisible:!document.getElementById('diagnostic-terminal')?.classList.contains('hidden'),footerVisible:!document.getElementById('contact')?.classList.contains('hidden'),zbMode:zbMode,allHiddenElements:Array.from(document.querySelectorAll('.hidden')).map(e=>e.id||e.className).slice(0,10)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
+        // #endregion
     </script>
     
     <!-- Diagnostic Terminal Quiz -->
