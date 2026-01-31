@@ -5,6 +5,12 @@ class AudioPlayer {
         this.currentTrackIndex = 0; // Carlton par défaut
         this.isRandom = false; // Mode séquentiel activé par défaut
         
+        // Spatial audio awareness
+        this.targetVolume = 1;
+        this.isFadingOut = false;
+        this.wasPlayingBeforeFade = false;
+        this.fadeAnimation = null;
+        
         // Récupérer les éléments DOM avec vérification
         this.audio = document.getElementById('audio-element');
         this.playPauseBtn = document.getElementById('play-pause-btn');
@@ -51,12 +57,106 @@ class AudioPlayer {
         
         // Initialiser la visibilité selon le mode actuel
         this.handleModeChange(document.body.classList.contains('zb-mode'));
+        
+        // Setup spatial audio awareness (fade when quiz visible)
+        this.setupSpatialAwareness();
+    }
+    
+    // ============================================
+    // SPATIAL AUDIO AWARENESS
+    // ============================================
+    
+    setupSpatialAwareness() {
+        const terminal = document.getElementById('diagnostic-terminal');
+        if (!terminal) return;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // Only apply in ZB mode
+                if (!document.body.classList.contains('zb-mode')) return;
+                
+                if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+                    // Terminal visible → fade out music
+                    this.fadeOutForQuiz();
+                } else {
+                    // Terminal hidden → fade in music
+                    this.fadeInFromQuiz();
+                }
+            });
+        }, {
+            threshold: [0, 0.3, 0.5, 0.7, 1]
+        });
+        
+        observer.observe(terminal);
+    }
+    
+    fadeOutForQuiz() {
+        if (this.isFadingOut) return;
+        
+        this.isFadingOut = true;
+        this.wasPlayingBeforeFade = this.audio && !this.audio.paused;
+        
+        this.fadeVolume(0, 400, () => {
+            // Pause after fade complete
+            if (this.audio && !this.audio.paused) {
+                this.audio.pause();
+            }
+        });
+    }
+    
+    fadeInFromQuiz() {
+        if (!this.isFadingOut) return;
+        
+        this.isFadingOut = false;
+        
+        // Only resume if was playing before
+        if (this.wasPlayingBeforeFade && this.audio) {
+            this.audio.play().catch(() => {});
+            this.fadeVolume(1, 400);
+            this.updatePlayPauseIcon(true);
+        }
+    }
+    
+    fadeVolume(target, duration, onComplete = null) {
+        if (!this.audio) return;
+        
+        // Cancel any existing fade
+        if (this.fadeAnimation) {
+            cancelAnimationFrame(this.fadeAnimation);
+        }
+        
+        const startVolume = this.audio.volume;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Ease out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            this.audio.volume = startVolume + (target - startVolume) * eased;
+            
+            if (progress < 1) {
+                this.fadeAnimation = requestAnimationFrame(animate);
+            } else {
+                this.audio.volume = target;
+                this.fadeAnimation = null;
+                if (onComplete) onComplete();
+            }
+        };
+        
+        this.fadeAnimation = requestAnimationFrame(animate);
     }
     
     handleModeChange(isZeroBullshit) {
         const playerContainer = document.getElementById('audio-player');
         
         if (!playerContainer) return;
+        
+        // Reset spatial awareness state
+        this.isFadingOut = false;
+        this.wasPlayingBeforeFade = false;
+        if (this.audio) this.audio.volume = 1;
         
         if (isZeroBullshit) {
             // Mode ZB : afficher le player
