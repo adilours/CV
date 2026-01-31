@@ -83,7 +83,37 @@ class AvatarScene {
         }
     }
 
+    isWebGLAvailable() {
+        try {
+            const canvas = document.createElement('canvas');
+            return !!(window.WebGLRenderingContext &&
+                (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+        } catch (e) {
+            return false;
+        }
+    }
+
+    showFallback() {
+        if (this.container) {
+            this.container.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 2rem;">
+                    <p style="color: #78716c; font-size: 0.875rem; text-align: center;">
+                        Votre navigateur ne supporte pas WebGL.<br>
+                        <span style="font-size: 0.75rem;">L'avatar 3D n'est pas disponible.</span>
+                    </p>
+                </div>
+            `;
+            this.container.classList.add('loaded');
+        }
+    }
+
     init() {
+        // WebGL Support Check
+        if (!this.isWebGLAvailable()) {
+            this.showFallback();
+            return;
+        }
+
         // Scene setup
         this.scene = new THREE.Scene();
         
