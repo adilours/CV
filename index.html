@@ -3,44 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adil Mhira // UX Strategist — Strategic Transformation</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Adil Mhira - UX Strategist & Head of Service Design. Je simplifie les systèmes pour libérer les décisions. 20+ ans de leadership en transformation digitale.">
-    <meta name="keywords" content="UX Strategy, Service Design, Design Strategist, Transformation Digitale, Renault, Paris">
-    <meta name="author" content="Adil Mhira">
-    <meta name="robots" content="index, follow">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://adilours.github.io/CV/">
     <meta property="og:title" content="Adil Mhira // UX Strategist — Strategic Transformation">
-    <meta property="og:description" content="Je simplifie les systèmes pour libérer les décisions. Service Designer intervenant sur les transformations complexes.">
-    <meta property="og:image" content="https://adilours.github.io/CV/og-image.png">
-    <meta property="og:locale" content="fr_FR">
-    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:description" content="UX Strategist passionné par la transformation digitale et l'innovation centrée utilisateur.">
+    <meta property="og:image" content="https://adilours.github.io/CV/og-image.jpg">
 
-    <!-- Twitter Card -->
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://adilours.github.io/CV/">
     <meta name="twitter:title" content="Adil Mhira // UX Strategist — Strategic Transformation">
-    <meta name="twitter:description" content="Je simplifie les systèmes pour libérer les décisions. Service Designer intervenant sur les transformations complexes.">
-    <meta name="twitter:image" content="https://adilours.github.io/CV/og-image.png">
+    <meta name="twitter:description" content="UX Strategist passionné par la transformation digitale et l'innovation centrée utilisateur.">
+    <meta name="twitter:image" content="https://adilours.github.io/CV/og-image.jpg">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%231c1917' width='100' height='100' rx='12'/><text x='50' y='68' font-family='system-ui,-apple-system,sans-serif' font-size='48' font-weight='600' fill='%23fafaf9' text-anchor='middle'>AM</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%231c1917' width='100' height='100' rx='12'/><text x='50' y='68' font-family='system-ui,-apple-system,sans-serif' font-size='48' font-weight='600' fill='%23fafaf9' text-anchor='middle'>AM</text></svg>">
-
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#1c1917">
-
+    <title>Adil Mhira // UX Strategist — Strategic Transformation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&family=Inter:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="diagnostic-terminal.css">
     <script type="importmap">
 {
   "imports": {
@@ -249,24 +235,32 @@
 
         /* ========== INTERACTIVE GRID & POST-ITS ========== */
 
-        /* Grid Layer */
+        /* Grid Layer - desktop only */
         #hero-grid {
             position: absolute;
             inset: 0;
             z-index: 1;
-            display: grid;
+            display: none;
             pointer-events: auto;
             overflow: hidden;
+            cursor: crosshair;
+        }
+
+        @media (min-width: 1024px) {
+            #hero-grid {
+                display: grid;
+            }
         }
 
         .grid-cell {
-            border: 1px solid rgba(0, 0, 0, 0.15);
+            border: 0.5px solid rgba(0, 0, 0, 0.03);
             transition: background-color 0.2s ease, transform 0.15s ease-out;
             will-change: transform;
+            pointer-events: none; /* Let clicks pass through to grid container */
         }
 
         body.zb-mode .grid-cell {
-            border-color: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.02);
         }
 
         /* Mouse Glow */
@@ -281,6 +275,13 @@
             z-index: 2;
             opacity: 0;
             transition: opacity 0.3s ease;
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            #hero-glow {
+                display: block;
+            }
         }
 
         body.zb-mode #hero-glow {
@@ -291,41 +292,118 @@
             opacity: 1;
         }
 
+        /* Wires Layer - connections between post-its */
+        #hero-wires {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            overflow: visible;
+            display: none;
+        }
+
+        @media (min-width: 1024px) {
+            #hero-wires {
+                display: block;
+            }
+        }
+
+        .wire-path {
+            fill: none;
+            stroke: rgba(59, 130, 246, 0.25);
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 8 6;
+            filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.4));
+            animation: wirePulse 3s ease-in-out infinite;
+        }
+
+        body.zb-mode .wire-path {
+            stroke: rgba(96, 165, 250, 0.35);
+            filter: drop-shadow(0 0 3px rgba(96, 165, 250, 0.5));
+        }
+
+        .wire-path.reverse {
+            animation-direction: reverse;
+        }
+
+        .wire-path.fading {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        @keyframes wirePulse {
+            0%, 100% { 
+                stroke-dashoffset: 0;
+                filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.3));
+            }
+            50% { 
+                stroke-dashoffset: -14;
+                filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.7));
+            }
+        }
+
+        body.zb-mode .wire-path {
+            animation-name: wirePulseZB;
+        }
+
+        @keyframes wirePulseZB {
+            0%, 100% { 
+                stroke-dashoffset: 0;
+                filter: drop-shadow(0 0 2px rgba(96, 165, 250, 0.4));
+            }
+            50% { 
+                stroke-dashoffset: -14;
+                filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.8));
+            }
+        }
+
         /* Post-its Container */
         #hero-postits {
             position: absolute;
             inset: 0;
-            z-index: 10;
+            z-index: 3;  /* Behind 3D character (z-index: 5) */
             pointer-events: none;
             overflow: hidden;
+            display: none;
         }
 
-        /* Post-it Note */
+        @media (min-width: 1024px) {
+            #hero-postits {
+                display: block;
+            }
+        }
+
+        /* Post-it Note - Square 135x135 (3/4 of original) */
         .postit-note {
             position: absolute;
-            width: 220px;
-            min-height: 140px;
-            background: #fefce8;
+            width: 135px;
+            height: 135px;
+            background: #f4f1e8;
             color: #1c1917;
-            padding: 16px 18px;
-            box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0,0,0,0.1);
+            padding: 15px;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.15);
             transform: scale(0) rotate(var(--rotation, -2deg));
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
             pointer-events: auto;
             cursor: grab;
             font-family: 'Caveat', cursive;
-            font-size: 18px;
-            line-height: 1.35;
+            font-size: 12px;
+            line-height: 1.4;
             border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .postit-note::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 20px;
-            width: 40px;
-            height: 8px;
+            left: 15px;
+            width: 25px;
+            height: 6px;
             background: rgba(0, 0, 0, 0.08);
             border-radius: 0 0 2px 2px;
         }
@@ -334,76 +412,213 @@
             transform: scale(1) rotate(var(--rotation, -2deg));
         }
 
+        .postit-note.fade-out {
+            opacity: 0;
+            transform: scale(0.8) rotate(var(--rotation, -2deg));
+            transition: all 0.3s ease-out;
+        }
+
+        /* Falling leaf animation */
+        @keyframes fallLeaf {
+            0% { 
+                opacity: 1; 
+                transform: scale(1) rotate(var(--rotation, -2deg)); 
+            }
+            25% { 
+                transform: scale(0.95) rotate(calc(var(--rotation, -2deg) + 10deg)) translateX(20px); 
+            }
+            50% { 
+                transform: scale(0.9) rotate(calc(var(--rotation, -2deg) - 15deg)) translateX(-15px) translateY(50px); 
+            }
+            75% { 
+                transform: scale(0.85) rotate(calc(var(--rotation, -2deg) + 20deg)) translateX(25px) translateY(150px); 
+                opacity: 0.6;
+            }
+            100% { 
+                opacity: 0; 
+                transform: scale(0.7) rotate(calc(var(--rotation, -2deg) + 45deg)) translateX(10px) translateY(300px); 
+            }
+        }
+
+        .postit-note.falling {
+            animation: fallLeaf 2s ease-in forwards;
+            pointer-events: none;
+        }
+
+        /* Unstuck effect when dragging */
+        .postit-note.unstuck {
+            box-shadow: 12px 12px 30px rgba(0, 0, 0, 0.25) !important;
+            filter: brightness(1.05);
+        }
+
         .postit-note:hover {
             transform: scale(1.03) rotate(var(--rotation, -2deg)) translateY(-3px);
-            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 8px 8px 24px rgba(0, 0, 0, 0.18);
+            z-index: 60;  /* In front of everything on hover */
+        }
+
+        .postit-note:active {
             cursor: grabbing;
         }
 
-        .postit-note .postit-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            opacity: 0.5;
-            margin-bottom: 8px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
+        /* Post-it Text Formatting */
+        .postit-line1 {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
         }
 
-        .postit-note .postit-highlight {
+        .postit-line2 {
+            font-size: 11px;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+
+        .postit-date {
+            color: #b8860b;
             font-weight: 600;
-            font-size: 20px;
-        }
-
-        .postit-note .postit-subtle {
-            opacity: 0.6;
-            font-size: 16px;
-            margin-top: 8px;
         }
 
         /* ZB Mode Post-its */
         body.zb-mode .postit-note {
-            background: #fef3c7;
-            box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.3);
+            background: #fff9e6;
+            box-shadow: 6px 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body.zb-mode .postit-date {
+            color: #d4a574;
         }
 
         /* Interaction Hint */
         .interaction-hint {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 24px;
             font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
-            opacity: 0.35;
-            transition: opacity 0.3s;
-            color: inherit;
+            letter-spacing: 0.12em;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
         }
 
         .interaction-hint:hover {
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         .interaction-hint .hint-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 16px;
             height: 16px;
             border: 1px solid currentColor;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
+            font-size: 9px;
+            opacity: 0.6;
         }
 
-        /* Hide grid on mobile/tablet */
-        @media (max-width: 1024px) {
+        /* Hide grid elements on mobile */
+        @media (max-width: 1023px) {
             #hero-grid,
             #hero-glow,
             #hero-postits,
             .interaction-hint {
                 display: none !important;
             }
+        }
+
+        /* Hero text should not block clicks on grid */
+        #hero > .max-w-6xl {
+            pointer-events: none;
+        }
+        #hero > .max-w-6xl a,
+        #hero > .max-w-6xl button,
+        #hero > .max-w-6xl .interaction-hint {
+            pointer-events: auto;
+        }
+
+        /* Easter Egg Overlay */
+        .easter-egg-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: easterFadeIn 0.4s ease-out;
+        }
+
+        .easter-egg-overlay.hidden {
+            display: none;
+        }
+
+        @keyframes easterFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .easter-content {
+            text-align: center;
+            max-width: 500px;
+            padding: 50px 40px;
+            color: white;
+        }
+
+        .easter-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .easter-content p {
+            font-size: 1.15rem;
+            opacity: 0.7;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .easter-subtext {
+            opacity: 0.5 !important;
+            font-size: 0.95rem !important;
+            margin-top: 25px !important;
+        }
+
+        .easter-cta {
+            display: inline-block;
+            padding: 14px 36px;
+            background: white;
+            color: black;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .easter-cta:hover {
+            background: #d4a574;
+            color: white;
+        }
+
+        .easter-close {
+            display: block;
+            margin: 25px auto 0;
+            background: none;
+            border: none;
+            color: white;
+            opacity: 0.4;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: opacity 0.3s;
+        }
+
+        .easter-close:hover {
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -422,11 +637,11 @@
                 <a href="#contact" class="nav-link text-[10px] font-medium text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-[0.2em]" data-fr="Contact" data-en="Contact">Contact</a>
             </div>
             <div class="flex items-center gap-2 md:gap-4 ml-auto">
-                <button id="zb-toggle" class="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-widest border border-stone-300 rounded-full px-2.5 py-1.5 hover:border-orange-400 transition-all" title="Mode Zero Bullshit" aria-label="Activer le mode Zero Bullshit" aria-pressed="false">
+                <button id="zb-toggle" class="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-widest border border-stone-300 rounded-full px-2.5 py-1.5 hover:border-orange-400 transition-all" title="Mode Zero Bullshit">
                     <span>🔥</span>
                     <span class="hidden sm:inline">Zero BS</span>
                 </button>
-                <button id="lang-toggle" class="flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest border border-stone-300 rounded-full px-3 py-1.5 hover:border-stone-400 transition-colors" aria-label="Changer la langue">
+                <button id="lang-toggle" class="flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest border border-stone-300 rounded-full px-3 py-1.5 hover:border-stone-400 transition-colors">
                     <span id="lang-fr" class="text-stone-900">FR</span>
                     <span class="text-stone-300">/</span>
                     <span id="lang-en" class="text-stone-400">EN</span>
@@ -437,23 +652,33 @@
 
     <!-- Hero Section -->
     <header id="hero" class="relative pt-40 pb-24 px-6 md:pt-56 md:pb-32" style="background: transparent;">
-
-        <!-- Interactive Grid Layer (z-index: 1) -->
-        <div id="hero-grid" class="hidden lg:grid" aria-hidden="true"></div>
-
-        <!-- Mouse Glow Effect (z-index: 2) -->
+        
+        <!-- Interactive Grid Layer (desktop only) -->
+        <div id="hero-grid" aria-hidden="true"></div>
+        
+        <!-- Mouse Glow Effect -->
         <div id="hero-glow" aria-hidden="true"></div>
-
-        <!-- Post-its Container (z-index: 10) -->
+        
+        <!-- Wires Layer (connections between post-its) -->
+        <svg id="hero-wires" aria-hidden="true"></svg>
+        
+        <!-- Post-its Container -->
         <div id="hero-postits" aria-hidden="true"></div>
-
+        
+        <!-- Easter Egg Overlay (z-index: 1000) -->
+        <div class="easter-egg-overlay hidden" id="easterEgg">
+            <div class="easter-content">
+                <h2>10+ clics.</h2>
+                <p>Soit tu procrastines,<br>soit tu veux vraiment bosser ensemble.</p>
+                <p class="easter-subtext">Si c'est le deuxième cas :</p>
+                <a href="mailto:adil@studioscratch.com" class="easter-cta">adil@studioscratch.com</a>
+                <button class="easter-close" id="easterEggClose">Fermer (ESC)</button>
+            </div>
+        </div>
+        
         <!-- 3D Avatar Container - INSIDE header with 33% offset -->
-        <div id="avatar-3d-container" class="hidden md:block" role="img" aria-label="Avatar 3D animé d'Adil Mhira">
-            <canvas id="avatar-canvas" aria-hidden="true"></canvas>
-            <!-- Fallback for browsers without WebGL -->
-            <noscript>
-                <p class="text-stone-500 text-sm">JavaScript est requis pour afficher l'avatar 3D.</p>
-            </noscript>
+        <div id="avatar-3d-container" class="hidden md:block">
+            <canvas id="avatar-canvas"></canvas>
         </div>
         
         <div class="max-w-6xl mx-auto">
@@ -485,12 +710,12 @@
                     <span class="text-[10px] font-medium uppercase tracking-widest px-3 py-1 border border-stone-200 rounded-md text-stone-400">Strategic Decisions</span>
                     <span class="text-[10px] font-medium uppercase tracking-widest px-3 py-1 border border-stone-200 rounded-md text-stone-400">Delivery</span>
                 </div>
-
-                <!-- Interaction Hint (desktop only) -->
-                <div class="interaction-hint hero-reveal hidden lg:flex" data-delay="1200">
-                    <span class="hint-icon">?</span>
-                    <span data-fr="Cliquez sur la grille pour découvrir mon parcours" data-en="Click on the grid to discover my journey">Cliquez sur la grille pour découvrir mon parcours</span>
-                    <span id="postit-counter" class="opacity-50">(0/4)</span>
+                
+                <!-- Interactive Grid Hint (desktop only) -->
+                <div class="interaction-hint hero-reveal hidden lg:flex items-center gap-2 mt-6" data-delay="1200">
+                    <span class="hint-icon text-stone-400">?</span>
+                    <span class="text-stone-400" data-fr="Cliquez sur la grille" data-en="Click on the grid">Cliquez sur la grille</span>
+                    <span id="postit-counter" class="text-stone-300">(0)</span>
                 </div>
             </div>
         </div>
@@ -783,7 +1008,124 @@
         </div>
     </section>
 
-    <!-- Footer / Contact -->
+    <!-- Diagnostic Terminal - Zero BS Mode Only -->
+    <section id="diagnostic-terminal" class="hidden">
+        <div class="terminal">
+            
+            <!-- Telemetry Panel (Left) -->
+            <aside class="telemetry-stream">
+                <div class="system-header">SYS_DIAGNOSTIC // v.4.0.1</div>
+                
+                <!-- Voice Transcript -->
+                <div class="voice-transcript-container">
+                    <div class="transcript-header">
+                        <span class="transcript-label">VOICE TRANSCRIPT</span>
+                        <button class="transcript-toggle" id="transcriptToggle" title="Toggle transcript">
+                            <span class="icon-visible">👁️</span>
+                            <span class="icon-hidden hidden">👁️‍🗨️</span>
+                        </button>
+                    </div>
+                    <div class="transcript-output" id="transcriptOutput">
+                        <div class="transcript-line muted">> EN ATTENTE...</div>
+                    </div>
+                </div>
+                
+                <div class="separator-telemetry"></div>
+                
+                <!-- Log Stream -->
+                <div class="log-stream" id="logStream">
+                    <!-- Logs injected here -->
+                </div>
+            </aside>
+
+            <!-- Main Workspace (Right) -->
+            <main class="diagnostic-workspace">
+                
+                <!-- Screen 1: Lead Capture -->
+                <div class="screen active" id="leadCaptureScreen">
+                    <div class="lead-capture-container">
+                        <div class="access-header">
+                            <div class="access-line" data-fr="> ACCÈS RESTREINT AU DIAGNOSTIC STRATÉGIQUE" data-en="> RESTRICTED ACCESS TO STRATEGIC DIAGNOSTIC">> ACCÈS RESTREINT AU DIAGNOSTIC STRATÉGIQUE</div>
+                            <div class="access-line" data-fr="> IDENTIFICATION REQUISE" data-en="> IDENTIFICATION REQUIRED">> IDENTIFICATION REQUISE</div>
+                        </div>
+                        
+                        <form id="leadCaptureForm" class="capture-form">
+                            <div class="form-group">
+                                <label class="terminal-label" data-fr="PRÉNOM" data-en="FIRST NAME">PRÉNOM</label>
+                                <input type="text" id="diagnosticFirstName" class="terminal-input" placeholder="Marc" required autocomplete="given-name" />
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="terminal-label" data-fr="EMAIL PROFESSIONNEL" data-en="PROFESSIONAL EMAIL">EMAIL PROFESSIONNEL</label>
+                                <input type="email" id="diagnosticEmail" class="terminal-input" placeholder="marc.durand@company.com" required autocomplete="email" />
+                            </div>
+                            
+                            <div class="form-consent">
+                                <label class="consent-label">
+                                    <input type="checkbox" id="diagnosticConsent" required />
+                                    <span data-fr="J'accepte qu'Adil me contacte si compatibilité détectée" data-en="I agree that Adil may contact me if compatibility is detected">J'accepte qu'Adil me contacte si compatibilité détectée</span>
+                                </label>
+                            </div>
+                            
+                            <button type="button" id="diagnosticStartBtn" class="terminal-btn" data-fr="INITIALISER MON DIAGNOSTIC →" data-en="INITIALIZE MY DIAGNOSTIC →">INITIALISER MON DIAGNOSTIC →</button>
+                            <div id="audioSelfTestStatus" class="audio-test-status muted"
+                                 data-fr="TEST AUDIO EN ATTENTE"
+                                 data-en="AUDIO TEST PENDING"
+                                 data-fr-ok="AUDIO OK - DIAGNOSTIC ACTIF"
+                                 data-en-ok="AUDIO OK - DIAGNOSTIC ACTIVE"
+                                 data-fr-fail="AUDIO BLOQUÉ - MODE TRANSCRIPT"
+                                 data-en-fail="AUDIO BLOCKED - TRANSCRIPT MODE">TEST AUDIO EN ATTENTE</div>
+                        </form>
+                        
+                        <div class="privacy-note" data-fr="Vos données ne seront jamais partagées. Pas de spam." data-en="Your data will never be shared. No spam.">Vos données ne seront jamais partagées. Pas de spam.</div>
+                    </div>
+                </div>
+                
+                <!-- Screen 2: Welcome -->
+                <div class="screen" id="welcomeScreen">
+                    <!-- Content generated dynamically -->
+                </div>
+                
+                <!-- Screen 3: Quiz -->
+                <div class="screen" id="quizScreen">
+                    <div class="quiz-header">
+                        <span id="stepCounter">PARAMÈTRE 01/04</span>
+                        <span id="sessionTimer">SESSION: 00:00:00</span>
+                    </div>
+                    
+                    <div class="question-display">
+                        <span id="typewriterText"></span>
+                        <span class="terminal-cursor"></span>
+                    </div>
+                    
+                    <div class="options-grid" id="optionsGrid">
+                        <!-- Options injected dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Screen 4: Analysis -->
+                <div class="screen" id="analysisScreen">
+                    <div class="analysis-container">
+                        <div class="analysis-label" data-fr="ANALYSE DU NIVEAU DE BULLSHIT" data-en="BULLSHIT LEVEL ANALYSIS">ANALYSE DU NIVEAU DE BULLSHIT</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="analysisProgress"></div>
+                        </div>
+                        <div class="analysis-status" id="analysisStatus">INITIALISATION...</div>
+                    </div>
+                </div>
+                
+                <!-- Screen 5: Result -->
+                <div class="screen" id="resultScreen">
+                    <div class="result-container" id="resultContainer">
+                        <!-- Result generated dynamically -->
+                    </div>
+                </div>
+                
+            </main>
+        </div>
+    </section>
+
+    <!-- Footer / Contact - Normal Mode -->
     <footer id="contact" class="mt-auto py-24 px-6 border-t border-stone-200 bg-stone-50">
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
             <div class="reveal">
@@ -809,10 +1151,10 @@
     </footer>
 
     <!-- Audio Player Floating - Minimal (Hidden by default, visible in Zero BS mode only) -->
-    <div id="audio-player" style="display: none;" class="fixed bottom-6 right-6 z-50 bg-stone-900/90 backdrop-blur-sm rounded-full shadow-xl" role="region" aria-label="Lecteur audio">
+    <div id="audio-player" style="display: none;" class="fixed bottom-6 right-6 z-50 bg-stone-900/90 backdrop-blur-sm rounded-full shadow-xl">
         <div class="flex items-center gap-1 px-2 py-2">
             <!-- Previous -->
-            <button id="prev-btn" class="text-stone-400 hover:text-stone-100 transition-all duration-200 p-2 rounded-full hover:bg-stone-800/50" aria-label="Piste précédente">
+            <button id="prev-btn" class="text-stone-400 hover:text-stone-100 transition-all duration-200 p-2 rounded-full hover:bg-stone-800/50">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="19 20 9 12 19 4 19 20"></polygon>
                     <line x1="5" y1="19" x2="5" y2="5"></line>
@@ -820,7 +1162,7 @@
             </button>
             
             <!-- Play/Stop -->
-            <button id="play-pause-btn" class="bg-stone-100 text-stone-900 rounded-full p-2.5 hover:bg-white transition-all duration-200 hover:scale-105" aria-label="Lecture / Pause">
+            <button id="play-pause-btn" class="bg-stone-100 text-stone-900 rounded-full p-2.5 hover:bg-white transition-all duration-200 hover:scale-105">
                 <svg id="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                 </svg>
@@ -831,7 +1173,7 @@
             </button>
             
             <!-- Next -->
-            <button id="next-btn" class="text-stone-400 hover:text-stone-100 transition-all duration-200 p-2 rounded-full hover:bg-stone-800/50" aria-label="Piste suivante">
+            <button id="next-btn" class="text-stone-400 hover:text-stone-100 transition-all duration-200 p-2 rounded-full hover:bg-stone-800/50">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="5 4 15 12 5 20 5 4"></polygon>
                     <line x1="19" y1="5" x2="19" y2="19"></line>
@@ -849,7 +1191,6 @@
 
     <script type="module" src="./avatar-scene.js?v=48"></script>
     <script type="module" src="./audio-player.js?v=48"></script>
-    <script src="./hero-grid.js?v=1"></script>
     <script>
         // Hero Reveal Animation - Guimauve style on page load
         function startHeroReveal() {
@@ -972,6 +1313,7 @@
         // Language Toggle
         function setLanguage(lang) {
             currentLang = lang;
+            window.currentLang = lang; // Expose globally for post-its
             document.documentElement.lang = lang;
             
             // Update toggle button styling
@@ -989,6 +1331,14 @@
 
             // Update content
             updateContent();
+            
+            // Update post-its language
+            if (window.postItSystem) {
+                window.postItSystem.updatePostItsLanguage();
+            }
+            
+            // Dispatch event for other components (like diagnostic terminal)
+            window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
 
             // Store preference
             localStorage.setItem('lang', lang);
@@ -1004,8 +1354,32 @@
             // Update toggle button styling
             zbToggle.classList.toggle('active', enabled);
             
+            // Toggle diagnostic terminal vs normal footer
+            const terminal = document.getElementById('diagnostic-terminal');
+            const footer = document.getElementById('contact');
+            const contactLink = document.querySelector('a.nav-link[href="#contact"], a.nav-link[href="#diagnostic-terminal"]');
+            
+            if (terminal && footer) {
+                if (enabled) {
+                    terminal.classList.remove('hidden');
+                    footer.classList.add('hidden');
+                    if (contactLink) contactLink.href = '#diagnostic-terminal';
+                    // Initialize quiz
+                    if (typeof diagnosticQuiz !== 'undefined' && diagnosticQuiz.init) {
+                        diagnosticQuiz.init();
+                    }
+                } else {
+                    terminal.classList.add('hidden');
+                    footer.classList.remove('hidden');
+                    if (contactLink) contactLink.href = '#contact';
+                }
+            }
+            
             // Update content
             updateContent();
+            
+            // Dispatch event for other components
+            window.dispatchEvent(new CustomEvent('zbModeChanged', { detail: { enabled } }));
             
             // Store preference
             localStorage.setItem('zbMode', enabled);
@@ -1032,5 +1406,15 @@
             setZBMode(true);
         }
     </script>
+    
+    <!-- Hero Interactive Grid -->
+    <script src="hero-grid.js"></script>
+    
+    <!-- Diagnostic Terminal Quiz Modules -->
+    <script src="js/diagnostic-config.js"></script>
+    <script src="js/diagnostic-gradium.js"></script>
+    <script src="js/diagnostic-transcript.js"></script>
+    <script src="js/diagnostic-audio.js"></script>
+    <script src="js/diagnostic-quiz.js"></script>
 </body>
 </html>

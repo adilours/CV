@@ -3,8 +3,11 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('CV Site E2E Tests', () => {
   
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+  test.beforeEach(async ({ page, baseURL }) => {
+    // Use baseURL explicitly to avoid resolution issues
+    const targetUrl = baseURL || 'https://adilours.github.io/CV/';
+    const response = await page.goto(targetUrl);
+    
     // Wait for page to be fully loaded
     await page.waitForLoadState('networkidle');
   });
@@ -89,6 +92,28 @@ test.describe('CV Site E2E Tests', () => {
     
     // Check ZB mode is disabled
     await expect(body).not.toHaveClass(/zb-mode/);
+  });
+
+  test('should run audio self-test on diagnostic init', async ({ page }) => {
+    await page.click('#zb-toggle');
+    await page.waitForTimeout(300);
+
+    const terminal = page.locator('#diagnostic-terminal');
+    await terminal.scrollIntoViewIfNeeded();
+
+    await page.fill('#diagnosticFirstName', 'Test');
+    await page.fill('#diagnosticEmail', 'test@example.com');
+    await page.check('#diagnosticConsent');
+
+    const urlBefore = page.url();
+    await page.click('#diagnosticStartBtn');
+
+    await page.waitForFunction(() => typeof window.__audioSelfTestResult === 'boolean');
+    const urlAfter = page.url();
+    expect(urlAfter).toBe(urlBefore);
+
+    const audioResult = await page.evaluate(() => window.__audioSelfTestResult);
+    expect(typeof audioResult).toBe('boolean');
   });
 
   test('should toggle language FR/EN', async ({ page }) => {
