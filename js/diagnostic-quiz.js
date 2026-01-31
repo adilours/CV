@@ -230,6 +230,9 @@ const diagnosticQuiz = {
         
         // Generate all audios
         try {
+            // #region agent log
+            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:showWelcomeScreen',message:'Starting audio generation',data:{firstName:this.firstName,lang:this.lang},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+            // #endregion
             await this.simulateGeneration();
             await audioSystem.generateAllAudios(this.firstName, this.lang, (progress) => {
                 const progressBar = document.getElementById('welcomeProgress');
