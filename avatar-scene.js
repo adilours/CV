@@ -43,12 +43,12 @@ class AvatarScene {
                 }
             ];
         } else {
-            // Mode Normal : running en loop, pas de tracks audio
+            // Mode Normal : carlton dance en loop, pas de tracks audio
             this.tracks = [
                 {
-                    id: 'running',
-                    name: 'Running',
-                    fbx: './Jogging_optimized.glb',
+                    id: 'carlton',
+                    name: 'Carlton Dance',
+                    fbx: './carlton_dance.glb?v=3',
                     audio: null,
                     type: 'glb'
                 }
@@ -485,9 +485,9 @@ class AvatarScene {
         } else {
             this.tracks = [
                 {
-                    id: 'running',
-                    name: 'Running',
-                    fbx: './Jogging_optimized.glb',
+                    id: 'carlton',
+                    name: 'Carlton Dance',
+                    fbx: './carlton_dance.glb?v=3',
                     audio: null,
                     type: 'glb'
                 }
