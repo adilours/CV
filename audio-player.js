@@ -134,12 +134,13 @@ class AudioPlayer {
             
             // Ease out cubic
             const eased = 1 - Math.pow(1 - progress, 3);
-            this.audio.volume = startVolume + (target - startVolume) * eased;
+            // Clamp volume between 0 and 1
+            this.audio.volume = Math.max(0, Math.min(1, startVolume + (target - startVolume) * eased));
             
             if (progress < 1) {
                 this.fadeAnimation = requestAnimationFrame(animate);
             } else {
-                this.audio.volume = target;
+                this.audio.volume = Math.max(0, Math.min(1, target));
                 this.fadeAnimation = null;
                 if (onComplete) onComplete();
             }
