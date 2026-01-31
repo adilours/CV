@@ -1385,5 +1385,133 @@
     <script src="js/diagnostic-transcript.js"></script>
     <script src="js/diagnostic-audio.js"></script>
     <script src="js/diagnostic-quiz.js"></script>
+
+    <!-- Grid Debug UI -->
+    <div id="grid-debug">
+        <div class="debug-title">Grid Settings</div>
+        
+        <div class="debug-row">
+            <label>Cell Size: <span id="cellSizeVal">20</span>px</label>
+            <input type="range" id="cellSizeSlider" min="10" max="60" value="20">
+        </div>
+        
+        <div class="debug-row">
+            <label>Radius: <span id="radiusVal">100</span>px</label>
+            <input type="range" id="radiusSlider" min="40" max="200" value="100">
+        </div>
+        
+        <div class="debug-row">
+            <label>Max Move: <span id="maxMoveVal">6</span>px</label>
+            <input type="range" id="maxMoveSlider" min="1" max="20" value="6">
+        </div>
+        
+        <div class="debug-row">
+            <label>Border Opacity: <span id="borderOpacityVal">3</span>%</label>
+            <input type="range" id="borderOpacitySlider" min="1" max="15" value="3">
+        </div>
+        
+        <div class="debug-row">
+            <label>Elastic Power: <span id="elasticVal">1.5</span></label>
+            <input type="range" id="elasticSlider" min="10" max="30" value="15">
+        </div>
+        
+        <div class="debug-actions">
+            <button id="applyGridBtn">Apply & Rebuild</button>
+            <button id="copyGridBtn">Copy Values</button>
+        </div>
+    </div>
+
+    <style>
+        #grid-debug {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.92);
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        #grid-debug .debug-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 18px;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #grid-debug .debug-row {
+            margin-bottom: 14px;
+        }
+        #grid-debug label {
+            display: block;
+            margin-bottom: 6px;
+            color: #a1a1a1;
+        }
+        #grid-debug label span {
+            color: #fff;
+            font-weight: bold;
+        }
+        #grid-debug input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        #grid-debug input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #60a5fa;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        #grid-debug input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        #grid-debug .debug-actions {
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid #333;
+            display: flex;
+            gap: 10px;
+        }
+        #grid-debug button {
+            flex: 1;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #grid-debug #applyGridBtn {
+            background: #60a5fa;
+            color: #000;
+        }
+        #grid-debug #applyGridBtn:hover {
+            background: #93c5fd;
+        }
+        #grid-debug #copyGridBtn {
+            background: #333;
+            color: #fff;
+        }
+        #grid-debug #copyGridBtn:hover {
+            background: #444;
+        }
+        @media (max-width: 1024px) {
+            #grid-debug { display: none; }
+        }
+    </style>
 </body>
 </html>

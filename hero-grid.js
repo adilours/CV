@@ -1,6 +1,6 @@
 /**
  * Hero Interactive Grid & Post-its System
- * - Dense 40px grid with glow effect
+ * - Configurable grid with glow effect
  * - 31 autobiographical post-its FR/EN (random selection)
  * - Max 8 visible at once (FIFO)
  * - Stick & snap drag effect
@@ -9,6 +9,15 @@
  * - Easter egg after 10 clicks
  * Desktop only (>= 1024px)
  */
+
+// Global configuration - adjustable via debug UI
+window.gridConfig = {
+    cellSize: 20,
+    radius: 100,
+    maxMove: 6,
+    borderOpacity: 0.03,
+    elasticPower: 1.5
+};
 
 /**
  * WireSystem - Manages SVG wire connections between post-its
@@ -59,7 +68,7 @@ class WireSystem {
     // Generate a path that follows grid lines and stays WITHIN bounding box of the two post-its
     // No deviation outside the zone between the two points
     generateOrthogonalPath(from, to, seed = 0) {
-        const gridSize = 40;
+        const gridSize = window.gridConfig.cellSize;
         const r = 5;
         
         // Seeded random
@@ -304,7 +313,7 @@ class PostItSystem {
 
     createGrid() {
         const heroRect = this.hero.getBoundingClientRect();
-        const cellSize = 40;
+        const cellSize = window.gridConfig.cellSize;
         const cols = Math.ceil(heroRect.width / cellSize);
         const rows = Math.ceil(heroRect.height / cellSize);
 
@@ -313,9 +322,17 @@ class PostItSystem {
         this.grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
         this.cells = [];
 
+        // Apply border opacity from config
+        const borderOpacity = window.gridConfig.borderOpacity;
+        const isZbMode = document.body.classList.contains('zb-mode');
+
         for (let i = 0; i < cols * rows; i++) {
             const cell = document.createElement('div');
             cell.classList.add('grid-cell');
+            // Dynamic border opacity
+            cell.style.borderColor = isZbMode 
+                ? `rgba(255, 255, 255, ${borderOpacity * 0.7})`
+                : `rgba(0, 0, 0, ${borderOpacity})`;
             cell.addEventListener('click', (e) => this.handleCellClick(e));
             this.grid.appendChild(cell);
             this.cells.push(cell);
@@ -372,9 +389,10 @@ class PostItSystem {
             this.glow.style.top = y + 'px';
         }
 
-        // Subtle cell repulsion effect
-        const radius = 80;
-        const maxMove = 4;
+        // Configurable cell repulsion effect
+        const radius = window.gridConfig.radius;
+        const maxMove = window.gridConfig.maxMove;
+        const elasticPower = window.gridConfig.elasticPower;
 
         this.cells.forEach(cell => {
             const rect = cell.getBoundingClientRect();
@@ -385,7 +403,8 @@ class PostItSystem {
             const distance = Math.sqrt(distX * distX + distY * distY);
 
             if (distance < radius) {
-                const power = (radius - distance) / radius;
+                // Elastic power curve for more natural deformation
+                const power = Math.pow((radius - distance) / radius, elasticPower);
                 const moveX = (distX / distance) * -maxMove * power;
                 const moveY = (distY / distance) * -maxMove * power;
                 cell.style.transform = `translate(${moveX}px, ${moveY}px)`;
@@ -393,8 +412,8 @@ class PostItSystem {
                 // Subtle highlight
                 const isZbMode = document.body.classList.contains('zb-mode');
                 const highlightColor = isZbMode
-                    ? `rgba(255, 255, 255, ${power * 0.02})`
-                    : `rgba(0, 0, 0, ${power * 0.015})`;
+                    ? `rgba(255, 255, 255, ${power * 0.03})`
+                    : `rgba(0, 0, 0, ${power * 0.02})`;
                 cell.style.backgroundColor = highlightColor;
             } else {
                 cell.style.transform = 'translate(0, 0)';
@@ -803,4 +822,64 @@ window.addEventListener('resize', () => {
     if (window.innerWidth >= 1024 && !window.postItSystem) {
         window.postItSystem = new PostItSystem();
     }
+});
+
+// Debug UI Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const cellSizeSlider = document.getElementById('cellSizeSlider');
+    const radiusSlider = document.getElementById('radiusSlider');
+    const maxMoveSlider = document.getElementById('maxMoveSlider');
+    const borderOpacitySlider = document.getElementById('borderOpacitySlider');
+    const elasticSlider = document.getElementById('elasticSlider');
+    const applyBtn = document.getElementById('applyGridBtn');
+    const copyBtn = document.getElementById('copyGridBtn');
+
+    if (!cellSizeSlider) return; // Debug UI not present
+
+    // Cell Size
+    cellSizeSlider.addEventListener('input', (e) => {
+        window.gridConfig.cellSize = parseInt(e.target.value);
+        document.getElementById('cellSizeVal').textContent = e.target.value;
+    });
+
+    // Radius
+    radiusSlider.addEventListener('input', (e) => {
+        window.gridConfig.radius = parseInt(e.target.value);
+        document.getElementById('radiusVal').textContent = e.target.value;
+    });
+
+    // Max Move
+    maxMoveSlider.addEventListener('input', (e) => {
+        window.gridConfig.maxMove = parseInt(e.target.value);
+        document.getElementById('maxMoveVal').textContent = e.target.value;
+    });
+
+    // Border Opacity
+    borderOpacitySlider.addEventListener('input', (e) => {
+        window.gridConfig.borderOpacity = parseInt(e.target.value) / 100;
+        document.getElementById('borderOpacityVal').textContent = e.target.value;
+    });
+
+    // Elastic Power
+    elasticSlider.addEventListener('input', (e) => {
+        window.gridConfig.elasticPower = parseInt(e.target.value) / 10;
+        document.getElementById('elasticVal').textContent = (parseInt(e.target.value) / 10).toFixed(1);
+    });
+
+    // Apply & Rebuild button
+    applyBtn.addEventListener('click', () => {
+        if (window.postItSystem) {
+            window.postItSystem.createGrid();
+            window.postItSystem.wireSystem.updateAllWires();
+        }
+    });
+
+    // Copy Values button
+    copyBtn.addEventListener('click', () => {
+        const config = `cellSize: ${window.gridConfig.cellSize}, radius: ${window.gridConfig.radius}, maxMove: ${window.gridConfig.maxMove}, borderOpacity: ${window.gridConfig.borderOpacity}, elasticPower: ${window.gridConfig.elasticPower}`;
+        navigator.clipboard.writeText(config).then(() => {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => { copyBtn.textContent = 'Copy Values'; }, 1500);
+        });
+    });
 });
