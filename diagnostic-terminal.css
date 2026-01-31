@@ -492,7 +492,9 @@
    UTILITIES
    ============================================ */
 
-.hidden {
+/* Only apply to terminal elements - don't override Tailwind responsive classes */
+#diagnostic-terminal.hidden,
+#diagnostic-terminal .hidden {
     display: none !important;
 }
 
