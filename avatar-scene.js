@@ -23,21 +23,21 @@ class AvatarScene {
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb?v=4',
+                    fbx: './carlton_dance.glb?v=5',
                     audio: './carlton.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller_dance.glb?v=4',
+                    fbx: './thriller_dance.glb?v=5',
                     audio: './thriller.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'awa',
                     name: 'Awa Dance',
-                    fbx: './awa_dance.glb?v=4',
+                    fbx: './awa_dance.glb?v=5',
                     audio: './awa.mp3',
                     type: 'glb'
                 }
@@ -48,7 +48,7 @@ class AvatarScene {
                 {
                     id: 'running',
                     name: 'Running',
-                    fbx: './running.glb?v=4',
+                    fbx: './running.glb?v=5',
                     audio: null,
                     type: 'glb'
                 }
@@ -462,21 +462,21 @@ class AvatarScene {
                 {
                     id: 'carlton',
                     name: 'Carlton Dance',
-                    fbx: './carlton_dance.glb?v=4',
+                    fbx: './carlton_dance.glb?v=5',
                     audio: './carlton.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'thriller',
                     name: 'Thriller',
-                    fbx: './thriller_dance.glb?v=4',
+                    fbx: './thriller_dance.glb?v=5',
                     audio: './thriller.mp3',
                     type: 'glb'
                 },
                 {
                     id: 'awa',
                     name: 'Awa Dance',
-                    fbx: './awa_dance.glb?v=4',
+                    fbx: './awa_dance.glb?v=5',
                     audio: './awa.mp3',
                     type: 'glb'
                 }
@@ -487,7 +487,7 @@ class AvatarScene {
                 {
                     id: 'running',
                     name: 'Running',
-                    fbx: './running.glb?v=4',
+                    fbx: './running.glb?v=5',
                     audio: null,
                     type: 'glb'
                 }
