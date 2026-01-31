@@ -2,6 +2,12 @@
 // DIAGNOSTIC QUIZ - Main Flow Controller
 // ============================================
 
+// #region agent log - Global error handler
+window.addEventListener('error', (e) => {
+    fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:globalError',message:'Uncaught error',data:{error:e.message,filename:e.filename,lineno:e.lineno},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+});
+// #endregion
+
 const diagnosticQuiz = {
     // State
     currentStep: 0,
@@ -110,14 +116,37 @@ const diagnosticQuiz = {
         const form = document.getElementById('leadCaptureForm');
         if (!form) return;
         
+        // #region agent log
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:bindLeadCaptureForm',message:'Form bound',data:{formFound:!!form},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+        // #endregion
+        
+        // Prevent any click on checkbox from bubbling
+        const consent = document.getElementById('diagnosticConsent');
+        if (consent) {
+            consent.addEventListener('click', (e) => {
+                // #region agent log
+                fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:consentClick',message:'Consent checkbox clicked',data:{checked:consent.checked},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+                // #endregion
+                e.stopPropagation();
+            });
+        }
+        
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            // #region agent log
+            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formSubmit',message:'Form submit triggered',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+            // #endregion
             
             const firstName = document.getElementById('diagnosticFirstName')?.value.trim();
             const email = document.getElementById('diagnosticEmail')?.value.trim();
-            const consent = document.getElementById('diagnosticConsent')?.checked;
+            const consentChecked = document.getElementById('diagnosticConsent')?.checked;
             
-            if (!firstName || !email || !consent) {
+            // #region agent log
+            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formValidation',message:'Form values',data:{firstName:firstName,email:email,consent:consentChecked},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
+            // #endregion
+            
+            if (!firstName || !email || !consentChecked) {
                 this.addLog('ERREUR : DONNÉES INCOMPLÈTES');
                 return;
             }
