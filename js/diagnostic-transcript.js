@@ -11,29 +11,13 @@ const transcriptSystem = {
      * @returns {Promise<boolean>}
      */
     async detectAudioCapability() {
+        // After user interaction (click), audio is allowed by browsers
+        // We enable it directly and handle errors at playback time
+        this.isAudioEnabled = true;
         // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-transcript.js:detectAudioCapability',message:'Starting audio detection',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
+        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-transcript.js:detectAudioCapability',message:'Audio ENABLED after user click',data:{isAudioEnabled:true},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
         // #endregion
-        try {
-            const testAudio = new Audio();
-            // Use a proper silent MP3 that works across browsers
-            testAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYNB07AAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYNB07AAAAAAAAAAAAAAAAAAAAA';
-            testAudio.volume = 0.01; // Nearly silent
-            await testAudio.play();
-            testAudio.pause();
-            this.isAudioEnabled = true;
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-transcript.js:detectAudioCapability',message:'Audio detection SUCCESS',data:{isAudioEnabled:true},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
-            // #endregion
-            return true;
-        } catch (error) {
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-transcript.js:detectAudioCapability',message:'Audio detection FAILED',data:{error:error.message},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
-            // #endregion
-            this.isAudioEnabled = false;
-            this.showAudioDisabledWarning();
-            return false;
-        }
+        return true;
     },
     
     /**
