@@ -237,13 +237,13 @@ class AvatarScene {
             // Configurer le modèle
             let scale;
             if (track.type === 'glb') {
-                // Scale et position calibrés pour le modèle GLB optimisé
-                scale = 2.2;
+                // Scale et position calibrés pour les nouveaux modèles GLB (10x plus grands)
+                scale = 0.22;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
-                // Position calibrée via debug UI
-                model.position.set(-0.6, -1.6, -0.4);
+                // Position calibrée pour les nouveaux modèles
+                model.position.set(-0.6, -16, -0.4);
             } else {
                 // FBX: logique existante
                 scale = this.calculateResponsiveScale();
