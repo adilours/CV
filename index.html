@@ -592,61 +592,110 @@
 
     <!-- Diagnostic Terminal - Zero BS Mode Only -->
     <section id="diagnostic-terminal" class="hidden">
-        <div class="terminal-container">
+        <div class="terminal">
             
             <!-- Telemetry Panel (Left) -->
             <aside class="telemetry-stream">
                 <div class="system-header">SYS_DIAGNOSTIC // v.4.0.1</div>
-                <div class="log-output" id="logStream">
-                    <!-- Logs will be injected here -->
+                
+                <!-- Voice Transcript -->
+                <div class="voice-transcript-container">
+                    <div class="transcript-header">
+                        <span class="transcript-label">VOICE TRANSCRIPT</span>
+                        <button class="transcript-toggle" id="transcriptToggle" title="Toggle transcript">
+                            <span class="icon-visible">👁️</span>
+                            <span class="icon-hidden hidden">👁️‍🗨️</span>
+                        </button>
+                    </div>
+                    <div class="transcript-output" id="transcriptOutput">
+                        <div class="transcript-line muted">> EN ATTENTE...</div>
+                    </div>
+                </div>
+                
+                <div class="separator-telemetry"></div>
+                
+                <!-- Log Stream -->
+                <div class="log-stream" id="logStream">
+                    <!-- Logs injected here -->
                 </div>
             </aside>
 
             <!-- Main Workspace (Right) -->
             <main class="diagnostic-workspace">
                 
-                <!-- Intro Screen -->
-                <div id="introScreen" class="intro-screen">
-                    <p id="introText" class="intro-text">Avant d'ouvrir mon agenda, je dois diagnostiquer votre niveau de bullshit organisationnel.</p>
-                    <button id="startDiagnostic" class="start-btn">Lancer le diagnostic</button>
+                <!-- Screen 1: Lead Capture -->
+                <div class="screen active" id="leadCaptureScreen">
+                    <div class="lead-capture-container">
+                        <div class="access-header">
+                            <div class="access-line" data-fr="> ACCÈS RESTREINT AU DIAGNOSTIC STRATÉGIQUE" data-en="> RESTRICTED ACCESS TO STRATEGIC DIAGNOSTIC">> ACCÈS RESTREINT AU DIAGNOSTIC STRATÉGIQUE</div>
+                            <div class="access-line" data-fr="> IDENTIFICATION REQUISE" data-en="> IDENTIFICATION REQUIRED">> IDENTIFICATION REQUISE</div>
+                        </div>
+                        
+                        <form id="leadCaptureForm" class="capture-form">
+                            <div class="form-group">
+                                <label class="terminal-label" data-fr="PRÉNOM" data-en="FIRST NAME">PRÉNOM</label>
+                                <input type="text" id="diagnosticFirstName" class="terminal-input" placeholder="Marc" required autocomplete="given-name" />
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="terminal-label" data-fr="EMAIL PROFESSIONNEL" data-en="PROFESSIONAL EMAIL">EMAIL PROFESSIONNEL</label>
+                                <input type="email" id="diagnosticEmail" class="terminal-input" placeholder="marc.durand@company.com" required autocomplete="email" />
+                            </div>
+                            
+                            <div class="form-consent">
+                                <label class="consent-label">
+                                    <input type="checkbox" id="diagnosticConsent" required />
+                                    <span data-fr="J'accepte qu'Adil me contacte si compatibilité détectée" data-en="I agree that Adil may contact me if compatibility is detected">J'accepte qu'Adil me contacte si compatibilité détectée</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="terminal-btn" data-fr="INITIALISER MON DIAGNOSTIC →" data-en="INITIALIZE MY DIAGNOSTIC →">INITIALISER MON DIAGNOSTIC →</button>
+                        </form>
+                        
+                        <div class="privacy-note" data-fr="Vos données ne seront jamais partagées. Pas de spam." data-en="Your data will never be shared. No spam.">Vos données ne seront jamais partagées. Pas de spam.</div>
+                    </div>
                 </div>
-
-                <!-- Quiz Interface -->
-                <div id="quiz-interface" class="hidden">
-                    <div class="diagnostic-header">
-                        <span id="paramCounter">PARAMÈTRE 01/04</span>
+                
+                <!-- Screen 2: Welcome -->
+                <div class="screen" id="welcomeScreen">
+                    <!-- Content generated dynamically -->
+                </div>
+                
+                <!-- Screen 3: Quiz -->
+                <div class="screen" id="quizScreen">
+                    <div class="quiz-header">
+                        <span id="stepCounter">PARAMÈTRE 01/04</span>
                         <span id="sessionTimer">SESSION: 00:00:00</span>
                     </div>
-
+                    
                     <div class="question-display">
                         <span id="typewriterText"></span>
                         <span class="terminal-cursor"></span>
                     </div>
-
-                    <div class="response-options" id="optionsContainer">
-                        <!-- Options will be injected here -->
+                    
+                    <div class="options-grid" id="optionsGrid">
+                        <!-- Options injected dynamically -->
                     </div>
                 </div>
-
-                <!-- Analysis Overlay -->
-                <div class="overlay-screen hidden" id="analysisScreen">
-                    <div class="analysis-label" data-fr="ANALYSE DU NIVEAU DE BULLSHIT" data-en="BULLSHIT LEVEL ANALYSIS">ANALYSE DU NIVEAU DE BULLSHIT</div>
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div class="analysis-status" id="statusText">
-                        CALCUL DES VECTEURS D'INERTIE...
+                
+                <!-- Screen 4: Analysis -->
+                <div class="screen" id="analysisScreen">
+                    <div class="analysis-container">
+                        <div class="analysis-label" data-fr="ANALYSE DU NIVEAU DE BULLSHIT" data-en="BULLSHIT LEVEL ANALYSIS">ANALYSE DU NIVEAU DE BULLSHIT</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="analysisProgress"></div>
+                        </div>
+                        <div class="analysis-status" id="analysisStatus">INITIALISATION...</div>
                     </div>
                 </div>
-
-                <!-- Results Overlay -->
-                <div class="overlay-screen hidden" id="resultsScreen">
-                    <div class="verdict-title" id="verdictTitle">DIAGNOSTIC</div>
-                    <div class="verdict-subtitle" id="verdictSubtitle">—</div>
-                    <div class="verdict-body" id="verdictText"></div>
-                    <div class="verdict-actions" id="verdictCTA"></div>
+                
+                <!-- Screen 5: Result -->
+                <div class="screen" id="resultScreen">
+                    <div class="result-container" id="resultContainer">
+                        <!-- Result generated dynamically -->
+                    </div>
                 </div>
-
+                
             </main>
         </div>
     </section>
@@ -866,9 +915,6 @@
 
         // Zero Bullshit Toggle
         function setZBMode(enabled) {
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:setZBMode',message:'setZBMode called',data:{enabled:enabled,storedZB:localStorage.getItem('zbMode')},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-            // #endregion
             zbMode = enabled;
             
             // Toggle dark mode on body
@@ -881,23 +927,19 @@
             const terminal = document.getElementById('diagnostic-terminal');
             const footer = document.getElementById('contact');
             const contactLink = document.querySelector('a.nav-link[href="#contact"], a.nav-link[href="#diagnostic-terminal"]');
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:setZBMode:elements',message:'Terminal and footer elements',data:{terminalFound:!!terminal,footerFound:!!footer,contactLinkFound:!!contactLink,terminalClasses:terminal?.className,footerClasses:footer?.className},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
-            // #endregion
+            
             if (terminal && footer) {
                 if (enabled) {
                     terminal.classList.remove('hidden');
                     footer.classList.add('hidden');
-                    // Update contact link to point to terminal in ZB mode
                     if (contactLink) contactLink.href = '#diagnostic-terminal';
-                    // Initialize quiz if not already
-                    if (typeof DiagnosticQuiz !== 'undefined') {
-                        DiagnosticQuiz.init();
+                    // Initialize quiz
+                    if (typeof diagnosticQuiz !== 'undefined' && diagnosticQuiz.init) {
+                        diagnosticQuiz.init();
                     }
                 } else {
                     terminal.classList.add('hidden');
                     footer.classList.remove('hidden');
-                    // Restore contact link to point to footer in normal mode
                     if (contactLink) contactLink.href = '#contact';
                 }
             }
@@ -925,10 +967,6 @@
         const storedLang = localStorage.getItem('lang');
         const storedZB = localStorage.getItem('zbMode');
         
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:init',message:'Page init - stored preferences',data:{storedLang:storedLang,storedZB:storedZB,terminalClasses:document.getElementById('diagnostic-terminal')?.className,footerClasses:document.getElementById('contact')?.className,hiddenElementsCount:document.querySelectorAll('.hidden').length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1-H3'})}).catch(()=>{});
-        // #endregion
-        
         if (storedLang) {
             setLanguage(storedLang);
         }
@@ -936,13 +974,13 @@
         if (storedZB === 'true') {
             setZBMode(true);
         }
-        
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:afterInit',message:'After init - element visibility',data:{terminalVisible:!document.getElementById('diagnostic-terminal')?.classList.contains('hidden'),footerVisible:!document.getElementById('contact')?.classList.contains('hidden'),zbMode:zbMode,allHiddenElements:Array.from(document.querySelectorAll('.hidden')).map(e=>e.id||e.className).slice(0,10)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
-        // #endregion
     </script>
     
-    <!-- Diagnostic Terminal Quiz -->
-    <script src="diagnostic-terminal.js"></script>
+    <!-- Diagnostic Terminal Quiz Modules -->
+    <script src="js/diagnostic-config.js"></script>
+    <script src="js/diagnostic-gradium.js"></script>
+    <script src="js/diagnostic-transcript.js"></script>
+    <script src="js/diagnostic-audio.js"></script>
+    <script src="js/diagnostic-quiz.js"></script>
 </body>
 </html>

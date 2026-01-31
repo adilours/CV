@@ -199,18 +199,12 @@ class AvatarScene {
         
         try {
             let model;
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:loadModel',message:'Loading model',data:{trackId:track.id,trackType:track.type,fbxPath:track.fbx},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-            // #endregion
             
             if (track.type === 'glb') {
                 // Charger GLB
                 const gltf = await new Promise((resolve, reject) => {
                     loader.load(track.fbx, resolve, undefined, reject);
                 });
-                // #region agent log
-                fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'avatar-scene.js:loadModel:success',message:'GLB loaded',data:{trackId:track.id,hasScene:!!gltf?.scene,animationsCount:gltf?.animations?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-                // #endregion
                 model = gltf.scene;
                 
                 // Pour GLB, les animations sont dans gltf.animations
