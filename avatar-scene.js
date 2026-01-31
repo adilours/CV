@@ -254,15 +254,27 @@ class AvatarScene {
 
             model.rotation.y = Math.PI / 4;
             
-            // Fix pour les faces transparentes - forcer DoubleSide sur tous les matériaux
+            // Fix pour les matériaux - rendu plus naturel (moins métallique)
             model.traverse((child) => {
                 if (child.isMesh && child.material) {
+                    const fixMaterial = (m) => {
+                        m.side = THREE.DoubleSide;
+                        // Réduire l'aspect métallique pour un rendu plus naturel
+                        if (m.metalness !== undefined) {
+                            m.metalness = Math.min(m.metalness, 0.1);
+                        }
+                        // Augmenter la rugosité pour moins de reflets plastiques
+                        if (m.roughness !== undefined) {
+                            m.roughness = Math.max(m.roughness, 0.6);
+                        }
+                        // S'assurer que le material est mis à jour
+                        m.needsUpdate = true;
+                    };
+                    
                     if (Array.isArray(child.material)) {
-                        child.material.forEach(m => {
-                            m.side = THREE.DoubleSide;
-                        });
+                        child.material.forEach(fixMaterial);
                     } else {
-                        child.material.side = THREE.DoubleSide;
+                        fixMaterial(child.material);
                     }
                 }
             });
