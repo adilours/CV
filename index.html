@@ -599,37 +599,42 @@
         </div>
     </footer>
 
-    <!-- TEMP: Debug Controls for 3D positioning (Zero BS mode only) -->
-    <div id="debug-controls" style="display: none;" class="fixed top-20 left-4 z-[100] bg-black/95 text-white p-4 rounded-lg text-xs font-mono" style="width: 300px;">
-        <div class="font-bold mb-3 text-yellow-400">3D Position Debug (ZB Mode)</div>
+    <!-- TEMP: Debug Controls for 3D positioning (ALL MODES) -->
+    <div id="debug-controls" style="display: block;" class="fixed top-20 left-4 z-[100] bg-black/95 text-white p-4 rounded-lg text-xs font-mono" style="width: 300px;">
+        <div class="font-bold mb-3 text-yellow-400">3D Position Debug</div>
+        
+        <div class="mb-2 text-stone-400 text-[10px]">
+            Mode: <span id="current-mode" class="text-cyan-400">--</span>
+        </div>
         
         <div class="mb-3">
             <label class="block mb-1">Track:</label>
             <select id="track-select" class="w-full bg-stone-800 text-white p-1 rounded">
-                <option value="0">Carlton Dance</option>
-                <option value="1">Thriller</option>
-                <option value="2">Awa Dance</option>
+                <option value="0">Running (Normal)</option>
+                <option value="100">Carlton Dance (ZB)</option>
+                <option value="101">Thriller (ZB)</option>
+                <option value="102">Awa Dance (ZB)</option>
             </select>
         </div>
         
         <div class="mb-2">
-            <label class="block mb-1">Position X: <span id="val-x">0</span></label>
-            <input type="range" id="pos-x" min="-5" max="5" step="0.1" value="0" class="w-full">
+            <label class="block mb-1">Position X: <span id="val-x">-0.6</span></label>
+            <input type="range" id="pos-x" min="-10" max="10" step="0.1" value="-0.6" class="w-full">
         </div>
         
         <div class="mb-2">
-            <label class="block mb-1">Position Y: <span id="val-y">-1.6</span></label>
-            <input type="range" id="pos-y" min="-5" max="2" step="0.1" value="-1.6" class="w-full">
+            <label class="block mb-1">Position Y: <span id="val-y">-16</span></label>
+            <input type="range" id="pos-y" min="-50" max="10" step="0.5" value="-16" class="w-full">
         </div>
         
         <div class="mb-2">
-            <label class="block mb-1">Position Z: <span id="val-z">0</span></label>
-            <input type="range" id="pos-z" min="-3" max="5" step="0.1" value="0" class="w-full">
+            <label class="block mb-1">Position Z: <span id="val-z">-0.4</span></label>
+            <input type="range" id="pos-z" min="-10" max="10" step="0.1" value="-0.4" class="w-full">
         </div>
         
         <div class="mb-3">
-            <label class="block mb-1">Scale: <span id="val-scale">2.2</span></label>
-            <input type="range" id="scale" min="0.5" max="5" step="0.1" value="2.2" class="w-full">
+            <label class="block mb-1">Scale: <span id="val-scale">0.22</span></label>
+            <input type="range" id="scale" min="0.05" max="1" step="0.01" value="0.22" class="w-full">
         </div>
         
         <div class="mt-3 p-2 bg-stone-800 rounded text-[10px]">
@@ -647,12 +652,13 @@
     </div>
     
     <script>
-        // Debug controls for 3D positioning in ZB mode
+        // Debug controls for 3D positioning - ALL MODES
         const savedPositions = {};
         
         function initDebugControls() {
             const debugPanel = document.getElementById('debug-controls');
             const trackSelect = document.getElementById('track-select');
+            const modeDisplay = document.getElementById('current-mode');
             const controls = {
                 x: document.getElementById('pos-x'),
                 y: document.getElementById('pos-y'),
@@ -668,16 +674,19 @@
             const finalOutput = document.getElementById('final-values');
             const savedOutput = document.getElementById('saved-positions');
             
-            // Show/hide based on ZB mode
-            function updateVisibility() {
+            // Always visible now
+            debugPanel.style.display = 'block';
+            
+            // Update mode display
+            function updateModeDisplay() {
                 const isZB = document.body.classList.contains('zb-mode');
-                debugPanel.style.display = isZB ? 'block' : 'none';
+                modeDisplay.textContent = isZB ? 'Zero Bullshit' : 'Normal';
             }
             
-            // Watch for ZB mode changes
-            const observer = new MutationObserver(updateVisibility);
+            // Watch for mode changes
+            const observer = new MutationObserver(updateModeDisplay);
             observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-            updateVisibility();
+            updateModeDisplay();
             
             function updateAvatar() {
                 const avatar = window.avatarScene?.avatar;
@@ -694,19 +703,33 @@
                 values.x.textContent = x.toFixed(1);
                 values.y.textContent = y.toFixed(1);
                 values.z.textContent = z.toFixed(1);
-                values.scale.textContent = s.toFixed(1);
+                values.scale.textContent = s.toFixed(2);
                 
                 const trackName = trackSelect.options[trackSelect.selectedIndex].text;
                 finalOutput.textContent = `${trackName}: X:${x} Y:${y} Z:${z} S:${s}`;
             }
             
-            // Track change - switch to that track
+            // Track change - switch mode and load track
             trackSelect.addEventListener('change', () => {
-                const idx = parseInt(trackSelect.value);
-                if (window.avatarScene) {
-                    window.avatarScene.currentTrackIndex = idx;
-                    window.avatarScene.loadTrack(idx);
+                const val = parseInt(trackSelect.value);
+                const isZBTrack = val >= 100;
+                const isCurrentlyZB = document.body.classList.contains('zb-mode');
+                
+                // Switch mode if needed
+                if (isZBTrack && !isCurrentlyZB) {
+                    document.body.classList.add('zb-mode');
+                } else if (!isZBTrack && isCurrentlyZB) {
+                    document.body.classList.remove('zb-mode');
                 }
+                
+                // Load the track (map 100-102 to 0-2 for ZB mode)
+                setTimeout(() => {
+                    const trackIdx = isZBTrack ? val - 100 : val;
+                    if (window.avatarScene) {
+                        window.avatarScene.currentTrackIndex = trackIdx;
+                        window.avatarScene.loadTrack(trackIdx);
+                    }
+                }, 100);
             });
             
             Object.values(controls).forEach(c => c.addEventListener('input', updateAvatar));
@@ -729,6 +752,15 @@
                     html += `<div class="text-green-400">${p.name}: X:${p.x} Y:${p.y} Z:${p.z} S:${p.s}</div>`;
                 }
                 savedOutput.innerHTML = html;
+                
+                // Copy to clipboard
+                const copyText = `Position: (${pos.x}, ${pos.y}, ${pos.z}) Scale: ${pos.s}`;
+                navigator.clipboard.writeText(copyText).then(() => {
+                    finalOutput.textContent = 'Copié dans le presse-papier!';
+                    setTimeout(() => {
+                        finalOutput.textContent = `${trackName}: X:${pos.x} Y:${pos.y} Z:${pos.z} S:${pos.s}`;
+                    }, 1500);
+                });
             });
             
             // Wait for avatar to load
