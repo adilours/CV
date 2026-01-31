@@ -30,7 +30,6 @@ const diagnosticQuiz = {
         
         // Initialize transcript system
         transcriptSystem.initToggle();
-        transcriptSystem.detectAudioCapability();
         
         // Bind form
         this.bindLeadCaptureForm();
@@ -134,6 +133,10 @@ const diagnosticQuiz = {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             e.stopPropagation();
+            
+            // Detect audio capability (must be after user interaction)
+            await transcriptSystem.detectAudioCapability();
+            
             // #region agent log
             fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formSubmit',message:'Form submit triggered',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
             // #endregion
