@@ -56,46 +56,119 @@ class WireSystem {
             .map(x => x.postIt);
     }
 
-    // Generate a path with rounded corners and random variations
+    // Generate a grid-aligned path with random orthogonal deviations
+    // NEVER diagonal - only horizontal and vertical segments following grid lines
     generateOrthogonalPath(from, to, seed = 0) {
-        const r = 8;  // Corner radius
-        const jitterAmount = 15;
+        const gridSize = 40;  // Must match grid cell size
+        const r = 6;  // Corner radius
         
         // Seeded random for consistency during drag
         const seededRandom = () => {
             seed = (seed * 9301 + 49297) % 233280;
-            return (seed / 233280) - 0.5;
+            return seed / 233280;
         };
-        const jitter = () => seededRandom() * jitterAmount;
-
-        // Build intermediate points
+        
+        // Snap to nearest grid line
+        const snapToGrid = (val) => Math.round(val / gridSize) * gridSize;
+        
+        // Start and end points (snapped to grid)
+        const startX = snapToGrid(from.x);
+        const startY = snapToGrid(from.y);
+        const endX = snapToGrid(to.x);
+        const endY = snapToGrid(to.y);
+        
+        // Build path with random orthogonal deviations
         const points = [{ x: from.x, y: from.y }];
         
-        // Random number of segments (2 to 3)
-        const segments = 2 + Math.floor(Math.abs(seededRandom()) * 2);
+        // Move to first grid intersection
+        points.push({ x: startX, y: from.y });
+        points.push({ x: startX, y: startY });
         
-        for (let i = 1; i < segments; i++) {
-            const t = i / segments;
-            const baseX = from.x + (to.x - from.x) * t;
-            const baseY = from.y + (to.y - from.y) * t;
+        // Calculate direction and distance
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const stepsX = Math.abs(dx) / gridSize;
+        const stepsY = Math.abs(dy) / gridSize;
+        const totalSteps = stepsX + stepsY;
+        
+        // Number of random deviations (2 to 4)
+        const numDeviations = 2 + Math.floor(seededRandom() * 3);
+        
+        let currentX = startX;
+        let currentY = startY;
+        
+        // Create random deviation points along the path
+        for (let i = 0; i < numDeviations && totalSteps > 2; i++) {
+            const progress = (i + 1) / (numDeviations + 1);
             
-            if (i % 2 === 1) {
-                points.push({ x: baseX + jitter(), y: points[points.length - 1].y });
-                points.push({ x: points[points.length - 1].x, y: baseY + jitter() });
+            // Decide to move horizontally or vertically first (random)
+            const moveHorizontalFirst = seededRandom() > 0.5;
+            
+            // Calculate intermediate target
+            const targetX = startX + dx * progress;
+            const targetY = startY + dy * progress;
+            
+            // Add random deviation perpendicular to main direction
+            const deviationAmount = (seededRandom() - 0.5) * gridSize * 3;
+            
+            if (moveHorizontalFirst) {
+                // Move horizontally with deviation
+                const deviatedX = snapToGrid(targetX + deviationAmount);
+                if (deviatedX !== currentX) {
+                    points.push({ x: deviatedX, y: currentY });
+                    currentX = deviatedX;
+                }
+                // Then move vertically
+                const nextY = snapToGrid(targetY);
+                if (nextY !== currentY) {
+                    points.push({ x: currentX, y: nextY });
+                    currentY = nextY;
+                }
             } else {
-                points.push({ x: points[points.length - 1].x, y: baseY + jitter() });
-                points.push({ x: baseX + jitter(), y: points[points.length - 1].y });
+                // Move vertically with deviation
+                const deviatedY = snapToGrid(targetY + deviationAmount);
+                if (deviatedY !== currentY) {
+                    points.push({ x: currentX, y: deviatedY });
+                    currentY = deviatedY;
+                }
+                // Then move horizontally
+                const nextX = snapToGrid(targetX);
+                if (nextX !== currentX) {
+                    points.push({ x: nextX, y: currentY });
+                    currentX = nextX;
+                }
             }
         }
+        
+        // Final approach to end point (grid-aligned)
+        if (currentX !== endX) {
+            points.push({ x: endX, y: currentY });
+            currentX = endX;
+        }
+        if (currentY !== endY) {
+            points.push({ x: currentX, y: endY });
+        }
+        
+        // Connect to actual end point
+        points.push({ x: endX, y: to.y });
         points.push({ x: to.x, y: to.y });
 
-        // Build SVG path with quadratic curves for rounded corners
-        let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+        // Remove duplicate consecutive points
+        const cleanPoints = [points[0]];
+        for (let i = 1; i < points.length; i++) {
+            const prev = cleanPoints[cleanPoints.length - 1];
+            if (Math.abs(points[i].x - prev.x) > 1 || Math.abs(points[i].y - prev.y) > 1) {
+                cleanPoints.push(points[i]);
+            }
+        }
+
+        // Build SVG path with rounded corners
+        let d = `M ${cleanPoints[0].x.toFixed(1)} ${cleanPoints[0].y.toFixed(1)}`;
         
-        for (let i = 1; i < points.length - 1; i++) {
-            const prev = points[i - 1];
-            const curr = points[i];
-            const next = points[i + 1];
+        for (let i = 1; i < cleanPoints.length - 1; i++) {
+            const prev = cleanPoints[i - 1];
+            const curr = cleanPoints[i];
+            const next = cleanPoints[i + 1];
 
             const dx1 = curr.x - prev.x;
             const dy1 = curr.y - prev.y;
@@ -105,7 +178,10 @@ class WireSystem {
             const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
             const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
-            if (len1 === 0 || len2 === 0) continue;
+            if (len1 < 1 || len2 < 1) {
+                d += ` L ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
+                continue;
+            }
 
             const rr = Math.min(r, len1 / 2, len2 / 2);
 
@@ -117,7 +193,11 @@ class WireSystem {
             d += ` L ${x1.toFixed(1)} ${y1.toFixed(1)} Q ${curr.x.toFixed(1)} ${curr.y.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
         }
         
-        d += ` L ${points[points.length - 1].x.toFixed(1)} ${points[points.length - 1].y.toFixed(1)}`;
+        if (cleanPoints.length > 1) {
+            const last = cleanPoints[cleanPoints.length - 1];
+            d += ` L ${last.x.toFixed(1)} ${last.y.toFixed(1)}`;
+        }
+        
         return d;
     }
 
