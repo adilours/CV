@@ -1,12 +1,12 @@
 // ============================================
-// CONFIGURATION API GRADIUM
+// CONFIGURATION API ELEVENLABS
 // ============================================
 
-const GRADIUM_CONFIG = {
-    apiKey: 'gsk_e8a61401cc4d5422001c57c416c5b31a0d77108d49a16050f30c514567ff2739',
-    voiceId: 'DVy6LMcnhbPq5k0z',
-    baseUrl: 'https://api.gradium.ai/v1',
-    speed: 1.0
+const ELEVENLABS_CONFIG = {
+    apiKey: 'sk_27c74c41cc10fa6213589941d70135f0473191e505582e7b',
+    voiceId: 'zlPHrAwmHtWd9KRUhvlV',
+    modelId: 'eleven_multilingual_v2',
+    baseUrl: 'https://api.elevenlabs.io/v1'
 };
 
 // ============================================

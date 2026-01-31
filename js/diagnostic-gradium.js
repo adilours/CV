@@ -1,33 +1,34 @@
 // ============================================
-// API GRADIUM - TEXT-TO-SPEECH
+// API ELEVENLABS - TEXT-TO-SPEECH
 // ============================================
 
-const gradiumAPI = {
+const elevenlabsAPI = {
     
     /**
-     * Generate voiceover from text using Gradium API
+     * Generate voiceover from text using ElevenLabs API
      * @param {string} text - Text to convert to speech
-     * @param {number} speed - Speech speed (default from config)
      * @returns {Promise<string|null>} - Audio blob URL or null on error
      */
-    async generateVoiceover(text, speed = GRADIUM_CONFIG.speed) {
+    async generateVoiceover(text) {
         try {
-            const response = await fetch(`${GRADIUM_CONFIG.baseUrl}/tts`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${GRADIUM_CONFIG.apiKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    text: text,
-                    voice_id: GRADIUM_CONFIG.voiceId,
-                    speed: speed,
-                    format: 'mp3'
-                })
-            });
+            const response = await fetch(
+                `${ELEVENLABS_CONFIG.baseUrl}/text-to-speech/${ELEVENLABS_CONFIG.voiceId}?output_format=mp3_44100_128`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'xi-api-key': ELEVENLABS_CONFIG.apiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        model_id: ELEVENLABS_CONFIG.modelId
+                    })
+                }
+            );
 
             if (!response.ok) {
-                throw new Error(`Gradium API error: ${response.status}`);
+                const errorText = await response.text();
+                throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
             }
 
             const audioBlob = await response.blob();
@@ -36,7 +37,7 @@ const gradiumAPI = {
             return audioUrl;
 
         } catch (error) {
-            console.error('[Gradium] Voiceover generation failed:', error);
+            console.error('[ElevenLabs] Voiceover generation failed:', error);
             return null;
         }
     },
@@ -88,5 +89,9 @@ const gradiumAPI = {
     }
 };
 
+// Alias for backward compatibility
+const gradiumAPI = elevenlabsAPI;
+
 // Make available globally
+window.elevenlabsAPI = elevenlabsAPI;
 window.gradiumAPI = gradiumAPI;
