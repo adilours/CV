@@ -238,7 +238,7 @@ class AvatarScene {
             let scale;
             if (track.type === 'glb') {
                 // Scale et position calibrés pour les nouveaux modèles GLB
-                scale = 0.52;
+                scale = 0.44;
                 model.scale.setScalar(scale);
                 model.userData.baseScale = scale;
                 
