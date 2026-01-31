@@ -355,3 +355,187 @@
 .grid-debug-ui::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+
+/* ================================
+   FLUX BALL SYSTEM
+   ================================ */
+
+.flux-ball {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 55;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.flux-ball-trail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 54;
+}
+
+.flux-trail-point {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+
+/* Effect: Orb - Glowing sphere */
+.flux-ball.effect-orb {
+    box-shadow:
+        0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+        0 0 calc(var(--flux-glow, 8px) * 2) var(--flux-color, #60a5fa),
+        0 0 calc(var(--flux-glow, 8px) * 3) rgba(96, 165, 250, 0.3);
+    animation: orbPulse 2s ease-in-out infinite;
+}
+
+@keyframes orbPulse {
+    0%, 100% {
+        box-shadow:
+            0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+            0 0 calc(var(--flux-glow, 8px) * 2) var(--flux-color, #60a5fa),
+            0 0 calc(var(--flux-glow, 8px) * 3) rgba(96, 165, 250, 0.3);
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        box-shadow:
+            0 0 calc(var(--flux-glow, 8px) * 1.5) var(--flux-color, #60a5fa),
+            0 0 calc(var(--flux-glow, 8px) * 2.5) var(--flux-color, #60a5fa),
+            0 0 calc(var(--flux-glow, 8px) * 4) rgba(96, 165, 250, 0.4);
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+/* Effect: Comet - Bright head with fading trail */
+.flux-ball.effect-comet {
+    box-shadow:
+        0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+        0 0 calc(var(--flux-glow, 8px) * 1.5) #fff;
+    animation: cometGlow 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes cometGlow {
+    0% {
+        box-shadow:
+            0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+            0 0 calc(var(--flux-glow, 8px) * 1.5) #fff;
+    }
+    100% {
+        box-shadow:
+            0 0 calc(var(--flux-glow, 8px) * 1.3) var(--flux-color, #60a5fa),
+            0 0 calc(var(--flux-glow, 8px) * 2) #fff;
+    }
+}
+
+/* Effect: Spark - Flickering electric point */
+.flux-ball.effect-spark {
+    box-shadow:
+        0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+        0 0 2px #fff;
+    animation: sparkFlicker 0.1s steps(2) infinite;
+}
+
+@keyframes sparkFlicker {
+    0%, 100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+}
+
+/* Effect: Ghost - Semi-transparent ethereal glow */
+.flux-ball.effect-ghost {
+    background: transparent !important;
+    border: 2px solid var(--flux-color, #60a5fa);
+    box-shadow:
+        0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+        inset 0 0 calc(var(--flux-glow, 8px) * 0.5) rgba(255, 255, 255, 0.2);
+    animation: ghostFloat 3s ease-in-out infinite;
+}
+
+@keyframes ghostFloat {
+    0%, 100% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1);
+        filter: blur(0px);
+    }
+    50% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(1.15);
+        filter: blur(1px);
+    }
+}
+
+/* Effect: Plasma - Morphing energy ball */
+.flux-ball.effect-plasma {
+    background: radial-gradient(circle at 30% 30%,
+        rgba(255, 255, 255, 0.8),
+        var(--flux-color, #60a5fa) 40%,
+        transparent 70%
+    ) !important;
+    box-shadow:
+        0 0 var(--flux-glow, 8px) var(--flux-color, #60a5fa),
+        0 0 calc(var(--flux-glow, 8px) * 2) var(--flux-color, #60a5fa);
+    animation: plasmaShift 2s ease-in-out infinite;
+}
+
+@keyframes plasmaShift {
+    0%, 100% {
+        border-radius: 50%;
+        transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    }
+    25% {
+        border-radius: 45% 55% 55% 45%;
+        transform: translate(-50%, -50%) rotate(90deg) scale(1.05);
+    }
+    50% {
+        border-radius: 55% 45% 45% 55%;
+        transform: translate(-50%, -50%) rotate(180deg) scale(1);
+    }
+    75% {
+        border-radius: 45% 55% 55% 45%;
+        transform: translate(-50%, -50%) rotate(270deg) scale(1.05);
+    }
+}
+
+/* State: At post-it (paused) */
+.flux-ball.at-postit {
+    animation: atPostItPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes atPostItPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1.2);
+        filter: brightness(1.3);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.4);
+        filter: brightness(1.5);
+    }
+}
+
+/* Trail point styling for different effects */
+.flux-ball.effect-comet ~ .flux-ball-trail .flux-trail-point {
+    border-radius: 50%;
+    filter: blur(1px);
+}
+
+.flux-ball.effect-spark ~ .flux-ball-trail .flux-trail-point {
+    border-radius: 50%;
+    filter: blur(0px);
+    box-shadow: 0 0 4px currentColor;
+}
+
+.flux-ball.effect-plasma ~ .flux-ball-trail .flux-trail-point {
+    border-radius: 40% 60%;
+    filter: blur(2px);
+}
