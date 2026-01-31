@@ -56,145 +56,94 @@ class WireSystem {
             .map(x => x.postIt);
     }
 
-    // Generate a path that STRICTLY follows grid lines
-    // Every segment is either purely horizontal or purely vertical on grid lines
+    // Generate a path that follows grid lines and stays WITHIN bounding box of the two post-its
+    // No deviation outside the zone between the two points
     generateOrthogonalPath(from, to, seed = 0) {
-        const gridSize = 40;  // Must match grid cell size
-        const r = 5;  // Corner radius
+        const gridSize = 40;
+        const r = 5;
         
-        // Seeded random for consistency during drag
+        // Seeded random
         const seededRandom = () => {
             seed = (seed * 9301 + 49297) % 233280;
             return seed / 233280;
         };
         
-        // Snap to grid line (grid lines are at 0, 40, 80, 120...)
+        // Snap to grid
         const snapToGrid = (val) => Math.round(val / gridSize) * gridSize;
         
-        // Get nearest grid intersection from a point
-        const nearestGridX = snapToGrid(from.x);
-        const nearestGridY = snapToGrid(from.y);
-        const targetGridX = snapToGrid(to.x);
-        const targetGridY = snapToGrid(to.y);
+        // Bounding box (with small margin for grid alignment)
+        const minX = Math.min(from.x, to.x);
+        const maxX = Math.max(from.x, to.x);
+        const minY = Math.min(from.y, to.y);
+        const maxY = Math.max(from.y, to.y);
         
-        // All points will be on grid lines - start building the path
-        const gridPoints = [];
+        // Clamp to bounding box
+        const clampX = (x) => Math.max(snapToGrid(minX), Math.min(snapToGrid(maxX), x));
+        const clampY = (y) => Math.max(snapToGrid(minY), Math.min(snapToGrid(maxY), y));
         
-        // Entry point: from post-it center, go to nearest grid intersection
-        // First move vertically to grid line, then horizontally (or vice versa based on seed)
-        const entryVerticalFirst = seededRandom() > 0.5;
-        if (entryVerticalFirst) {
-            gridPoints.push({ x: from.x, y: nearestGridY });  // vertical to grid
-            gridPoints.push({ x: nearestGridX, y: nearestGridY });  // horizontal on grid
+        // Grid-aligned start/end
+        const startGridX = snapToGrid(from.x);
+        const startGridY = snapToGrid(from.y);
+        const endGridX = snapToGrid(to.x);
+        const endGridY = snapToGrid(to.y);
+        
+        // Build path points
+        const points = [{ x: from.x, y: from.y }];
+        
+        // Simple routing: pick a random intermediate Y within bounds
+        // Path: from -> (startGridX, startGridY) -> (endGridX, midY) -> (endGridX, endGridY) -> to
+        // Or with variation
+        
+        const routeType = Math.floor(seededRandom() * 3);
+        
+        if (routeType === 0) {
+            // Route 1: Go horizontal first, then vertical
+            // from -> (from.x, startGridY) -> (endGridX, startGridY) -> (endGridX, to.y) -> to
+            points.push({ x: from.x, y: startGridY });
+            points.push({ x: endGridX, y: startGridY });
+            points.push({ x: endGridX, y: to.y });
+        } else if (routeType === 1) {
+            // Route 2: Go vertical first, then horizontal
+            // from -> (startGridX, from.y) -> (startGridX, endGridY) -> (to.x, endGridY) -> to
+            points.push({ x: startGridX, y: from.y });
+            points.push({ x: startGridX, y: endGridY });
+            points.push({ x: to.x, y: endGridY });
         } else {
-            gridPoints.push({ x: nearestGridX, y: from.y });  // horizontal to grid
-            gridPoints.push({ x: nearestGridX, y: nearestGridY });  // vertical on grid
-        }
-        
-        // Now walk on the grid from nearestGrid to targetGrid with random turns
-        let currentX = nearestGridX;
-        let currentY = nearestGridY;
-        
-        // Determine how many grid cells we need to traverse
-        const cellsX = (targetGridX - nearestGridX) / gridSize;
-        const cellsY = (targetGridY - nearestGridY) / gridSize;
-        const dirX = cellsX > 0 ? 1 : cellsX < 0 ? -1 : 0;
-        const dirY = cellsY > 0 ? 1 : cellsY < 0 ? -1 : 0;
-        
-        // Create a path with random deviations (2-4 turns)
-        const numTurns = 2 + Math.floor(seededRandom() * 3);
-        const totalDistance = Math.abs(cellsX) + Math.abs(cellsY);
-        
-        if (totalDistance > 0) {
-            for (let turn = 0; turn < numTurns; turn++) {
-                const progress = (turn + 1) / (numTurns + 1);
-                
-                // Target position at this progress point
-                const progressX = nearestGridX + (targetGridX - nearestGridX) * progress;
-                const progressY = nearestGridY + (targetGridY - nearestGridY) * progress;
-                
-                // Add random perpendicular deviation (1-2 cells)
-                const deviationCells = Math.floor(seededRandom() * 2) + 1;
-                const deviationDir = seededRandom() > 0.5 ? 1 : -1;
-                
-                // Decide if we deviate horizontally or vertically
-                const deviateHorizontal = seededRandom() > 0.5;
-                
-                if (deviateHorizontal && dirY !== 0) {
-                    // Move vertically first, then deviate horizontally
-                    const newY = snapToGrid(progressY);
-                    if (newY !== currentY) {
-                        gridPoints.push({ x: currentX, y: newY });
-                        currentY = newY;
-                    }
-                    // Horizontal deviation
-                    const deviatedX = currentX + deviationDir * deviationCells * gridSize;
-                    gridPoints.push({ x: deviatedX, y: currentY });
-                    currentX = deviatedX;
-                } else if (!deviateHorizontal && dirX !== 0) {
-                    // Move horizontally first, then deviate vertically
-                    const newX = snapToGrid(progressX);
-                    if (newX !== currentX) {
-                        gridPoints.push({ x: newX, y: currentY });
-                        currentX = newX;
-                    }
-                    // Vertical deviation
-                    const deviatedY = currentY + deviationDir * deviationCells * gridSize;
-                    gridPoints.push({ x: currentX, y: deviatedY });
-                    currentY = deviatedY;
-                } else {
-                    // Simple progress toward target
-                    if (seededRandom() > 0.5 && currentX !== targetGridX) {
-                        const newX = snapToGrid(progressX);
-                        if (newX !== currentX) {
-                            gridPoints.push({ x: newX, y: currentY });
-                            currentX = newX;
-                        }
-                    } else if (currentY !== targetGridY) {
-                        const newY = snapToGrid(progressY);
-                        if (newY !== currentY) {
-                            gridPoints.push({ x: currentX, y: newY });
-                            currentY = newY;
-                        }
-                    }
-                }
+            // Route 3: With one intermediate turn (Z-shape or S-shape)
+            // Pick a midpoint on the grid within bounding box
+            const midProgress = 0.3 + seededRandom() * 0.4; // 30% to 70%
+            const midX = clampX(snapToGrid(from.x + (to.x - from.x) * midProgress));
+            const midY = clampY(snapToGrid(from.y + (to.y - from.y) * midProgress));
+            
+            // Decide path shape based on seed
+            if (seededRandom() > 0.5) {
+                // Z-shape: horizontal -> vertical -> horizontal
+                points.push({ x: from.x, y: startGridY });
+                points.push({ x: midX, y: startGridY });
+                points.push({ x: midX, y: endGridY });
+                points.push({ x: to.x, y: endGridY });
+            } else {
+                // S-shape: vertical -> horizontal -> vertical
+                points.push({ x: startGridX, y: from.y });
+                points.push({ x: startGridX, y: midY });
+                points.push({ x: endGridX, y: midY });
+                points.push({ x: endGridX, y: to.y });
             }
         }
         
-        // Final approach to target grid intersection
-        if (currentX !== targetGridX) {
-            gridPoints.push({ x: targetGridX, y: currentY });
-            currentX = targetGridX;
-        }
-        if (currentY !== targetGridY) {
-            gridPoints.push({ x: currentX, y: targetGridY });
-            currentY = targetGridY;
-        }
-        
-        // Exit: from grid to post-it center (reverse of entry)
-        const exitVerticalFirst = seededRandom() > 0.5;
-        if (exitVerticalFirst) {
-            gridPoints.push({ x: targetGridX, y: to.y });
-            gridPoints.push({ x: to.x, y: to.y });
-        } else {
-            gridPoints.push({ x: to.x, y: targetGridY });
-            gridPoints.push({ x: to.x, y: to.y });
-        }
-        
-        // Build full path: start -> grid points -> end
-        const allPoints = [{ x: from.x, y: from.y }, ...gridPoints];
+        points.push({ x: to.x, y: to.y });
         
         // Remove duplicates and very short segments
-        const cleanPoints = [allPoints[0]];
-        for (let i = 1; i < allPoints.length; i++) {
+        const cleanPoints = [points[0]];
+        for (let i = 1; i < points.length; i++) {
             const prev = cleanPoints[cleanPoints.length - 1];
-            const curr = allPoints[i];
+            const curr = points[i];
             if (Math.abs(curr.x - prev.x) > 2 || Math.abs(curr.y - prev.y) > 2) {
                 cleanPoints.push(curr);
             }
         }
 
-        // Build SVG path with rounded corners at turns
+        // Build SVG path with rounded corners
         let d = `M ${cleanPoints[0].x.toFixed(1)} ${cleanPoints[0].y.toFixed(1)}`;
         
         for (let i = 1; i < cleanPoints.length - 1; i++) {
@@ -210,10 +159,7 @@ class WireSystem {
             const len1 = Math.sqrt(dx1 * dx1 + dy1 * dy1);
             const len2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
-            // Only add curve if there's actually a turn (not collinear)
-            const isTurn = (dx1 === 0 && dx2 !== 0) || (dy1 === 0 && dy2 !== 0);
-            
-            if (len1 < 2 || len2 < 2 || !isTurn) {
+            if (len1 < 2 || len2 < 2) {
                 d += ` L ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
                 continue;
             }
