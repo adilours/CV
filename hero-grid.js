@@ -10,13 +10,13 @@
  * Desktop only (>= 1024px)
  */
 
-// Global configuration - adjustable via debug UI
+// Grid configuration
 window.gridConfig = {
-    cellSize: 20,
-    radius: 100,
-    maxMove: 6,
-    borderOpacity: 0.03,
-    elasticPower: 1.5
+    cellSize: 28,
+    radius: 143,
+    maxMove: 10,
+    borderOpacity: 0.06,
+    elasticPower: 2.2
 };
 
 /**
@@ -463,13 +463,15 @@ class PostItSystem {
 
     createPostIt(x, y) {
         // Random selection from all post-its
-        const data = this.postItsData[Math.floor(Math.random() * this.postItsData.length)];
+        const dataIndex = Math.floor(Math.random() * this.postItsData.length);
+        const data = this.postItsData[dataIndex];
         const lang = window.currentLang || 'fr';
         const html = data[lang] || data.fr;
         const rotation = (Math.random() * 10 - 5);
 
         const postIt = document.createElement('div');
         postIt.classList.add('postit-note');
+        postIt.dataset.postItIndex = dataIndex; // Store index for language switching
         postIt.style.setProperty('--rotation', rotation + 'deg');
         postIt.style.left = x + 'px';
         postIt.style.top = y + 'px';
@@ -489,6 +491,20 @@ class PostItSystem {
         this.schedulePostItFall(postIt);
 
         return postIt;
+    }
+
+    // Update all visible post-its when language changes
+    updatePostItsLanguage() {
+        const lang = window.currentLang || 'fr';
+        this.visiblePostIts.forEach(postIt => {
+            if (!postIt.parentNode) return; // Skip removed post-its
+            const dataIndex = parseInt(postIt.dataset.postItIndex);
+            if (isNaN(dataIndex)) return;
+            const data = this.postItsData[dataIndex];
+            if (data) {
+                postIt.innerHTML = data[lang] || data.fr;
+            }
+        });
     }
 
     schedulePostItFall(postIt) {
@@ -832,64 +848,4 @@ window.addEventListener('resize', () => {
     if (window.innerWidth >= 1024 && !window.postItSystem) {
         window.postItSystem = new PostItSystem();
     }
-});
-
-// Debug UI Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    const cellSizeSlider = document.getElementById('cellSizeSlider');
-    const radiusSlider = document.getElementById('radiusSlider');
-    const maxMoveSlider = document.getElementById('maxMoveSlider');
-    const borderOpacitySlider = document.getElementById('borderOpacitySlider');
-    const elasticSlider = document.getElementById('elasticSlider');
-    const applyBtn = document.getElementById('applyGridBtn');
-    const copyBtn = document.getElementById('copyGridBtn');
-
-    if (!cellSizeSlider) return; // Debug UI not present
-
-    // Cell Size
-    cellSizeSlider.addEventListener('input', (e) => {
-        window.gridConfig.cellSize = parseInt(e.target.value);
-        document.getElementById('cellSizeVal').textContent = e.target.value;
-    });
-
-    // Radius
-    radiusSlider.addEventListener('input', (e) => {
-        window.gridConfig.radius = parseInt(e.target.value);
-        document.getElementById('radiusVal').textContent = e.target.value;
-    });
-
-    // Max Move
-    maxMoveSlider.addEventListener('input', (e) => {
-        window.gridConfig.maxMove = parseInt(e.target.value);
-        document.getElementById('maxMoveVal').textContent = e.target.value;
-    });
-
-    // Border Opacity
-    borderOpacitySlider.addEventListener('input', (e) => {
-        window.gridConfig.borderOpacity = parseInt(e.target.value) / 100;
-        document.getElementById('borderOpacityVal').textContent = e.target.value;
-    });
-
-    // Elastic Power
-    elasticSlider.addEventListener('input', (e) => {
-        window.gridConfig.elasticPower = parseInt(e.target.value) / 10;
-        document.getElementById('elasticVal').textContent = (parseInt(e.target.value) / 10).toFixed(1);
-    });
-
-    // Apply & Rebuild button
-    applyBtn.addEventListener('click', () => {
-        if (window.postItSystem) {
-            window.postItSystem.createGrid();
-            window.postItSystem.wireSystem.updateAllWires();
-        }
-    });
-
-    // Copy Values button
-    copyBtn.addEventListener('click', () => {
-        const config = `cellSize: ${window.gridConfig.cellSize}, radius: ${window.gridConfig.radius}, maxMove: ${window.gridConfig.maxMove}, borderOpacity: ${window.gridConfig.borderOpacity}, elasticPower: ${window.gridConfig.elasticPower}`;
-        navigator.clipboard.writeText(config).then(() => {
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => { copyBtn.textContent = 'Copy Values'; }, 1500);
-        });
-    });
 });
