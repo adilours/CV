@@ -664,10 +664,11 @@
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Active Nav Link Highlighting
+        // Active Nav Link Highlighting (with click debounce fix)
         (function initActiveNavHighlighting() {
             const navLinks = document.querySelectorAll('nav .nav-link');
             const sections = [];
+            let isClickScrolling = false; // Flag to prevent observer interference during click navigation
 
             navLinks.forEach(link => {
                 const href = link.getAttribute('href');
@@ -685,6 +686,9 @@
             }
 
             const navObserver = new IntersectionObserver((entries) => {
+                // Skip observer updates during programmatic scroll from click
+                if (isClickScrolling) return;
+                
                 let topmostSection = null;
                 let topmostTop = Infinity;
 
@@ -706,11 +710,20 @@
             // Initial state
             if (window.scrollY < 100) setActiveLink('hero');
 
-            // Immediate feedback on click
+            // Immediate feedback on click with debounce
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     const href = link.getAttribute('href');
-                    if (href?.startsWith('#')) setActiveLink(href.substring(1));
+                    if (href?.startsWith('#')) {
+                        // Set flag to prevent observer interference
+                        isClickScrolling = true;
+                        setActiveLink(href.substring(1));
+                        
+                        // Reset flag after scroll animation completes
+                        setTimeout(() => { 
+                            isClickScrolling = false; 
+                        }, 800);
+                    }
                 });
             });
         })();

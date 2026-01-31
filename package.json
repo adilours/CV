@@ -1,0 +1,15 @@
+{
+  "name": "adil-cv",
+  "version": "1.0.0",
+  "description": "Interactive CV and portfolio website",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "serve": "npx serve ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "author": "Adil Mhira",
+  "license": "UNLICENSED"
+}
