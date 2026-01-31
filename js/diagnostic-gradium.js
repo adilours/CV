@@ -10,9 +10,6 @@ const elevenlabsAPI = {
      * @returns {Promise<string|null>} - Audio blob URL or null on error
      */
     async generateVoiceover(text) {
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-gradium.js:generateVoiceover',message:'API call start',data:{textLength:text?.length,voiceId:ELEVENLABS_CONFIG.voiceId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-        // #endregion
         try {
             const response = await fetch(
                 `${ELEVENLABS_CONFIG.baseUrl}/text-to-speech/${ELEVENLABS_CONFIG.voiceId}?output_format=mp3_44100_128`,
@@ -29,31 +26,17 @@ const elevenlabsAPI = {
                 }
             );
 
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-gradium.js:generateVoiceover',message:'API response',data:{status:response.status,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-            // #endregion
-
             if (!response.ok) {
                 const errorText = await response.text();
-                // #region agent log
-                fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-gradium.js:generateVoiceover',message:'API error',data:{status:response.status,errorText:errorText},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-                // #endregion
                 throw new Error(`ElevenLabs API error: ${response.status} - ${errorText}`);
             }
 
             const audioBlob = await response.blob();
             const audioUrl = URL.createObjectURL(audioBlob);
             
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-gradium.js:generateVoiceover',message:'Audio blob created',data:{blobSize:audioBlob.size,audioUrl:audioUrl?.slice(0,50)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
-            // #endregion
-            
             return audioUrl;
 
         } catch (error) {
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-gradium.js:generateVoiceover',message:'Exception caught',data:{error:error.message},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-            // #endregion
             console.error('[ElevenLabs] Voiceover generation failed:', error);
             return null;
         }

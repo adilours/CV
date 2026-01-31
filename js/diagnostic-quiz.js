@@ -2,12 +2,6 @@
 // DIAGNOSTIC QUIZ - Main Flow Controller
 // ============================================
 
-// #region agent log - Global error handler
-window.addEventListener('error', (e) => {
-    fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:globalError',message:'Uncaught error',data:{error:e.message,filename:e.filename,lineno:e.lineno},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-});
-// #endregion
-
 const diagnosticQuiz = {
     // State
     currentStep: 0,
@@ -117,17 +111,10 @@ const diagnosticQuiz = {
         const statusEl = document.getElementById('audioSelfTestStatus');
         if (!form) return;
         
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:bindLeadCaptureForm',message:'Form bound',data:{formFound:!!form},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-        // #endregion
-        
         // Prevent any click on checkbox from bubbling
         const consent = document.getElementById('diagnosticConsent');
         if (consent) {
             consent.addEventListener('click', (e) => {
-                // #region agent log
-                fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:consentClick',message:'Consent checkbox clicked',data:{checked:consent.checked},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-                // #endregion
                 e.stopPropagation();
             });
         }
@@ -158,17 +145,9 @@ const diagnosticQuiz = {
             setStatus('muted', 'pending');
             await transcriptSystem.detectAudioCapability();
 
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formSubmit',message:'Form submit triggered',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
-            // #endregion
-
             const firstName = document.getElementById('diagnosticFirstName')?.value.trim();
             const email = document.getElementById('diagnosticEmail')?.value.trim();
             const consentChecked = document.getElementById('diagnosticConsent')?.checked;
-
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:formValidation',message:'Form values',data:{firstName:firstName,email:email,consent:consentChecked},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-            // #endregion
 
             if (!firstName || !email || !consentChecked) {
                 this.addLog('ERREUR : DONNÉES INCOMPLÈTES');
@@ -269,9 +248,6 @@ const diagnosticQuiz = {
         
         // Generate all audios
         try {
-            // #region agent log
-            fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-quiz.js:showWelcomeScreen',message:'Starting audio generation',data:{firstName:this.firstName,lang:this.lang},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-            // #endregion
             await this.simulateGeneration();
             await audioSystem.generateAllAudios(this.firstName, this.lang, (progress) => {
                 const progressBar = document.getElementById('welcomeProgress');

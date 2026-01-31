@@ -16,9 +16,6 @@ const audioSystem = {
      * @returns {Promise<boolean>} - Success status
      */
     async generateAllAudios(firstName, lang = 'fr', onProgress = null) {
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-audio.js:generateAllAudios',message:'Start generating all audios',data:{firstName:firstName,lang:lang},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-        // #endregion
         this.isGenerating = true;
         let completed = 0;
         const total = 7; // 4 intros + 3 feedbacks
@@ -34,9 +31,6 @@ const audioSystem = {
             // Generate question intros (4)
             for (let i = 1; i <= 4; i++) {
                 const text = gradiumAPI.getRandomQuestionIntro(i, firstName, lang);
-                // #region agent log
-                fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-audio.js:generateAllAudios',message:`Generating q${i} intro`,data:{text:text?.slice(0,50)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-                // #endregion
                 const audioUrl = await gradiumAPI.generateVoiceover(text);
                 
                 this.cache[`q${i}_intro`] = audioUrl;
@@ -128,9 +122,6 @@ const audioSystem = {
      * @returns {Promise<void>}
      */
     async playWithTranscript(audioKey, fallbackText = null) {
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-audio.js:playWithTranscript',message:'Play requested',data:{audioKey:audioKey,hasCache:!!this.cache[audioKey],isAudioEnabled:transcriptSystem?.isAudioEnabled},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3-H4'})}).catch(()=>{});
-        // #endregion
         const transcriptText = fallbackText || this.transcripts[audioKey];
         
         if (!transcriptText) {
@@ -150,9 +141,6 @@ const audioSystem = {
                 const audio = new Audio(this.cache[audioKey]);
                 this.currentAudio = audio;
                 
-                // #region agent log
-                fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-audio.js:playWithTranscript',message:'About to play audio',data:{audioUrl:this.cache[audioKey]?.slice(0,50)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4'})}).catch(()=>{});
-                // #endregion
                 await audio.play();
                 
                 // Wait for either audio to end or transcript to complete

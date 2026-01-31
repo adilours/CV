@@ -14,9 +14,6 @@ const transcriptSystem = {
         // After user interaction (click), audio is allowed by browsers
         // We enable it directly and handle errors at playback time
         this.isAudioEnabled = true;
-        // #region agent log
-        fetch('http://127.0.0.1:7248/ingest/86f688f9-a472-48e4-9a37-f10ef76ffe42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'diagnostic-transcript.js:detectAudioCapability',message:'Audio ENABLED after user click',data:{isAudioEnabled:true},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H6'})}).catch(()=>{});
-        // #endregion
         return true;
     },
     
