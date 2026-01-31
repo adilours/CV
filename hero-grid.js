@@ -1,16 +1,21 @@
 /**
- * Hero Interactive Grid & Post-its
- * Adds a subtle interactive grid to the hero section with clickable post-it notes
+ * Hero Interactive Grid & Post-its System
+ * - Dense 40px grid with glow effect
+ * - 31 autobiographical post-its (random selection)
+ * - Max 8 visible at once (FIFO)
+ * - Easter egg after 10 clicks
  * Desktop only (>= 1024px)
  */
 
-class HeroInteractiveGrid {
+class PostItSystem {
     constructor() {
         this.hero = document.getElementById('hero');
         this.grid = document.getElementById('hero-grid');
         this.postitsContainer = document.getElementById('hero-postits');
         this.glow = document.getElementById('hero-glow');
         this.counter = document.getElementById('postit-counter');
+        this.easterEgg = document.getElementById('easterEgg');
+        this.easterEggClose = document.getElementById('easterEggClose');
 
         // Early exit if elements not found or mobile
         if (!this.hero || !this.grid || !this.postitsContainer || window.innerWidth < 1024) {
@@ -18,33 +23,15 @@ class HeroInteractiveGrid {
         }
 
         this.cells = [];
-        this.postItCount = 0;
-        this.maxPostIts = 4;
+        this.visiblePostIts = [];
+        this.totalClicks = 0;
+        this.maxVisible = 8;
+        this.easterEggThreshold = 10;
+        this.easterEggTriggered = false;
         this.isInitialized = false;
 
-        // Post-its content (FR/EN) - Timeline minimaliste
-        this.postItsData = [
-            {
-                fr: 'Service Designer depuis 2016',
-                en: 'Service Designer since 2016',
-                rotation: -3
-            },
-            {
-                fr: 'Product Engineer depuis 2007',
-                en: 'Product Engineer since 2007',
-                rotation: 2
-            },
-            {
-                fr: 'Strategist depuis 1982',
-                en: 'Strategist since 1982',
-                rotation: -2
-            },
-            {
-                fr: 'Dreamer before birth',
-                en: 'Dreamer before birth',
-                rotation: 4
-            }
-        ];
+        // Build post-its data
+        this.postItsData = this.buildPostItsData();
 
         this.init();
     }
@@ -55,6 +42,7 @@ class HeroInteractiveGrid {
 
         this.createGrid();
         this.attachEvents();
+        this.attachKeyboardEvents();
 
         // Rebuild grid on resize (debounced)
         let resizeTimeout;
@@ -70,7 +58,7 @@ class HeroInteractiveGrid {
 
     createGrid() {
         const heroRect = this.hero.getBoundingClientRect();
-        const cellSize = 80;
+        const cellSize = 40;
         const cols = Math.ceil(heroRect.width / cellSize);
         const rows = Math.ceil(heroRect.height / cellSize);
 
@@ -103,6 +91,31 @@ class HeroInteractiveGrid {
         });
     }
 
+    attachKeyboardEvents() {
+        // ESC to close easter egg
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.easterEgg) {
+                this.easterEgg.classList.add('hidden');
+            }
+        });
+
+        // Click outside easter egg content to close
+        if (this.easterEgg) {
+            this.easterEgg.addEventListener('click', (e) => {
+                if (e.target === this.easterEgg) {
+                    this.easterEgg.classList.add('hidden');
+                }
+            });
+        }
+
+        // Close button
+        if (this.easterEggClose) {
+            this.easterEggClose.addEventListener('click', () => {
+                this.easterEgg.classList.add('hidden');
+            });
+        }
+    }
+
     handleMouseMove(e) {
         const x = e.clientX;
         const y = e.clientY;
@@ -114,8 +127,8 @@ class HeroInteractiveGrid {
         }
 
         // Subtle cell repulsion effect
-        const radius = 100;
-        const maxMove = 5;
+        const radius = 80;
+        const maxMove = 4;
 
         this.cells.forEach(cell => {
             const rect = cell.getBoundingClientRect();
@@ -145,34 +158,43 @@ class HeroInteractiveGrid {
     }
 
     handleCellClick(e) {
-        if (this.postItCount >= this.maxPostIts) return;
-
         const heroRect = this.hero.getBoundingClientRect();
 
         // Calculate position relative to hero, with some randomness
-        let x = e.clientX - heroRect.left - 90 + (Math.random() * 30 - 15);
-        let y = e.clientY - heroRect.top - 20 + (Math.random() * 20 - 10);
+        let x = e.clientX - heroRect.left - 90 + (Math.random() * 40 - 20);
+        let y = e.clientY - heroRect.top - 90 + (Math.random() * 40 - 20);
 
         // Keep post-it within hero bounds
         x = Math.max(20, Math.min(x, heroRect.width - 200));
-        y = Math.max(20, Math.min(y, heroRect.height - 60));
+        y = Math.max(20, Math.min(y, heroRect.height - 200));
 
-        this.createPostIt(x, y);
-        this.postItCount++;
+        // FIFO: Remove oldest if at max
+        if (this.visiblePostIts.length >= this.maxVisible) {
+            const oldest = this.visiblePostIts.shift();
+            oldest.classList.add('fade-out');
+            setTimeout(() => oldest.remove(), 300);
+        }
+
+        // Create new post-it
+        const postIt = this.createPostIt(x, y);
+        this.visiblePostIts.push(postIt);
+
+        this.totalClicks++;
         this.updateCounter();
+        this.checkEasterEgg();
     }
 
     createPostIt(x, y) {
-        const data = this.postItsData[this.postItCount];
-        const lang = window.currentLang || 'fr';
-        const text = data[lang] || data.fr;
+        // Random selection from all post-its
+        const data = this.postItsData[Math.floor(Math.random() * this.postItsData.length)];
+        const rotation = (Math.random() * 10 - 5);
 
         const postIt = document.createElement('div');
         postIt.classList.add('postit-note');
-        postIt.style.setProperty('--rotation', data.rotation + 'deg');
+        postIt.style.setProperty('--rotation', rotation + 'deg');
         postIt.style.left = x + 'px';
         postIt.style.top = y + 'px';
-        postIt.textContent = text;
+        postIt.innerHTML = data.html;
 
         this.postitsContainer.appendChild(postIt);
 
@@ -183,6 +205,8 @@ class HeroInteractiveGrid {
 
         // Make draggable
         this.makePostItDraggable(postIt);
+
+        return postIt;
     }
 
     makePostItDraggable(element) {
@@ -196,7 +220,7 @@ class HeroInteractiveGrid {
             initialX = element.offsetLeft;
             initialY = element.offsetTop;
             element.style.cursor = 'grabbing';
-            element.style.zIndex = '15';
+            element.style.zIndex = '12';
             e.preventDefault();
         });
 
@@ -222,23 +246,161 @@ class HeroInteractiveGrid {
 
     updateCounter() {
         if (this.counter) {
-            this.counter.textContent = `(${this.postItCount}/${this.maxPostIts})`;
-
-            // Update hint when all post-its are placed
-            if (this.postItCount >= this.maxPostIts) {
-                const hint = this.counter.closest('.interaction-hint');
-                if (hint) {
-                    hint.style.opacity = '0.2';
-                    const hintText = hint.querySelector('[data-fr]');
-                    if (hintText) {
-                        const lang = window.currentLang || 'fr';
-                        hintText.textContent = lang === 'fr'
-                            ? 'Parcours complet !'
-                            : 'Journey complete!';
-                    }
-                }
-            }
+            this.counter.textContent = `(${this.totalClicks})`;
         }
+    }
+
+    checkEasterEgg() {
+        if (this.totalClicks >= this.easterEggThreshold && !this.easterEggTriggered) {
+            this.triggerEasterEgg();
+        }
+    }
+
+    triggerEasterEgg() {
+        this.easterEggTriggered = true;
+        if (this.easterEgg) {
+            setTimeout(() => {
+                this.easterEgg.classList.remove('hidden');
+            }, 600);
+        }
+    }
+
+    buildPostItsData() {
+        return [
+            // === PARCOURS (5) ===
+            {
+                html: `<div class="postit-line1">Service Designer <span class="postit-date">depuis 2016</span></div>
+                       <div class="postit-line2">Strategist <span class="postit-date">depuis 1982</span></div>`
+            },
+            {
+                html: `<div class="postit-line1">J'ai vendu ma boîte <span class="postit-date">en 2020</span></div>
+                       <div class="postit-line2">Pas pour l'argent.<br>Pour revenir au terrain.</div>`
+            },
+            {
+                html: `<div class="postit-line1">20 ans, 5 secteurs.</div>
+                       <div class="postit-line2">Même merde,<br>emballage différent.</div>`
+            },
+            {
+                html: `<div class="postit-line1">EY → BNP → Generali<br>→ Enedis → Renault</div>
+                       <div class="postit-line2">La même réunion 1000 fois.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Avant je designais<br>des produits.</div>
+                       <div class="postit-line2">Maintenant je designe<br>des organisations.</div>`
+            },
+
+            // === VÉRITÉS DESIGN (10) ===
+            {
+                html: `<div class="postit-line1">Un bon TOM redistribue<br>le pouvoir.</div>
+                       <div class="postit-line2">C'est pour ça qu'on l'évite.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Les workshops retardent<br>les décisions.</div>
+                       <div class="postit-line2">C'est leur vraie fonction.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Ton NPS ne vaut rien.</div>
+                       <div class="postit-line2">Montre-moi un user<br>qui rage-quit.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Design Thinking =<br>Théâtre corporate</div>
+                       <div class="postit-line2">Vrai design =<br>Guerre politique</div>`
+            },
+            {
+                html: `<div class="postit-line1">Si ton projet manque<br>"d'alignement"...</div>
+                       <div class="postit-line2">Ton projet est mort.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Les beaux Figma<br>c'est cool.</div>
+                       <div class="postit-line2">Les décisions en COMEX<br>c'est mieux.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Je cartographie pas<br>des parcours.</div>
+                       <div class="postit-line2">Je cartographie<br>qui bloque.</div>`
+            },
+            {
+                html: `<div class="postit-line1">30sec de vidéo user ><br>120 slides PDF</div>
+                       <div class="postit-line2">Toujours.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Les problèmes ne viennent<br>jamais du manque</div>
+                       <div class="postit-line2">de communication.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Un MVP gentillet<br>ne transforme rien.</div>
+                       <div class="postit-line2">Efficace ou rien.</div>`
+            },
+
+            // === MÉTHODE (5) ===
+            {
+                html: `<div class="postit-line1">VerbatimExtractor :<br>analyse UX locale</div>
+                       <div class="postit-line2">Zéro cloud, zéro bullshit.</div>`
+            },
+            {
+                html: `<div class="postit-line1">LevelOrg :<br>organisations en 3D</div>
+                       <div class="postit-line2">L'organigramme<br>ment toujours.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Je code avec Cursor.</div>
+                       <div class="postit-line2">2 jours au lieu<br>de 2 semaines.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Mes outils ne sont pas<br>sur GitHub.</div>
+                       <div class="postit-line2">Pas finis. Jamais.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Tauri + React<br>+ LLMs locaux</div>
+                       <div class="postit-line2">Zéro vendor lock-in.</div>`
+            },
+
+            // === PHILOSOPHIE PRO (5) ===
+            {
+                html: `<div class="postit-line1">Je recrute des gens<br>qui disent non.</div>
+                       <div class="postit-line2">Les yes-men tuent<br>les équipes.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Sujets toxiques =<br>mon point de départ</div>
+                       <div class="postit-line2">C'est là que l'orga crève.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Je ne rassure pas<br>les COMEX.</div>
+                       <div class="postit-line2">Je dis la vérité.</div>`
+            },
+            {
+                html: `<div class="postit-line1">30 designers recrutés.</div>
+                       <div class="postit-line2">100% d'emmerdeurs.</div>`
+            },
+            {
+                html: `<div class="postit-line1">On m'appelle quand<br>les slides échouent.</div>
+                       <div class="postit-line2">Jamais avant.</div>`
+            },
+
+            // === PERSO (6) ===
+            {
+                html: `<div class="postit-line1">Père de 2.<br>Mari d'une psy.</div>
+                       <div class="postit-line2">Proprio d'un beagle<br>(Euclide).</div>`
+            },
+            {
+                html: `<div class="postit-line1">62km Istres→Marseille<br>avec mon grand</div>
+                       <div class="postit-line2">14h de marche ><br>5 ans chez EY</div>`
+            },
+            {
+                html: `<div class="postit-line1">Je viens de Zarzis<br>en Tunisie.</div>
+                       <div class="postit-line2">Méditerranée sud,<br>racines profondes.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Le Crocodile, Paris 5<sup>e</sup></div>
+                       <div class="postit-line2">Mon bar.<br>Les meilleures idées<br>naissent là-bas.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Ma sœur m'a appris<br>l'essentiel :</div>
+                       <div class="postit-line2">La vulnérabilité<br>n'est pas une faiblesse.</div>`
+            },
+            {
+                html: `<div class="postit-line1">Ma femme analyse<br>les individus.</div>
+                       <div class="postit-line2">Moi les organisations.</div>`
+            }
+        ];
     }
 }
 
@@ -246,13 +408,13 @@ class HeroInteractiveGrid {
 document.addEventListener('DOMContentLoaded', () => {
     // Only initialize on desktop
     if (window.innerWidth >= 1024) {
-        window.heroGrid = new HeroInteractiveGrid();
+        window.postItSystem = new PostItSystem();
     }
 });
 
 // Re-check on resize in case user resizes to desktop
 window.addEventListener('resize', () => {
-    if (window.innerWidth >= 1024 && !window.heroGrid) {
-        window.heroGrid = new HeroInteractiveGrid();
+    if (window.innerWidth >= 1024 && !window.postItSystem) {
+        window.postItSystem = new PostItSystem();
     }
 });
